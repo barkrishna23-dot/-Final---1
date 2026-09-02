@@ -1,0 +1,6 @@
+{
+  "name": "Sundarban Vromon — সুন্দরবন ভ্রমণ",
+  "description": "Sundarban tour and travel agency (since 2019). Book verified boat safaris, Sajnekhali, Sudhanyakhali, Dobanki canopy walk, authentic Bengali cuisine, and local guide packages.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

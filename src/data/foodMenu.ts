@@ -1,0 +1,117 @@
+import { FoodMenuItem } from '../types';
+
+export const FOOD_MENU_ITEMS: FoodMenuItem[] = [
+  {
+    id: 'f6',
+    name: { bn: 'কলাপাতায় ভাপা ইলিশ ও খাঁটি বাঙালি থালি', en: 'Royal Steamed Bhapa Ilish & Traditional Bengali Thali' },
+    mealType: 'lunch',
+    category: 'seasonal',
+    description: {
+      bn: 'মাটির থালায় কলাপাতায় ভাপানো নরম সুস্বাদু ইলিশের টুকরো, ঝাল কাঁচা লঙ্কা ও খাঁটি সর্ষে বাটার ঝোল, সাথে ধোঁয়া ওঠা গরম বাসমতী চালের ভাত, সুগন্ধি সোনা মুগের ডাল ও তরকারি।',
+      en: 'Tender steamed Hilsa fillets in pungent mustard gravy with green chillies on banana leaf, served with aromatic steaming rice, golden moong dal, and side dishes in earthen terracotta bowls.',
+    },
+    image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80',
+    isVegetarian: false,
+    isSeasonal: true,
+    allergens: { bn: 'সর্ষে ও মাছ', en: 'Mustard & Fish' },
+  },
+  {
+    id: 'f3',
+    name: { bn: 'গলদা চিংড়ির মালাইকারি', en: 'Golda Chingri Malaikari (Jumbo Prawns in Coconut Cream)' },
+    mealType: 'lunch',
+    category: 'seafood',
+    description: {
+      bn: 'সুন্দরবনের খাঁটি নারকেলের ঘন দুধ ও মৃদু গরম মশলার গ্রেভিতে রান্না করা বিশাল সাইজের গলদা চিংড়ির অতুলনীয় মালাইকারি।',
+      en: 'Jumbo freshwater river prawns simmered gently in rich coconut cream, mild aromatic spices, and green chillies.',
+    },
+    image: 'https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=800&q=80',
+    isVegetarian: false,
+    allergens: { bn: 'শেলফিশ (চিংড়ি)', en: 'Shellfish (Crustaceans)' },
+  },
+  {
+    id: 'f4',
+    name: { bn: 'কলাপাতায় মোড়া ভেটকি পাতুরি', en: 'Bhetki Paturi in Banana Leaf' },
+    mealType: 'lunch',
+    category: 'seafood',
+    description: {
+      bn: 'সাদা ও কালো সর্ষের পেস্ট, কাঁচা লঙ্কা ও খাঁটি সর্ষের তেলে মাখিয়ে কলাপাতা দিয়ে বেঁধে ভাপে রান্না করা টাটকা নদীর ভেটকি মাছের পাতুরি।',
+      en: 'Fresh river Bhetki fillet marinated in pungent mustard-poppy seed paste and mustard oil, wrapped in banana leaf and slow-steamed.',
+    },
+    image: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=800&q=80',
+    isVegetarian: false,
+    allergens: { bn: 'সর্ষে', en: 'Mustard' },
+  },
+  {
+    id: 'f1',
+    name: { bn: 'ফুলকো লুচি ও ছোলার ডাল / আলুর দম', en: 'Hot Fluffy Luchi with Chholar Dal & Aloor Dom' },
+    mealType: 'breakfast',
+    category: 'bengali-classic',
+    description: {
+      bn: 'সকালে বোটে ওঠার পর গরম গরম ভাজা ফুলকো লুচি, নারকেল কোড়া দেওয়া মিষ্টি ছোলার ডাল কিংবা কাশ্মীরি মশলায় মাখানো আলুর দম এবং ঐতিহ্যবাহী মিষ্টি।',
+      en: 'Piping hot deep-fried puffed bread paired with coconut-tempered sweet Bengal gram dal or rich potato gravy and traditional Bengali sweets.',
+    },
+    image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80',
+    isVegetarian: true,
+  },
+  {
+    id: 'f5',
+    name: { bn: 'সুন্দরবনের দেশি কাঁকড়ার কষা ঝাল', en: 'Spicy Sundarban Mud Crab Curry' },
+    mealType: 'dinner',
+    category: 'seafood',
+    description: {
+      bn: 'সুন্দরবনের নোনাজলের মিষ্টি মাংসল কাঁকড়া দিয়ে তৈরি ডালচিনি, পেঁয়াজ ও আদা-রসুনের কষা গ্রেভি।',
+      en: 'Freshly harvested tidal mud crab slow-cooked in a robust, deeply spiced onion-ginger-garlic and cinnamon gravy.',
+    },
+    image: 'https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=800&q=80',
+    isVegetarian: false,
+    allergens: { bn: 'কাঁকড়া (শেলফিশ)', en: 'Crab (Crustaceans)' },
+  },
+  {
+    id: 'f7',
+    name: { bn: 'দেশি মুরগি ও খাসির কষা ঝোল', en: 'Country Chicken & Slow-Cooked Bengali Mutton Kasha' },
+    mealType: 'dinner',
+    category: 'bengali-classic',
+    description: {
+      bn: 'গ্রাম্য কায়দায় বড় আলু সহযোগে রান্না করা দেশি মুরগির লাল ঝোল অথবা কষা মাটন কালিয়া।',
+      en: 'Homestyle rich country chicken gravy cooked with large potato chunks or slow-braised tender goat meat.',
+    },
+    image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80',
+    isVegetarian: false,
+  },
+  {
+    id: 'f8',
+    name: { bn: 'ধোঁকা ও পনিরের নিরামিষ স্পেশাল ডিশ', en: 'Dhokar Dalna & Chanar Kofta (Pure Veg Curation)' },
+    mealType: 'lunch',
+    category: 'vegetarian',
+    description: {
+      bn: 'নিরামিষাশী ও জৈন অতিথিদের জন্য ছোলার ডালের ধোঁকার ডালনা, ছানার কোপ্তা, মোচার ঘণ্ট এবং মিষ্টি চাটনি।',
+      en: 'Dedicated pure vegetarian courses: spiced lentil cake curry (Dhokar Dalna), cottage cheese dumplings (Chanar Kofta), and banana flower delicacies.',
+    },
+    image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80',
+    isVegetarian: true,
+  },
+  {
+    id: 'f9',
+    name: { bn: 'সন্ধ্যায় গরম পেঁয়াজি, চিকেন পকোড়া ও ভাড়ের চা', en: 'Evening Crispy Pakoras & Earthen Pot Spiced Chai' },
+    mealType: 'snacks',
+    category: 'bengali-classic',
+    description: {
+      bn: 'সাফারি শেষে রিসোর্টে বা বোটে গরম চা, মুড়ির চানাচুর মাখা, কুড়মুড়ে পেঁয়াজি অথবা গরম চিকেন পকোড়া।',
+      en: 'Post-safari tea rituals featuring hot onion pakoras, crispy chicken fritters, spiced puffed rice, and earthen cup ginger tea.',
+    },
+    image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80',
+    isVegetarian: true,
+  },
+  {
+    id: 'f10',
+    name: { bn: 'সুন্দরবনের খাঁটি মধু ও নলেন গুড়ের মিষ্টি', en: 'Sundarban Raw Wild Honey & Nolen Gur Sweets' },
+    mealType: 'special',
+    category: 'seasonal',
+    description: {
+      bn: 'মৌলিদের সংগৃহীত সুন্দরবনের বুনো ফুলের খাঁটি মধু ও শীতকালের সুগন্ধি খেজুরের নলেন গুড়ের রসগোল্লা ও পায়েস।',
+      en: 'Locally foraged wild mangrove forest honey and winter aromatic date palm jaggery (Nolen Gur) sweets & rice pudding.',
+    },
+    image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80',
+    isVegetarian: true,
+  },
+];
