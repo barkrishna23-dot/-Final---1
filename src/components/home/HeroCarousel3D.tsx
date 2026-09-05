@@ -181,22 +181,6 @@ export const HeroCarousel3D: React.FC<HeroCarousel3DProps> = ({ onNavigate }) =>
               {slide.secondaryCta[language]}
             </button>
           </div>
-
-          {/* Quick Stats Strip in Hero */}
-          <div className="pt-6 grid grid-cols-3 gap-4 border-t border-white/15 max-w-lg text-xs sm:text-sm">
-            <div>
-              <div className="font-bold text-amber-300 text-lg sm:text-xl font-heading">২০১৯+</div>
-              <div className="text-slate-300 text-xs">{isBengali ? 'সাল থেকে পরিষেবা' : 'Serving Since 2019'}</div>
-            </div>
-            <div>
-              <div className="font-bold text-emerald-300 text-lg sm:text-xl font-heading">২০+</div>
-              <div className="text-slate-300 text-xs">{isBengali ? 'যাচাইকৃত স্পট' : 'Verified Places'}</div>
-            </div>
-            <div>
-              <div className="font-bold text-cyan-300 text-lg sm:text-xl font-heading">১০০%</div>
-              <div className="text-slate-300 text-xs">{isBengali ? 'অনুমোদিত গাইড' : 'Licensed Guides'}</div>
-            </div>
-          </div>
         </div>
       </div>
 

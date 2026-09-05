@@ -239,12 +239,12 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
           <span className={`font-bold tracking-tight leading-none text-xl sm:text-2xl font-heading ${
             variant === 'dark' ? 'text-white' : 'text-[#064E3B]'
           }`}>
-            {lang === 'bn' ? 'সুন্দরবন ভ্রমণ' : 'Sundarban Vromon'}
+            সুন্দরবন ভ্রমণ
           </span>
           <span className={`text-[11px] sm:text-xs tracking-wider uppercase font-medium ${
             variant === 'dark' ? 'text-[#F4B942]' : 'text-[#0E7490]'
           }`}>
-            {lang === 'bn' ? 'SUNDARBAN VROMON • ২০১৯ থেকে' : 'TOUR & SAFARI AGENCY • EST. 2019'}
+            SUNDARBAN VROMON
           </span>
         </div>
       )}

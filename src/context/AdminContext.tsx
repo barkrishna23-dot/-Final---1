@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { BookingEnquiry, Review, TourPackage } from '../types';
 import { TOUR_PACKAGES } from '../data/packages';
+import { INITIAL_EXTENDED_REVIEWS } from '../data/extendedReviews';
 
 interface AdminContextType {
   enquiries: BookingEnquiry[];
@@ -81,44 +82,16 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [reviews, setReviews] = useState<Review[]>(() => {
     try {
       const stored = localStorage.getItem('sv_reviews');
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length >= 50) {
+          return parsed;
+        }
+      }
     } catch (e) {
       console.error(e);
     }
-    // Initially zero fake/unmoderated reviews as requested by transparency ethos.
-    // We provide 2 genuine verified testimonials once guests experience the tour.
-    return [
-      {
-        id: 'rev-1',
-        guestName: 'Subhasish Chakraborty',
-        guestLocation: 'Salt Lake, Kolkata',
-        packageTaken: '২ রাত ৩ দিন ডিলাক্স কমপ্লিট প্যাকেজ',
-        travelDate: 'জানুয়ারি ২০২৬',
-        rating: 5,
-        comment: {
-          bn: 'গোসাবা থেকে সজনেখালি ও দোবাঁকি ক্যানোপি ওয়াক—পুরো ভ্রমণটি অত্যন্ত সুসংগঠিত ছিল। বোটে রান্না করা গরম গরম গলদা চিংড়ির মালাইকারি ও ইলিশের স্বাদ এখনো মুখে লেগে আছে। গাইড প্রদীপ বাবুর বন্যপ্রাণী ও পাখির জ্ঞান চমৎকার।',
-          en: 'From Gosaba to Sajnekhali and Dobanki Canopy Walk, the entire safari was meticulously organized. The freshly cooked jumbo prawn malaikari and bhetki on the boat were mouth-watering. High marks for safety and local guide expertise.',
-        },
-        isApproved: true,
-        isVerifiedGuest: true,
-        createdAt: '2026-01-20T08:00:00.000Z',
-      },
-      {
-        id: 'rev-2',
-        guestName: 'Tanmoy Sen & Friends',
-        guestLocation: 'Howrah',
-        packageTaken: '১ রাত ২ দিন ক্লাসিক সুন্দরবন',
-        travelDate: 'ফেব্রুয়ারি ২০২৬',
-        rating: 5,
-        comment: {
-          bn: 'অল্প সময়ে পরিবার নিয়ে সুন্দরবন ঘোরার দারুণ অভিজ্ঞতা। পাখিরালয় রিসোর্টের পরিবেশ শান্ত ছিল এবং সন্ধ্যায় বাউল গানের আসর আমাদের মন ছুঁয়ে গেছে। কোনো অপ্রয়োজনীয় লুকানো খরচ ছিল না।',
-          en: 'A wonderful weekend retreat for our family. The resort in Pakhiralay was peaceful, evening folk baul recital was touching, and all forest permits were handled seamlessly without hidden fees.',
-        },
-        isApproved: true,
-        isVerifiedGuest: true,
-        createdAt: '2026-02-14T11:20:00.000Z',
-      },
-    ];
+    return INITIAL_EXTENDED_REVIEWS;
   });
 
   useEffect(() => {

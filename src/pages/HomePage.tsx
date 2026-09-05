@@ -44,7 +44,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* 2. Quick Trust Pillars Strip */}
       <QuickTrustStrip />
 
-      {/* 2.5. আমাদের পরিচয় (About Us & Founder Story Spotlight) */}
+      {/* 3. আমাদের পরিচয় (About Us & Founder Story Spotlight) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-gradient-to-br from-white via-emerald-50/40 to-amber-50/30 rounded-3xl p-6 sm:p-10 border border-emerald-100 shadow-md space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -430,59 +430,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         <WildlifeHonestyPanel />
       </section>
 
-      {/* 10. Verified Guest Reviews Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-          <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-900 uppercase tracking-wider bg-emerald-100 px-3 py-1 rounded-full mb-2">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-800" />
-              <span>{isBengali ? 'যাচাইকৃত পর্যটক প্রতিক্রিয়া' : '100% Verified Guest Reviews'}</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold font-heading text-[#064E3B]">
-              {isBengali ? 'আমাদের অতিথিরা কী বলছেন?' : 'Real Experiences from Real Guests'}
-            </h2>
-          </div>
-
-          <button
-            onClick={() => onNavigate('reviews')}
-            className="inline-flex items-center gap-2 text-sm font-bold text-[#064E3B] hover:text-[#096049] transition-colors"
-          >
-            <span>{isBengali ? 'সকল মতামত দেখুন ও রিভিউ লিখুন' : 'Read All & Write a Review'}</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {reviews.slice(0, 2).map(r => (
-            <div
-              key={r.id}
-              className="bg-white rounded-3xl p-6 animated-round-card shadow-sm hover:shadow-md transition-all space-y-3"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-bold text-base text-slate-900 font-heading">{r.guestName}</h4>
-                  <p className="text-xs text-slate-500">{r.guestLocation} • {r.travelDate}</p>
-                </div>
-                <div className="flex items-center gap-1 text-amber-500">
-                  {Array.from({ length: r.rating }).map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-              </div>
-
-              <div className="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg inline-block">
-                {r.packageTaken}
-              </div>
-
-              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed italic">
-                "{r.comment ? (typeof r.comment === 'object' ? (r.comment[language] || r.comment.bn || r.comment.en || '') : r.comment) : ''}"
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 11. Final Call To Action Banner */}
+      {/* 10. Final Call To Action Banner */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <div className="bg-gradient-to-r from-[#064E3B] via-[#0D5C43] to-[#064E3B] rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-4 max-w-xl">
