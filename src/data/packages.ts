@@ -91,7 +91,7 @@ export const TOUR_PACKAGES: TourPackage[] = [
       bn: '০ থেকে ৪ বছর পর্যন্ত শিশুর জন্য কোনো চার্জ প্রযোজ্য নয়। ৪ থেকে ৮ বছর পর্যন্ত ৫০% চার্জ, ৮ বছরের উর্ধ্বে পূর্ণ চার্জ।',
       en: 'Children 0–4 years travel free. Children 4–8 years charged at 50%. 8+ years considered adult.',
     },
-    basePrice: 2199,
+    basePrice: 1999,
     priceNote: {
       bn: 'প্রতি ব্যক্তি আনুমানিক খরচ (যাত্রী সংখ্যা ও পিকআপ পয়েন্ট অনুসারে পরিবর্তনীয়)',
       en: 'Estimated per person (varies with group size and vehicle choices)',
@@ -217,7 +217,7 @@ export const TOUR_PACKAGES: TourPackage[] = [
       bn: '৪ বছর পর্যন্ত শিশু বিনামূল্যে। ৪ থেকে ৮ বছর ৫০% চার্জ।',
       en: 'Children up to 4 years free. 4–8 years charged 50%.',
     },
-    basePrice: 3899,
+    basePrice: 2999,
     priceNote: {
       bn: 'প্রতি ব্যক্তি প্যাকেজ মূল্য (যাত্রী দল ও থাকার ধরণের ওপর নির্ভরশীল)',
       en: 'Estimated per person based on standard double/triple sharing',
@@ -377,7 +377,7 @@ export const TOUR_PACKAGES: TourPackage[] = [
       bn: '৪ বছর পর্যন্ত শিশু সম্পূর্ণ ফ্রি। ৪–৮ বছর ৫০% চার্জ। ৮+ বছর প্রাপ্তবয়স্ক হিসেবে গণ্য।',
       en: 'Children under 4 years free. 4–8 years 50%. 8+ years adult fare.',
     },
-    basePrice: 5499,
+    basePrice: 3999,
     priceNote: {
       bn: 'প্রতি ব্যক্তি আনুমানিক (রুমের ধরণ ও গ্রুপ সাইজের ওপর ভিত্তি করে)',
       en: 'Estimated per person based on standard sharing',
@@ -508,7 +508,7 @@ export const TOUR_PACKAGES: TourPackage[] = [
       bn: '৪ বছর পর্যন্ত শিশু ফ্রি। ৪–৮ বছর ৫০% চার্জ।',
       en: 'Under 4 years free. 4–8 years 50%.',
     },
-    basePrice: 8499,
+    basePrice: 4999,
     priceNote: {
       bn: 'প্রতি ব্যক্তি (সীমান্ত নৌযাত্রার বিশেষ জ্বালানি ও পারমিট অন্তর্ভুক্ত)',
       en: 'Per person (Includes extended navigation fuel and frontier permits)',
@@ -615,7 +615,7 @@ export const TOUR_PACKAGES: TourPackage[] = [
       bn: '৪ বছর পর্যন্ত ফ্রি। ৪–৮ বছর ৫০% চার্জ।',
       en: 'Under 4 years free. 4–8 years 50%.',
     },
-    basePrice: 4299,
+    basePrice: 2999,
     priceNote: {
       bn: 'প্রতি ব্যক্তি (ইলিশ উৎসবের স্পেশাল মেনু অন্তর্ভুক্ত)',
       en: 'Per person including full Hilsa culinary banquet',

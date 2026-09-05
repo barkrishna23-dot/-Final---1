@@ -90,7 +90,7 @@ export const PackageCard: React.FC<PackageCardProps> = ({ pkg, onSelect, onBookN
                 {isBengali ? 'জনপ্রতি প্রারম্ভিক খরচ' : 'Starting From'}
               </span>
               <div className="text-2xl font-black font-heading text-emerald-800">
-                {pkg.basePrice ? `₹${pkg.basePrice.toLocaleString('en-IN')}` : pkg.pricePerPersonINR || '₹2,199'}
+                {pkg.basePrice ? `₹${pkg.basePrice.toLocaleString('en-IN')}` : pkg.pricePerPersonINR || '₹1,999'}
                 <span className="text-xs font-normal text-slate-500 ml-1">
                   {isBengali ? '/জন' : '/person'}
                 </span>

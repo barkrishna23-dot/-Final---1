@@ -26,7 +26,7 @@ export const MainHeader: React.FC<MainHeaderProps> = ({ currentRoute: propCurren
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#0A2218]/95 backdrop-blur-md border-b border-[#F59E0B]/40 shadow-xl">
+    <header className="w-full bg-[#0A2218]/95 backdrop-blur-md border-b border-[#F59E0B]/40 shadow-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Brand Logo & Name */}

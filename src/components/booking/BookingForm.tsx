@@ -45,16 +45,17 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
     id: 'default',
     slug: 'one-day-sundarban-tour',
     title: { bn: 'সুন্দরবন ডে সাফারি', en: 'Sundarban Day Safari' },
-    basePrice: 2199
+    basePrice: 1999
   };
 
   // Dynamic Price Estimate Math
   const calculateEstimatedTotal = () => {
-    let baseRate = 5000;
-    if (selectedPkg.slug === '1-day-express') baseRate = 2499;
-    if (selectedPkg.slug === '1-night-2-days-classic') baseRate = 3999;
-    if (selectedPkg.slug === '2-nights-3-days-deluxe') baseRate = 5499;
-    if (selectedPkg.slug === '3-nights-4-days-extended') baseRate = 7999;
+    let baseRate = selectedPkg.basePrice || 1999;
+    if (selectedPkg.slug === 'one-day-sundarban-tour' || selectedPkg.slug === '1-day-express') baseRate = 1999;
+    if (selectedPkg.slug === '1-night-2-days-classic') baseRate = 2999;
+    if (selectedPkg.slug === '2-nights-3-days-deluxe') baseRate = 3999;
+    if (selectedPkg.slug === '3-nights-4-days-extended') baseRate = 4999;
+    if (selectedPkg.slug === 'seasonal-monsoon-festival') baseRate = 2999;
     if (selectedPkg.slug === 'custom-private-charter') baseRate = 9500;
 
     if (formData.roomType === 'luxury-suite') baseRate += 1200;

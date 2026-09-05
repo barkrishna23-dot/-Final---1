@@ -68,7 +68,7 @@ export const PackageDetailPage: React.FC<PackageDetailPageProps> = ({
             <div>
               <span className="text-xs text-slate-300 block">{isBengali ? 'জনপ্রতি প্রারম্ভিক খরচ' : 'Starting Fare'}</span>
               <strong className="text-2xl sm:text-3xl font-heading text-white">
-                {pkg.basePrice ? `₹${pkg.basePrice.toLocaleString('en-IN')}` : pkg.pricePerPersonINR || '₹2,199'}
+                {pkg.basePrice ? `₹${pkg.basePrice.toLocaleString('en-IN')}` : pkg.pricePerPersonINR || '₹1,999'}
               </strong>
               <span className="text-xs text-slate-300 ml-1">{isBengali ? '/জন' : '/person'}</span>
             </div>

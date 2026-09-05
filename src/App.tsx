@@ -88,11 +88,11 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-transparent text-slate-900 flex flex-col font-sans selection:bg-[#F59E0B] selection:text-slate-950 relative">
-      {/* 1. Top Utility Bar with Emergency Ticker, Phone & Language Switcher */}
-      <UtilityBar onNavigate={handleNavigate} />
-
-      {/* 2. Main Sticky Header Navigation */}
-      <MainHeader currentRoute={currentRoute} onNavigate={handleNavigate} />
+      {/* 1 & 2. Unified Sticky Header (Utility Bar + Main Header together on scroll) */}
+      <div className="sticky top-0 z-50">
+        <UtilityBar onNavigate={handleNavigate} />
+        <MainHeader currentRoute={currentRoute} onNavigate={handleNavigate} />
+      </div>
 
       {/* 3. Primary Content View Area */}
       <main className="flex-1 relative z-10">
