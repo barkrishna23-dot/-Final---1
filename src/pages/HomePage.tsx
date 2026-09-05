@@ -44,6 +44,87 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* 2. Quick Trust Pillars Strip */}
       <QuickTrustStrip />
 
+      {/* 2.5. Verified Guest Reviews Spotlight (Placed directly under Quick Trust Strip as requested) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-br from-emerald-50/70 via-white to-amber-50/40 rounded-3xl p-6 sm:p-8 border border-emerald-100 shadow-sm space-y-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#064E3B] uppercase tracking-wider bg-emerald-100/90 px-3.5 py-1.5 rounded-full border border-emerald-200">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-800" />
+                  <span>{isBengali ? '১০০% যাচাইকৃত পর্যটক প্রতিক্রিয়া' : '100% Verified Guest Reviews'}</span>
+                </div>
+                <div className="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full">
+                  <span className="font-extrabold text-xs text-slate-900">
+                    {isBengali ? '৪.৩ / ৫.০' : '4.3 / 5.0'}
+                  </span>
+                  <div className="flex text-amber-500">
+                    <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
+                  </div>
+                  <span className="text-[10px] text-slate-500 font-medium">
+                    {isBengali ? '(১৮৫+ মতামত)' : '(185+ reviews)'}
+                  </span>
+                </div>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold font-heading text-[#064E3B]">
+                {isBengali ? 'আমাদের অতিথিরা কী বলছেন?' : 'Real Experiences from Real Guests'}
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1">
+                {isBengali
+                  ? 'সুন্দরবনের জলজ অরণ্য ও খাঁড়িতে ভ্রমণের বাস্তব অভিজ্ঞতা ও পর্যটকদের স্বতঃস্ফূর্ত মূল্যায়ন'
+                  : 'Authentic feedback and reflections from travelers who experienced Sundarbans with us'}
+              </p>
+            </div>
+
+            <button
+              onClick={() => onNavigate('reviews')}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#064E3B] hover:bg-[#096049] text-white text-xs sm:text-sm font-bold shadow-xs transition-all shrink-0"
+            >
+              <span>{isBengali ? 'সকল মতামত দেখুন ও রিভিউ লিখুন' : 'Read All & Write a Review'}</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {reviews.slice(0, 2).map(r => (
+              <div
+                key={r.id}
+                className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:shadow-md transition-all space-y-3"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-emerald-800 text-white font-bold flex items-center justify-center text-sm shadow-xs">
+                      {r.guestName.charAt(0)}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm sm:text-base text-slate-900 font-heading leading-snug">
+                        {r.guestName}
+                      </h4>
+                      <p className="text-[11px] text-slate-500">
+                        {r.guestLocation} • {r.travelDate}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-0.5 text-amber-500">
+                    {Array.from({ length: r.rating }).map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-md inline-block">
+                  {r.packageTaken}
+                </div>
+
+                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed italic">
+                  "{r.comment ? (typeof r.comment === 'object' ? (r.comment[language] || r.comment.bn || r.comment.en || '') : r.comment) : ''}"
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* 3. আমাদের পরিচয় (About Us & Founder Story Spotlight) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-gradient-to-br from-white via-emerald-50/40 to-amber-50/30 rounded-3xl p-6 sm:p-10 border border-emerald-100 shadow-md space-y-6">
