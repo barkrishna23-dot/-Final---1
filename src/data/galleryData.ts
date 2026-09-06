@@ -1,4 +1,6 @@
 import { GalleryItem } from '../types';
+import galleryImg1 from '../assets/images/regenerated_image_1788724127036.avif';
+import galleryImg2 from '../assets/images/regenerated_image_1788724128341.webp';
 
 export const GALLERY_ITEMS: GalleryItem[] = [
   {
@@ -7,7 +9,7 @@ export const GALLERY_ITEMS: GalleryItem[] = [
     caption: { bn: 'বনের মিষ্টিপানির জলাশয় ঘিরে হরিণের আনাগোনা ও সবুজ ম্যানগ্রোভ প্রাচীর।', en: 'Sweet-water watering hole framed by dense green mangrove boundaries.' },
     category: 'wildlife',
     type: 'photo',
-    mediaUrl: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80',
+    mediaUrl: galleryImg1,
     credit: 'Sundarban Vromon Field Expedition',
   },
   {
@@ -16,7 +18,7 @@ export const GALLERY_ITEMS: GalleryItem[] = [
     caption: { bn: 'মাটির ওপরে ২০ ফুট উঁচুতে নির্মিত ৪০০ মিটারের সুরক্ষিত খাঁচাবিশিষ্ট পথ।', en: '400m elevated wire-meshed walkway suspended above the tidal swamp.' },
     category: 'mangrove',
     type: 'photo',
-    mediaUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',
+    mediaUrl: galleryImg2,
     credit: 'Sundarban Vromon Archive',
   },
   {

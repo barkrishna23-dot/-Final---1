@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, X, ChevronDown, Compass, MapPin, Utensils, Image, Youtube, BookOpen, MessageSquare, PhoneCall, Sparkles, History, BookmarkCheck, Binoculars } from 'lucide-react';
+import { Menu, X, ChevronDown, Compass, MapPin, Utensils, Image, Youtube, BookOpen, MessageSquare, PhoneCall, Sparkles, History, BookmarkCheck, Binoculars, Waves } from 'lucide-react';
 import { BrandLogo } from './BrandLogo';
 import { useLanguage } from '../../context/LanguageContext';
 import { BRAND_INFO } from '../../data/brandInfo';
@@ -129,6 +129,17 @@ export const MainHeader: React.FC<MainHeaderProps> = ({ currentRoute: propCurren
                       <div className="text-[11px] text-slate-400">{isBengali ? 'প্রকৃতি, পাখি ও ইকো-ট্যুরিজম' : 'Nature & Ecotourism Hub'}</div>
                     </div>
                   </button>
+
+                  <button
+                    onClick={() => handleNav('experience-tides')}
+                    className="w-full text-left px-3.5 py-2 hover:bg-[#154230] flex items-center gap-2 text-slate-100 hover:text-[#F59E0B] border-t border-emerald-800/60"
+                  >
+                    <Waves className="w-3.5 h-3.5 text-blue-400" />
+                    <div>
+                      <div className="font-semibold text-xs">{isBengali ? 'জোয়ার-ভাটা ও সাফারি সময়' : 'Tides & Safari Timing'}</div>
+                      <div className="text-[11px] text-slate-400">{isBengali ? 'বন্যপ্রাণী ও খাঁড়ির বৈজ্ঞানিক গাইড' : 'Wildlife & Creek Timing Guide'}</div>
+                    </div>
+                  </button>
                 </div>
               )}
             </div>
@@ -212,13 +223,14 @@ export const MainHeader: React.FC<MainHeaderProps> = ({ currentRoute: propCurren
             <button
               id="nav-blog"
               onClick={() => handleNav('blog')}
-              className={`px-2.5 py-1.5 rounded-lg transition-all ${
+              className={`px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
                 currentRoute.startsWith('blog')
                   ? 'text-[#F59E0B] font-bold bg-[#143B2B] border border-amber-400/50 shadow-[0_0_10px_rgba(245,158,11,0.25)]'
                   : 'hover:text-[#FBBF24] hover:bg-[#113224]'
               }`}
             >
-              {t.nav.blog}
+              <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+              <span>{t.nav.blog}</span>
             </button>
 
             <button
@@ -323,6 +335,13 @@ export const MainHeader: React.FC<MainHeaderProps> = ({ currentRoute: propCurren
               <span>{t.nav.sajnekhaliWatchTower} (প্রকৃতি ও পাখি)</span>
             </button>
             <button
+              onClick={() => handleNav('experience-tides')}
+              className="w-full text-left p-2.5 rounded-xl hover:bg-[#113827] flex items-center gap-2.5 text-blue-200"
+            >
+              <Waves className="w-4 h-4 text-blue-400" />
+              <span>{isBengali ? 'জোয়ার-ভাটা ও সাফারি সময়' : 'Tides & Safari Timing'}</span>
+            </button>
+            <button
               onClick={() => handleNav('food')}
               className="w-full text-left p-2.5 rounded-xl hover:bg-[#113827] flex items-center gap-2.5"
             >
@@ -345,9 +364,13 @@ export const MainHeader: React.FC<MainHeaderProps> = ({ currentRoute: propCurren
             </button>
             <button
               onClick={() => handleNav('blog')}
-              className="w-full text-left p-2.5 rounded-xl hover:bg-[#113827] flex items-center gap-2.5"
+              className={`w-full text-left p-2.5 rounded-xl flex items-center gap-2.5 transition-colors ${
+                currentRoute.startsWith('blog')
+                  ? 'bg-[#143B2B] text-amber-400 font-bold border border-amber-400/40'
+                  : 'hover:bg-[#113827] text-slate-200'
+              }`}
             >
-              <BookOpen className="w-4 h-4 text-slate-300" />
+              <BookOpen className="w-4 h-4 text-amber-400" />
               <span>{t.nav.blog}</span>
             </button>
             <button

@@ -32,5 +32,18 @@ export const BRAND_INFO = {
   disclaimerBn: "Sundarban Vromon কোনো সরকারি প্রতিষ্ঠান নয়; বন দপ্তরের নিয়ম, অনুমতি ও আবহাওয়া উপলভ্যতার ভিত্তিতে দায়িত্বশীলতার সাথে ভ্রমণ পরিচালিত হয়।",
   disclaimerEn: "Sundarban Vromon is a private eco-tourism agency; tours are conducted in compliance with Forest Department permits, safety regulations, and weather conditions.",
   wildlifeDisclaimerBn: "বন্যপ্রাণী (রয়্যাল বেঙ্গল টাইগার, হরিণ, কুমির ইত্যাদি) দর্শন সম্পূর্ণ প্রাকৃতিক ও ভাগ্যের ওপর নির্ভরশীল। কোনো দৃশ্যমানতার নিশ্চয়তা দেওয়া হয় না।",
-  wildlifeDisclaimerEn: "Wildlife sightings (Royal Bengal Tiger, Spotted Deer, Crocodiles) are completely natural and subject to chance and tides. Sightings are never guaranteed."
+  wildlifeDisclaimerEn: "Wildlife sightings (Royal Bengal Tiger, Spotted Deer, Crocodiles) are completely natural and subject to chance and tides. Sightings are never guaranteed.",
+  founder: {
+    nameBn: "সুন্দরবন ভ্রমণ কর্ণধার ও প্রতিষ্ঠাতা",
+    nameEn: "Founder & Owner, Sundarban Vromon",
+    titleBn: "কোম্পানি প্রতিষ্ঠাতা ও প্রধান ভ্রমণ পরিচালক",
+    titleEn: "Company Founder & Lead Expedition Host",
+    roleBn: "সুন্দরবন ভ্রমণ-এর প্রতিষ্ঠাতা ও ভ্রমণ আয়োজক (২০১৯ থেকে)",
+    roleEn: "Creator & Owner of Sundarban Vromon (Since 2019)",
+    photo: "/DSC_0390.JPG",
+    locationBn: "গোসাবা, দক্ষিণ ২৪ পরগনা",
+    locationEn: "Gosaba, South 24 Parganas, WB",
+    quoteBn: "সুন্দরবনের প্রকৃতি ও মানুষের প্রতি ভালোবাসা থেকেই ২০১৯ সালে পর্যটকদের নিয়ে ভ্রমণ আয়োজন শুরু করি। আমার লক্ষ্য শুধু ট্যুর প্যাকেজ বিক্রি করা নয়—প্রতিটি অতিথি যেন সুন্দরবনের প্রকৃতি, ইতিহাস ও সংস্কৃতিকে কাছ থেকে জানতে পারেন এবং আনন্দময় স্মৃতি নিয়ে নিরাপদে বাড়ি ফিরে যান।",
+    quoteEn: "Driven by a deep passion for the Sundarbans and its people, I started hosting travelers in 2019. My goal is to ensure every guest intimately experiences the authentic mangrove wilderness and returns home safely with joyful memories."
+  }
 };

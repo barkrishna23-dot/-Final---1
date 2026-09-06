@@ -7,9 +7,10 @@ import { Sparkles, Calendar, Users, MapPin, Check, Bookmark, MessageCircle, Arro
 
 interface PlanTripPageProps {
   onNavigate: (route: string) => void;
+  onBookNow?: (slug: string) => void;
 }
 
-export const PlanTripPage: React.FC<PlanTripPageProps> = ({ onNavigate }) => {
+export const PlanTripPage: React.FC<PlanTripPageProps> = ({ onNavigate, onBookNow }) => {
   const { language, isBengali } = useLanguage();
   const { customTripState, saveCustomTrip } = useSavedTrip();
 
@@ -30,36 +31,48 @@ export const PlanTripPage: React.FC<PlanTripPageProps> = ({ onNavigate }) => {
 
   const [isSavedNotice, setIsSavedNotice] = useState(false);
 
-  // Math for dynamic live pricing
-  const calculateQuotation = () => {
-    let dayRate = 2200;
-    if (trip.days === 1) dayRate = 2499;
-    if (trip.days === 2) dayRate = 2000;
-    if (trip.days === 3) dayRate = 1850;
-    if (trip.days === 4) dayRate = 1999;
+  const getMatchingPackageSlug = () => {
+    if (trip.days === 1) return 'one-day-sundarban-tour';
+    if (trip.days === 2) return '1-night-2-days-classic';
+    if (trip.days === 3) return '2-nights-3-days-deluxe';
+    if (trip.days === 4) return '3-nights-4-days-extended';
+    return '2-nights-3-days-deluxe';
+  };
 
-    let adultCost = trip.guestsAdults * dayRate * trip.days;
-    let childCost = trip.guestsChildren * (dayRate * 0.5) * trip.days;
+  // Math for dynamic live pricing - strictly aligned with official package base rates
+  const calculateQuotation = () => {
+    let packageBasePrice = 1999;
+    if (trip.days === 1) packageBasePrice = 1999;
+    else if (trip.days === 2) packageBasePrice = 2999;
+    else if (trip.days === 3) packageBasePrice = 3999;
+    else if (trip.days === 4) packageBasePrice = 4999;
+    else packageBasePrice = 1999 + (trip.days - 1) * 1000;
+
+    let adultCost = trip.guestsAdults * packageBasePrice;
+    let childCost = trip.guestsChildren * Math.round(packageBasePrice * 0.5);
 
     let roomModifier = 0;
-    if (trip.roomType === 'luxury-suite') roomModifier = 1200 * trip.days;
-    if (trip.roomType === 'non-ac') roomModifier = -500 * trip.days;
+    if (trip.days > 1) {
+      if (trip.roomType === 'luxury-suite') roomModifier = 1200;
+      if (trip.roomType === 'non-ac') roomModifier = -500;
+    }
 
     let pickupCost = 0;
-    if (trip.pickupLocation.includes('Kolkata')) pickupCost = 1200;
-    if (trip.pickupLocation.includes('Canning')) pickupCost = 400;
+    if (trip.pickupLocation.includes('Kolkata')) pickupCost = 0; // Standard Kolkata pickup is included in packages
+    if (trip.pickupLocation.includes('Canning')) pickupCost = 0;
 
     let cameramanCost = trip.cameramanAddon ? 2500 : 0;
 
     let total = adultCost + childCost + roomModifier + pickupCost + cameramanCost;
 
     return {
+      packageBasePrice,
       adultCost,
       childCost,
       roomModifier,
       pickupCost,
       cameramanCost,
-      total: Math.max(total, 2500),
+      total: Math.max(total, packageBasePrice),
     };
   };
 
@@ -162,8 +175,8 @@ export const PlanTripPage: React.FC<PlanTripPageProps> = ({ onNavigate }) => {
             </label>
             <div className="grid grid-cols-2 gap-4">
               <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200">
-                <span className="text-xs text-slate-500 block mb-1">
-                  {isBengali ? 'প্রাপ্তবয়স্ক (১২+ বছর)' : 'Adults (12+ Years)'}
+                <span className="text-xs text-slate-600 font-semibold block mb-1">
+                  {isBengali ? 'প্রাপ্তবয়স্ক (18+ বছর)' : 'Adults (18+ Years)'}
                 </span>
                 <div className="flex items-center justify-between">
                   <button
@@ -392,7 +405,14 @@ export const PlanTripPage: React.FC<PlanTripPageProps> = ({ onNavigate }) => {
               </button>
 
               <button
-                onClick={() => onNavigate('booking')}
+                onClick={() => {
+                  const targetSlug = getMatchingPackageSlug();
+                  if (onBookNow) {
+                    onBookNow(targetSlug);
+                  } else {
+                    onNavigate('booking');
+                  }
+                }}
                 className="py-2.5 px-3 bg-[#F4B942] hover:bg-[#ffcb59] text-[#064E3B] font-bold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5"
               >
                 <span>{isBengali ? 'চূড়ান্ত বুকিং' : 'Finalize Booking'}</span>

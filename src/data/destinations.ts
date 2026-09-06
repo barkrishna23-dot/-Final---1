@@ -1,4 +1,7 @@
 import { Destination } from '../types';
+import sajnekhaliDestImg from '../assets/images/regenerated_image_1788721456767.jpg';
+import sudhanyakhaliDestImg from '../assets/images/regenerated_image_1788721454884.jpg';
+import dobankiDestImg from '../assets/images/regenerated_image_1788721457725.jpg';
 
 export const DESTINATIONS: Destination[] = [
   {
@@ -42,7 +45,7 @@ export const DESTINATIONS: Destination[] = [
       bn: 'ওয়াচ টাওয়ারের রেলিং পার হবেন না। উচ্চস্বরে কথা বলা বা বন্যপ্রাণীকে খাবার দেওয়া সম্পূর্ণ নিষিদ্ধ।',
       en: 'Do not cross watch tower safety railings. Keep silence and strictly avoid feeding any animal.',
     },
-    image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80',
+    image: sajnekhaliDestImg,
     isHeroFeatured: true,
     verificationStatus: 'officially-verified',
     verificationSource: 'Sundarban Tiger Reserve Official Eco-Tourism & West Bengal Tourism Listing',
@@ -89,7 +92,7 @@ export const DESTINATIONS: Destination[] = [
       bn: 'শান্ত থাকুন। নির্ধারিত শেডের বাইরে যাবেন না। প্লাস্টিক ফেলা কঠোরভাবে নিষিদ্ধ।',
       en: 'Maintain absolute silence. Remain within covered observation shelters. Zero plastic zone.',
     },
-    image: 'https://images.unsplash.com/photo-1575550959106-5a7defe28b56?auto=format&fit=crop&w=1200&q=80',
+    image: sudhanyakhaliDestImg,
     isHeroFeatured: true,
     verificationStatus: 'officially-verified',
     verificationSource: 'Sundarban Tiger Reserve (STR) Management Plan',
@@ -136,7 +139,7 @@ export const DESTINATIONS: Destination[] = [
       bn: 'ওয়াকওয়েতে দৌড়াদৌড়ি করবেন না। শিশুদের হাত ধরে রাখুন। ক্যামেরা শক্ত করে ধরে রাখুন।',
       en: 'Do not run on the walkway. Keep children accompanied. Hold camera straps securely.',
     },
-    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',
+    image: dobankiDestImg,
     isHeroFeatured: true,
     verificationStatus: 'officially-verified',
     verificationSource: 'West Bengal Tourism Official Guidebook & STR Records',

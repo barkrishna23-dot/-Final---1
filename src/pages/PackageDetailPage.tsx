@@ -146,7 +146,7 @@ export const PackageDetailPage: React.FC<PackageDetailPageProps> = ({
               : 'Complete the form below or chat on WhatsApp for fast confirmation.'}
           </p>
         </div>
-        <BookingForm initialPackageSlug={pkg.slug} />
+        <BookingForm key={pkg.slug} initialPackageSlug={pkg.slug} />
       </section>
     </div>
   );

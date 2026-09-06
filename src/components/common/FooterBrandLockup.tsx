@@ -1,8 +1,9 @@
 import React from 'react';
-import { Phone, MessageCircle, Mail, MapPin, ShieldCheck, Heart, ExternalLink, Instagram, Facebook, Youtube } from 'lucide-react';
+import { Phone, MessageCircle, Mail, MapPin, ShieldCheck, Heart, ExternalLink, Instagram, Facebook, Youtube, PhoneCall } from 'lucide-react';
 import { BrandLogo } from './BrandLogo';
 import { useLanguage } from '../../context/LanguageContext';
 import { BRAND_INFO } from '../../data/brandInfo';
+import founderOwnerPhoto from '../../assets/images/founder_optimized.jpg';
 
 interface FooterProps {
   onNavigate: (route: string) => void;
@@ -28,6 +29,58 @@ export const FooterBrandLockup: React.FC<FooterProps> = ({ onNavigate }) => {
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0E3D2F] border border-emerald-700/40 text-xs text-amber-300">
               <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
               <span>{isBengali ? '৭+ বছরের মাঠপর্যায়ের বিশ্বস্ত অভিজ্ঞতা' : '7+ Years Field Experience'}</span>
+            </div>
+
+            {/* Founder & Owner Badge (Small Size) */}
+            <div id="footer-founder-badge" className="pt-3 border-t border-emerald-900/60">
+              <div className="bg-[#0A2F24] p-2.5 rounded-xl border border-emerald-800/60 shadow-xs flex items-center gap-3">
+                <div className="relative shrink-0">
+                  <img
+                    src={founderOwnerPhoto}
+                    alt={isBengali ? BRAND_INFO.founder.nameBn : BRAND_INFO.founder.nameEn}
+                    onError={(e) => {
+                      e.currentTarget.src = '/DSC_0390.JPG';
+                    }}
+                    referrerPolicy="no-referrer"
+                    className="w-12 h-12 rounded-xl object-cover border border-amber-400/80 shadow-xs bg-emerald-950"
+                  />
+                  <div className="absolute -bottom-1 -right-1 bg-amber-400 text-emerald-950 p-0.5 rounded-full shadow-2xs">
+                    <ShieldCheck className="w-2.5 h-2.5" />
+                  </div>
+                </div>
+
+                <div className="min-w-0 flex-1 space-y-0.5">
+                  <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wider block">
+                    {isBengali ? 'প্রতিষ্ঠাতা ও স্বত্বাধিকারী' : 'Founder & Owner'}
+                  </span>
+                  <h5 className="text-xs font-bold text-white font-heading truncate">
+                    {isBengali ? BRAND_INFO.founder.nameBn : BRAND_INFO.founder.nameEn}
+                  </h5>
+                  <div className="flex items-center gap-2 pt-0.5">
+                    <button
+                      onClick={() => onNavigate('about')}
+                      className="text-[11px] font-medium text-amber-300 hover:text-amber-200 transition-colors underline underline-offset-2"
+                    >
+                      {isBengali ? 'পরিচয়' : 'Profile'}
+                    </button>
+                    <span className="text-emerald-700 text-xs">•</span>
+                    <a
+                      id="footer-founder-call-btn"
+                      href={`https://wa.me/${BRAND_INFO.whatsappRaw}?text=${encodeURIComponent(
+                        isBengali
+                          ? 'নমস্কার, সুন্দরবন ভ্রমণের প্রতিষ্ঠাতার সাথে সরাসরি কথা বলতে চাই।'
+                          : 'Hello, I want to contact the founder of Sundarban Vromon directly.'
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[10.5px] font-bold text-emerald-950 bg-amber-400 hover:bg-amber-300 px-2 py-0.5 rounded-full transition-all inline-flex items-center gap-1"
+                    >
+                      <PhoneCall className="w-2.5 h-2.5" />
+                      <span>{isBengali ? 'কথা বলুন' : 'Call'}</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -104,10 +157,10 @@ export const FooterBrandLockup: React.FC<FooterProps> = ({ onNavigate }) => {
               </li>
               <li>
                 <button
-                  onClick={() => onNavigate('blog')}
-                  className="hover:text-[#F4B942] transition-colors text-left"
+                  onClick={() => onNavigate('experience-tides')}
+                  className="hover:text-[#F4B942] transition-colors text-left font-medium text-amber-200"
                 >
-                  {isBengali ? 'জোয়ার-ভাটা ও প্যাকিং গাইড' : 'Tide Schedules & Packing Guide'}
+                  {isBengali ? 'জোয়ার-ভাটা ও বন্যপ্রাণী সাফারি গাইড' : 'Tide Guide & Wildlife Safari Science'}
                 </button>
               </li>
               <li>

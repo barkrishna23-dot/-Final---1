@@ -202,6 +202,17 @@ export const AdminPage: React.FC = () => {
                     <td className="p-4">
                       <strong className="text-slate-900 block font-heading">{enq.guestName}</strong>
                       <span className="text-[11px] text-slate-400">{new Date(enq.createdAt).toLocaleDateString()}</span>
+                      {((enq as any).idNumber || (enq as any).idType) && (
+                        <div className="text-[10px] text-emerald-800 font-medium bg-emerald-50 px-1.5 py-0.5 rounded mt-1 border border-emerald-200/80 inline-block">
+                          🪪 {((enq as any).idType || 'ID').toUpperCase()}: {(enq as any).idNumber || 'Not provided'}
+                        </div>
+                      )}
+                      {(enq as any).originType && (
+                        <div className="text-[10px] text-slate-600 mt-0.5">
+                          📍 {(enq as any).originType === 'west_bengal' ? 'West Bengal' : (enq as any).originType === 'other_state' ? 'Other State' : 'International'}
+                          {(enq as any).originStateOrCountry ? ` (${(enq as any).originStateOrCountry})` : ''}
+                        </div>
+                      )}
                     </td>
 
                     <td className="p-4 space-y-0.5">
@@ -222,10 +233,15 @@ export const AdminPage: React.FC = () => {
                     </td>
 
                     <td className="p-4 text-slate-700">
-                      <div>{enq.travelDate}</div>
-                      <div className="text-[11px] text-slate-400">
-                        {enq.adults} Adults {enq.children > 0 ? `, ${enq.children} Kids` : ''}
+                      <div>{enq.travelDate || (enq as any).preferredDate}</div>
+                      <div className="text-[11px] text-slate-500">
+                        {enq.adults || (enq as any).adultsCount || 1} Adults {(enq.children || (enq as any).childrenCount) > 0 ? `, ${(enq.children || (enq as any).childrenCount)} Kids` : ''}
                       </div>
+                      {(enq as any).groupType && (
+                        <span className="inline-block mt-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 capitalize">
+                          {(enq as any).groupType === 'female-friends' ? 'বান্ধবী / Girls Group' : (enq as any).groupType === 'family' ? 'ফ্যামিলি' : (enq as any).groupType === 'couple' ? 'কাপেল' : (enq as any).groupType === 'friends' ? 'বন্ধু' : (enq as any).groupType}
+                        </span>
+                      )}
                     </td>
 
                     <td className="p-4 font-bold text-slate-900">

@@ -1,8 +1,9 @@
 import React from 'react';
 import { BookingForm } from '../components/booking/BookingForm';
 import { useLanguage } from '../context/LanguageContext';
-import { Sparkles, ShieldCheck, HeartHandshake, PhoneCall } from 'lucide-react';
+import { Sparkles, ShieldCheck, HeartHandshake, PhoneCall, Tag } from 'lucide-react';
 import { BRAND_INFO } from '../data/brandInfo';
+import { TOUR_PACKAGES } from '../data/packages';
 
 interface BookingStandalonePageProps {
   initialPackageSlug?: string | null;
@@ -10,6 +11,8 @@ interface BookingStandalonePageProps {
 
 export const BookingStandalonePage: React.FC<BookingStandalonePageProps> = ({ initialPackageSlug }) => {
   const { language, isBengali } = useLanguage();
+
+  const selectedPkg = initialPackageSlug ? TOUR_PACKAGES.find(p => p.slug === initialPackageSlug) : null;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
@@ -27,10 +30,22 @@ export const BookingStandalonePage: React.FC<BookingStandalonePageProps> = ({ in
             ? 'পছন্দসই প্যাকেজ, তারিখ ও যাত্রী সংখ্যা নির্বাচন করুন। আবেদন জমা পড়ার সাথে সাথে আমাদের টিম বন অনুমতি ও সিট নিশ্চিত করবে।'
             : 'Select your preferred dates and cruiser category. Our team confirms Forest Department clearance within 24 hours.'}
         </p>
+
+        {selectedPkg && (
+          <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-900 border border-emerald-300 px-4 py-2 rounded-2xl text-xs sm:text-sm font-semibold mt-2 shadow-xs">
+            <Tag className="w-4 h-4 text-emerald-700" />
+            <span>
+              {isBengali ? 'নির্বাচিত প্যাকেজ:' : 'Selected Package:'} <strong>{selectedPkg.title[language]}</strong>
+            </span>
+            <span className="bg-emerald-700 text-white text-xs px-2.5 py-0.5 rounded-full font-bold">
+              ₹{selectedPkg.basePrice.toLocaleString('en-IN')} / {isBengali ? 'জন' : 'person'}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Main Booking Form */}
-      <BookingForm initialPackageSlug={initialPackageSlug || undefined} />
+      <BookingForm key={initialPackageSlug || 'default-booking'} initialPackageSlug={initialPackageSlug || undefined} />
 
       {/* Trust & Guarantee Notes */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-slate-200">

@@ -1,4 +1,5 @@
 import { FoodMenuItem } from '../types';
+import bhapaIlishImage from '../assets/images/regenerated_image_1788720668689.webp';
 
 export const FOOD_MENU_ITEMS: FoodMenuItem[] = [
   {
@@ -10,7 +11,7 @@ export const FOOD_MENU_ITEMS: FoodMenuItem[] = [
       bn: 'মাটির থালায় কলাপাতায় ভাপানো নরম সুস্বাদু ইলিশের টুকরো, ঝাল কাঁচা লঙ্কা ও খাঁটি সর্ষে বাটার ঝোল, সাথে ধোঁয়া ওঠা গরম বাসমতী চালের ভাত, সুগন্ধি সোনা মুগের ডাল ও তরকারি।',
       en: 'Tender steamed Hilsa fillets in pungent mustard gravy with green chillies on banana leaf, served with aromatic steaming rice, golden moong dal, and side dishes in earthen terracotta bowls.',
     },
-    image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80',
+    image: bhapaIlishImage,
     isVegetarian: false,
     isSeasonal: true,
     allergens: { bn: 'সর্ষে ও মাছ', en: 'Mustard & Fish' },

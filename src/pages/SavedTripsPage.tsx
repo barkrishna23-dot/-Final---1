@@ -119,7 +119,14 @@ export const SavedTripsPage: React.FC<SavedTripsPageProps> = ({
 
               <div className="flex items-center justify-end gap-3 pt-2">
                 <button
-                  onClick={() => onNavigate('booking')}
+                  onClick={() => {
+                    let targetSlug = '2-nights-3-days-deluxe';
+                    if (customTripState.days === 1) targetSlug = 'one-day-sundarban-tour';
+                    else if (customTripState.days === 2) targetSlug = '1-night-2-days-classic';
+                    else if (customTripState.days === 3) targetSlug = '2-nights-3-days-deluxe';
+                    else if (customTripState.days === 4) targetSlug = '3-nights-4-days-extended';
+                    onBookNow(targetSlug);
+                  }}
                   className="px-6 py-2.5 rounded-full bg-[#064E3B] text-white font-bold text-xs shadow-md hover:bg-[#08614a]"
                 >
                   {isBengali ? 'এই ট্রিপটি সরাসরি বুক করুন' : 'Book This Custom Safari'}

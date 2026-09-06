@@ -36,6 +36,7 @@ import { SavedTripsPage } from './pages/SavedTripsPage';
 import { BookingStandalonePage } from './pages/BookingStandalonePage';
 import { ContactPage } from './pages/ContactPage';
 import { TermsPrivacyPage } from './pages/TermsPrivacyPage';
+import { TideGuidePage } from './pages/TideGuidePage';
 
 // Data
 import { TOUR_PACKAGES } from './data/packages';
@@ -53,6 +54,30 @@ const AppContent: React.FC = () => {
   }, [currentRoute, selectedPackageSlug, selectedBlogSlug]);
 
   const handleNavigate = (route: string) => {
+    if (route.startsWith('book-')) {
+      const slug = route.replace('book-', '');
+      setSelectedPackageSlug(slug);
+      setCurrentRoute('booking');
+      return;
+    }
+    if (route.startsWith('package-') && route !== 'packages' && route !== 'package-detail') {
+      const slug = route.replace('package-', '');
+      setSelectedPackageSlug(slug);
+      setCurrentRoute('package-detail');
+      return;
+    }
+    if (route === 'about') {
+      setCurrentRoute('about-us');
+      return;
+    }
+    if (route === 'saved-trip') {
+      setCurrentRoute('saved-trips');
+      return;
+    }
+    if (route === 'travel-guide' || route === 'guide') {
+      setCurrentRoute('blog');
+      return;
+    }
     setCurrentRoute(route);
   };
 
@@ -101,6 +126,7 @@ const AppContent: React.FC = () => {
             onNavigate={handleNavigate}
             onSelectPackage={handleSelectPackage}
             onSelectDestination={handleSelectDestination}
+            onBookNow={handleBookNow}
           />
         )}
 
@@ -141,7 +167,12 @@ const AppContent: React.FC = () => {
           <SajnekhaliPage onNavigate={handleNavigate} />
         )}
 
-        {currentRoute === 'plan-my-trip' && <PlanTripPage onNavigate={handleNavigate} />}
+        {currentRoute === 'plan-my-trip' && (
+          <PlanTripPage
+            onNavigate={handleNavigate}
+            onBookNow={handleBookNow}
+          />
+        )}
 
         {currentRoute === 'gallery-photos' && <GalleryPhotosPage />}
 
@@ -152,6 +183,10 @@ const AppContent: React.FC = () => {
         {currentRoute === 'about-us' && <AboutUsPage />}
 
         {currentRoute === 'blog' && <BlogPage onSelectPost={handleSelectBlog} />}
+        
+        {(currentRoute === 'tides-guide' || currentRoute === 'experience-tides' || currentRoute === 'sundarban-tides-joar-bhata-guide') && (
+          <TideGuidePage onNavigate={handleNavigate} />
+        )}
 
         {currentRoute === 'blog-post' && (
           <BlogPostPage

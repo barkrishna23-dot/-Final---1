@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
+import sajnekhaliSpotlightImg from '../../assets/images/regenerated_image_1788720175291.png';
 import {
   Binoculars,
   Trees,
@@ -96,7 +97,7 @@ export const SajnekhaliSpotlightSection: React.FC<SajnekhaliSpotlightSectionProp
           <div className="lg:col-span-5 space-y-4">
             <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white/20 group">
               <img
-                src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80"
+                src={sajnekhaliSpotlightImg}
                 alt="Sajnekhali Watch Tower Complex"
                 className="w-full h-72 sm:h-80 object-cover group-hover:scale-105 transition-transform duration-700"
               />

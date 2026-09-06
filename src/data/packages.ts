@@ -1,4 +1,5 @@
 import { TourPackage } from '../types';
+import sundarbanSafariImage from '../assets/images/regenerated_image_1788720175291.png';
 
 export const TOUR_PACKAGES: TourPackage[] = [
   {
@@ -16,7 +17,7 @@ export const TOUR_PACKAGES: TourPackage[] = [
     durationNights: 0,
     startingPoint: { bn: 'কলকাতা (সায়েন্স সিটি/ভারতীয় যাদুঘর) অথবা ক্যানিং', en: 'Kolkata (Science City / Indian Museum) or Canning' },
     endPoint: { bn: 'কলকাতা / ক্যানিং স্টেশনে নিরাপদ প্রত্যাবর্তন', en: 'Kolkata / Canning Railway Station drop-off' },
-    heroImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80',
+    heroImage: sundarbanSafariImage,
     galleryImages: [
       'https://images.unsplash.com/photo-1575550959106-5a7defe28b56?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',
@@ -537,7 +538,7 @@ export const TOUR_PACKAGES: TourPackage[] = [
     durationNights: 1,
     startingPoint: { bn: 'কলকাতা / ক্যানিং / গদখালি', en: 'Kolkata / Canning / Godkhali' },
     endPoint: { bn: 'কলকাতা / ক্যানিং', en: 'Kolkata / Canning' },
-    heroImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80',
+    heroImage: sundarbanSafariImage,
     galleryImages: [
       'https://images.unsplash.com/photo-1575550959106-5a7defe28b56?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',

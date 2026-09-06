@@ -1,6 +1,8 @@
 import React from 'react';
 import { BRAND_INFO } from '../data/brandInfo';
 import { useLanguage } from '../context/LanguageContext';
+import gosabaTeamImg from '../assets/images/regenerated_image_1788720175291.png';
+import founderOwnerPhoto from '../assets/images/founder_optimized.jpg';
 import {
   ShieldCheck,
   Heart,
@@ -19,7 +21,8 @@ import {
   Quote,
   Eye,
   Binoculars,
-  Info
+  Info,
+  PhoneCall
 } from 'lucide-react';
 
 export const AboutUsPage: React.FC = () => {
@@ -75,7 +78,7 @@ export const AboutUsPage: React.FC = () => {
           <div className="lg:col-span-5">
             <div className="relative rounded-3xl overflow-hidden shadow-xl border-4 border-emerald-950">
               <img
-                src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80"
+                src={gosabaTeamImg}
                 alt="Sundarban Gosaba & Mangrove Safari"
                 className="w-full h-[360px] object-cover"
               />
@@ -299,17 +302,34 @@ export const AboutUsPage: React.FC = () => {
       {/* 7. প্রতিষ্ঠাতার কথা (Founder's Personal Message) */}
       <div className="bg-gradient-to-br from-[#06241B] via-[#064E3B] to-[#0A3D2E] rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden space-y-6">
         <div className="flex flex-col md:flex-row gap-8 items-center">
-          <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-white/10 border-4 border-amber-400 p-2 flex items-center justify-center shrink-0">
-            <Users className="w-14 h-14 text-amber-300" />
+          <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-3xl overflow-hidden border-4 border-amber-400 shrink-0 shadow-2xl bg-emerald-950 group">
+            <img
+              src={founderOwnerPhoto}
+              alt={isBengali ? 'সুন্দরবন ভ্রমণের প্রতিষ্ঠাতা ও মালিক' : 'Founder & Owner, Sundarban Vromon'}
+              onError={(e) => {
+                e.currentTarget.src = '/DSC_0390.JPG';
+              }}
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute bottom-1.5 left-1.5 right-1.5 bg-black/80 backdrop-blur-xs text-[11px] text-amber-300 font-bold text-center py-1 rounded-md border border-amber-400/30">
+              {isBengali ? 'মালিক ও প্রতিষ্ঠাতা' : 'Founder & Owner'}
+            </div>
           </div>
 
           <div className="space-y-3 flex-1">
-            <div className="inline-flex items-center gap-2 text-xs font-bold text-amber-300 uppercase tracking-widest bg-white/10 px-3.5 py-1 rounded-full border border-white/20">
-              <Quote className="w-3 h-3 text-amber-300" />
-              <span>{isBengali ? 'প্রতিষ্ঠাতার কথা' : 'Founder’s Message'}</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-2 text-xs font-bold text-amber-300 uppercase tracking-widest bg-white/10 px-3.5 py-1 rounded-full border border-white/20">
+                <Quote className="w-3 h-3 text-amber-300" />
+                <span>{isBengali ? 'প্রতিষ্ঠাতার কথা' : 'Founder’s Message'}</span>
+              </div>
+              <span className="text-xs font-bold text-emerald-200 bg-white/10 px-3 py-1 rounded-full border border-white/15">
+                {isBengali ? 'গোসাবা, সুন্দরবন (২০১৯ থেকে)' : 'Gosaba, Sundarban (Since 2019)'}
+              </span>
             </div>
+
             <h3 className="text-2xl sm:text-3xl font-bold font-heading text-white">
-              {isBengali ? 'Sundarban Vromon-এর প্রতিষ্ঠাতা ও ভ্রমণ আয়োজক' : 'Founder & Lead Trip Host, Sundarban Vromon'}
+              {isBengali ? 'সুন্দরবন ভ্রমণ (Sundarban Vromon)-এর প্রতিষ্ঠাতা ও পরিচালক' : 'Founder & Owner, Sundarban Vromon'}
             </h3>
             <p className="text-sm sm:text-base text-emerald-100 leading-relaxed">
               {isBengali
@@ -321,6 +341,22 @@ export const AboutUsPage: React.FC = () => {
                 ? 'ভ্রমণের পরিকল্পনা থেকে যাতায়াত, নৌকা, থাকা, খাবার, গাইড এবং দর্শনীয় স্থান পরিদর্শন—প্রতিটি পর্যায়ে অতিথিদের পাশে থাকার চেষ্টা করি। অতিথিদের বিশ্বাস ও সন্তুষ্টিই আমাদের পথচলার সবচেয়ে বড় অনুপ্রেরণা।'
                 : 'From itinerary planning to transportation, riverboats, accommodation, food, guides, and watchtower visits—we stand by our guests at every step. Your trust and satisfaction remain our greatest inspiration.'}
             </p>
+
+            <div className="pt-2">
+              <a
+                href={`https://wa.me/${BRAND_INFO.whatsappRaw}?text=${encodeURIComponent(
+                  isBengali
+                    ? 'নমস্কার, সুন্দরবন ভ্রমণের প্রতিষ্ঠাতার সাথে সরাসরি কথা বলতে চাই।'
+                    : 'Hello, I would like to speak directly with the founder of Sundarban Vromon.'
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-amber-400 hover:bg-amber-300 text-emerald-950 font-bold text-xs sm:text-sm shadow-md transition-all duration-300"
+              >
+                <PhoneCall className="w-4 h-4" />
+                <span>{isBengali ? 'প্রতিষ্ঠাতার সাথে সরাসরি কথা বলুন (WhatsApp)' : 'Connect with Founder directly (WhatsApp)'}</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>

@@ -11,20 +11,25 @@ import { useAdmin } from '../context/AdminContext';
 import { TOUR_PACKAGES } from '../data/packages';
 import { DESTINATIONS } from '../data/destinations';
 import { FOOD_MENU_ITEMS } from '../data/foodMenu';
-import { Compass, ArrowRight, Utensils, Star, ShieldCheck, Sparkles, Camera, Play, Image as ImageIcon, Video } from 'lucide-react';
+import { Compass, ArrowRight, Utensils, Star, ShieldCheck, Sparkles, Camera, Play, Image as ImageIcon, Video, Quote, PhoneCall, Award, BookOpen, Clock } from 'lucide-react';
 import { GALLERY_ITEMS } from '../data/galleryData';
 import { YOUTUBE_VIDEOS } from '../data/youtubeVideos';
+import { BRAND_INFO } from '../data/brandInfo';
+import { BLOG_POSTS } from '../data/blogPosts';
+import sundarbanSafariImg from '../assets/images/regenerated_image_1788720175291.png';
 
 interface HomePageProps {
   onNavigate: (route: string) => void;
   onSelectPackage: (slug: string) => void;
   onSelectDestination: (slug: string) => void;
+  onBookNow?: (slug: string) => void;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({
   onNavigate,
   onSelectPackage,
   onSelectDestination,
+  onBookNow,
 }) => {
   const { language, isBengali } = useLanguage();
   const { reviews } = useAdmin();
@@ -172,7 +177,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="lg:col-span-5">
               <div className="relative rounded-3xl overflow-hidden shadow-lg border-4 border-white">
                 <img
-                  src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80"
+                  src={sundarbanSafariImg}
                   alt="Sundarban Vromon Team & Safari"
                   className="w-full h-[320px] object-cover"
                 />
@@ -220,8 +225,12 @@ export const HomePage: React.FC<HomePageProps> = ({
               pkg={pkg}
               onSelect={slug => onSelectPackage(slug)}
               onBookNow={slug => {
-                onSelectPackage(slug);
-                onNavigate('booking');
+                if (onBookNow) {
+                  onBookNow(slug);
+                } else {
+                  onSelectPackage(slug);
+                  onNavigate('booking');
+                }
               }}
             />
           ))}
@@ -329,7 +338,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="lg:col-span-6">
               <div className="relative rounded-3xl overflow-hidden shadow-xl border-4 border-white">
                 <img
-                  src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80"
+                  src={sundarbanSafariImg}
                   alt="Sundarban Creek Safari"
                   className="w-full h-[440px] object-cover"
                 />
@@ -478,26 +487,33 @@ export const HomePage: React.FC<HomePageProps> = ({
               </div>
             </div>
 
-            {/* Photo Highlights (md:col-span-5) */}
-            <div className="md:col-span-5 grid grid-cols-2 gap-3">
-              {GALLERY_ITEMS.slice(0, 4).map(item => (
+            {/* Featured Gallery Highlights (md:col-span-5) */}
+            <div className="md:col-span-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-4">
+              {GALLERY_ITEMS.slice(0, 2).map((item) => (
                 <div
                   key={item.id}
                   onClick={() => onNavigate('gallery-photos')}
-                  className="group relative rounded-2xl overflow-hidden h-36 sm:h-40 cursor-pointer shadow-xs border border-slate-200 bg-slate-100"
+                  className="group relative rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-xs hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
                 >
-                  <img
-                    src={item.mediaUrl}
-                    alt={item.title.en}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90 group-hover:opacity-100 transition-opacity p-2.5 flex flex-col justify-end text-white">
-                    <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wider block">
-                      {item.category}
+                  <div className="relative h-44 sm:h-48 overflow-hidden">
+                    <img
+                      src={item.mediaUrl}
+                      alt={item.title[language]}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+                    <span className="absolute top-3 right-3 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-black/60 text-amber-300 backdrop-blur-xs border border-white/15">
+                      {isBengali ? 'সুন্দরবনের আসল ছবি' : 'Safari Photo'}
                     </span>
-                    <span className="text-xs font-bold leading-tight line-clamp-1">
-                      {item.title[language]}
-                    </span>
+                    <div className="absolute bottom-3 left-3 right-3 text-white">
+                      <h5 className="text-sm sm:text-base font-bold font-heading line-clamp-1 group-hover:text-amber-300 transition-colors">
+                        {item.title[language]}
+                      </h5>
+                      <p className="text-xs text-slate-200 line-clamp-1 mt-0.5">
+                        {item.caption[language]}
+                      </p>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -506,12 +522,88 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* 9. Ethical Wildlife Sighting Policy Banner */}
+      {/* 9. ভ্রমণ নির্দেশিকা ও প্রস্তুতি (Sundarban Travel Guide & Safari Insights) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-br from-[#06241B] via-[#0A3527] to-[#06241B] text-white rounded-3xl p-6 sm:p-10 border border-emerald-700/50 shadow-xl space-y-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b border-white/10">
+            <div className="space-y-2 max-w-2xl">
+              <div className="inline-flex items-center gap-2 text-xs font-bold text-amber-300 uppercase tracking-widest bg-white/10 px-3.5 py-1.5 rounded-full border border-white/15">
+                <BookOpen className="w-3.5 h-3.5 text-amber-300" />
+                <span>{isBengali ? 'ভ্রমণ নির্দেশিকা ও প্রস্তুতি' : 'Travel Guide & Insights'}</span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-heading text-white">
+                {isBengali ? 'সুন্দরবন ভ্রমণ নির্দেশিকা: প্রস্তুতি, জোয়ার-ভাটা ও প্যাকিং' : 'Sundarban Safari Knowledge & Travel Guide'}
+              </h3>
+              <p className="text-sm text-emerald-100/90 leading-relaxed">
+                {isBengali
+                  ? 'সুন্দরবন সাফারির আসল প্রস্তুতি, জোয়ার-ভাটার সেরা সময়, ক্যামেরা ও প্যাকিং টিপস—আমাদের অভিজ্ঞ গাইডদের বাস্তব অভিজ্ঞতা থেকে সংকলিত।'
+                  : 'Practical field wisdom on tidal cycles, packing checklists, and safari logistics written by experienced local naturalists.'}
+              </p>
+            </div>
+
+            <button
+              id="main-travel-guide-btn"
+              onClick={() => onNavigate('blog')}
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-bold text-sm sm:text-base shadow-lg hover:shadow-xl transition-all shrink-0 transform hover:scale-105 active:scale-95"
+            >
+              <BookOpen className="w-4 h-4 text-emerald-950" />
+              <span>{isBengali ? 'সকল ভ্রমণ নির্দেশিকা পড়ুন' : 'Explore All Travel Guides'}</span>
+              <ArrowRight className="w-4 h-4 text-emerald-950" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {BLOG_POSTS.slice(0, 2).map((post) => (
+              <div
+                key={post.id}
+                onClick={() => onNavigate('blog')}
+                className="group bg-white/10 hover:bg-white/15 backdrop-blur-md rounded-2xl overflow-hidden border border-white/15 hover:border-amber-400/50 transition-all duration-300 cursor-pointer flex flex-col justify-between shadow-lg"
+              >
+                <div className="relative h-48 sm:h-52 overflow-hidden">
+                  <img
+                    src={post.image}
+                    alt={post.title.en}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <span className="absolute top-3 right-3 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-black/60 backdrop-blur-xs text-amber-300 border border-white/20">
+                    {post.category[language]}
+                  </span>
+                  <div className="absolute bottom-3 left-3 right-3">
+                    <span className="text-xs text-emerald-200 font-semibold flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-amber-400" />
+                      <span>{post.readTime}</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="space-y-2">
+                    <h4 className="text-lg sm:text-xl font-bold font-heading text-white group-hover:text-amber-300 transition-colors leading-snug">
+                      {post.title[language]}
+                    </h4>
+                    <p className="text-xs sm:text-sm text-emerald-100/80 line-clamp-2 leading-relaxed">
+                      {post.excerpt[language]}
+                    </p>
+                  </div>
+
+                  <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs font-bold text-amber-300 group-hover:text-amber-200">
+                    <span>{isBengali ? 'সম্পূর্ণ নির্দেশিকা পড়ুন' : 'Read Full Guide'}</span>
+                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 10. Ethical Wildlife Sighting Policy Banner */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <WildlifeHonestyPanel />
       </section>
 
-      {/* 10. Final Call To Action Banner */}
+      {/* 11. Final Call To Action Banner */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <div className="bg-gradient-to-r from-[#064E3B] via-[#0D5C43] to-[#064E3B] rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-4 max-w-xl">
@@ -527,12 +619,20 @@ export const HomePage: React.FC<HomePageProps> = ({
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto shrink-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto shrink-0">
             <button
               onClick={() => onNavigate('booking')}
-              className="px-8 py-4 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-base shadow-lg transition-all text-center"
+              className="px-7 py-4 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-base shadow-lg transition-all text-center"
             >
               {isBengali ? 'অনলাইন বুকিং করুন' : 'Book Safari Online'}
+            </button>
+            <button
+              id="cta-travel-guide-btn"
+              onClick={() => onNavigate('blog')}
+              className="px-6 py-4 rounded-full bg-emerald-950/80 hover:bg-emerald-900 text-amber-300 hover:text-amber-200 border border-amber-400/50 font-bold text-base backdrop-blur-md transition-all text-center flex items-center justify-center gap-2"
+            >
+              <BookOpen className="w-4 h-4 text-amber-400" />
+              <span>{isBengali ? 'ভ্রমণ নির্দেশিকা' : 'Travel Guide'}</span>
             </button>
             <button
               onClick={() => onNavigate('plan-my-trip')}

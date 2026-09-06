@@ -1,6 +1,7 @@
 import React from 'react';
 import { History, ArrowRight, Award, BookOpen, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import hamiltonEstateImg from '../../assets/images/regenerated_image_1788724130011.jpg';
 
 interface HamiltonStoryProps {
   onNavigate: (route: string) => void;
@@ -30,8 +31,9 @@ export const HamiltonStorySection: React.FC<HamiltonStoryProps> = ({ onNavigate 
           <div className="lg:col-span-5 relative">
             <div className="relative rounded-3xl overflow-hidden shadow-xl border-4 border-white">
               <img
-                src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80"
+                src={hamiltonEstateImg}
                 alt="Hamilton Historic Estate Gosaba"
+                referrerPolicy="no-referrer"
                 className="w-full h-[420px] object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />

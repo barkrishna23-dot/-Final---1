@@ -150,6 +150,11 @@ export interface BookingEnquiry {
   roomSharing: 'double' | 'triple' | 'four' | 'family-suite';
   foodPreference: 'bengali-nonveg' | 'bengali-veg' | 'jain-veg' | 'mixed';
   dietaryAllergies?: string;
+  groupType?: 'family' | 'couple' | 'friends' | 'female-friends' | string;
+  idType?: 'aadhaar' | 'voter' | 'passport' | 'driving_license' | string;
+  idNumber?: string;
+  originType?: 'west_bengal' | 'other_state' | 'outside_india' | string;
+  originStateOrCountry?: string;
   cameramanAddon: boolean;
   customRequests?: string;
   status: 'pending' | 'contacted' | 'confirmed' | 'cancelled';

@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Compass, ShieldCheck, Clock, MapPin, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Compass, ShieldCheck, Clock, MapPin, Sparkles, BookOpen } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import slide1HeroImage from '../../assets/images/regenerated_image_1788720995101.jpg';
+import slide2HeroImage from '../../assets/images/regenerated_image_1788721453247.webp';
+import slide3HeroImage from '../../assets/images/regenerated_image_1788721094482.jpg';
+import slide4HeroImage from '../../assets/images/regenerated_image_1788719895312.jpg';
 
 interface HeroSlide {
   id: string;
@@ -16,7 +20,7 @@ interface HeroSlide {
 const HERO_SLIDES: HeroSlide[] = [
   {
     id: 'slide-1',
-    image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1600&q=80',
+    image: slide1HeroImage,
     badge: { bn: 'সুন্দরবনের জীবন্ত শ্বাসমূল ও ম্যানগ্রোভ অরণ্য', en: 'Pneumatophores & Mangrove Wilderness' },
     title: {
       bn: 'ম্যানগ্রোভের হৃদয়ে আপনার নির্ভরযোগ্য সঙ্গী',
@@ -32,7 +36,7 @@ const HERO_SLIDES: HeroSlide[] = [
   },
   {
     id: 'slide-2',
-    image: 'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?auto=format&fit=crop&w=1600&q=80',
+    image: slide2HeroImage,
     badge: { bn: 'রয়েল বেঙ্গল টাইগার ও সুন্দরবনের বন্যপ্রাণী', en: 'Royal Bengal Tiger Safari' },
     title: {
       bn: 'দোবাঁকি ক্যানোপি ওয়াকওয়ে ও ৫ নদী মোহনা',
@@ -48,7 +52,7 @@ const HERO_SLIDES: HeroSlide[] = [
   },
   {
     id: 'slide-3',
-    image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1600&q=80',
+    image: slide3HeroImage,
     badge: { bn: 'সজনেখালি ওয়াচ টাওয়ার ও মিষ্টি জলের পুকুর', en: 'Sajnekhali Watch Tower & Wildlife Complex' },
     title: {
       bn: 'সজনেখালি ওয়াচ টাওয়ার, হরিণ ও বন্যপ্রাণী কমপ্লেক্স',
@@ -64,7 +68,7 @@ const HERO_SLIDES: HeroSlide[] = [
   },
   {
     id: 'slide-4',
-    image: 'https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=1600&q=80',
+    image: slide4HeroImage,
     badge: { bn: 'ম্যানগ্রোভ পাখিরালয় ও জীববৈচিত্র্য', en: 'Mangrove Avifauna & Great Egret' },
     title: {
       bn: 'শ্বাসমূলের চরে সাদা বক ও বিরল পাখির ওড়াউড়ি',
@@ -163,20 +167,29 @@ export const HeroCarousel3D: React.FC<HeroCarousel3DProps> = ({ onNavigate }) =>
           </p>
 
           {/* Action CTAs */}
-          <div className="flex flex-wrap items-center gap-4 pt-2">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-2">
             <button
               id="hero-primary-cta"
               onClick={() => onNavigate(slide.actionRoute)}
-              className="px-7 py-3.5 rounded-full bg-[#F4B942] hover:bg-[#ffc957] text-[#064E3B] font-bold text-base shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-0.5 flex items-center gap-2"
+              className="px-6 sm:px-7 py-3.5 rounded-full bg-[#F4B942] hover:bg-[#ffc957] text-[#064E3B] font-bold text-sm sm:text-base shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-0.5 flex items-center gap-2"
             >
               <Compass className="w-5 h-5" />
               <span>{slide.primaryCta[language]}</span>
             </button>
 
             <button
+              id="hero-guide-cta"
+              onClick={() => onNavigate('blog')}
+              className="px-5 sm:px-6 py-3.5 rounded-full bg-emerald-950/85 hover:bg-emerald-900 text-amber-300 hover:text-amber-200 font-bold text-sm sm:text-base border border-amber-400/60 shadow-lg hover:shadow-xl backdrop-blur-md transition-all duration-300 flex items-center gap-2 transform hover:-translate-y-0.5"
+            >
+              <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
+              <span>{isBengali ? 'ভ্রমণ নির্দেশিকা' : 'Travel Guide'}</span>
+            </button>
+
+            <button
               id="hero-secondary-cta"
               onClick={() => onNavigate('plan-my-trip')}
-              className="px-6 py-3.5 rounded-full bg-white/15 hover:bg-white/25 text-white font-semibold text-base border border-white/30 backdrop-blur-md transition-all duration-300"
+              className="px-5 sm:px-6 py-3.5 rounded-full bg-white/15 hover:bg-white/25 text-white font-semibold text-sm sm:text-base border border-white/30 backdrop-blur-md transition-all duration-300"
             >
               {slide.secondaryCta[language]}
             </button>
