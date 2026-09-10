@@ -11,7 +11,7 @@ export const TRANSLATIONS = {
       youtube: 'ইউটিউব',
       about: 'আমাদের পরিচয়',
       experience: 'অভিজ্ঞতা',
-      riverToCreek: 'নদী থেকে খাঁড়ি',
+      riverToCreek: 'নদী থেকে নিস্তব্ধ খাঁড়ির ৯টি অধ্যায়',
       gosabaHeritage: 'গোসাবা ঐতিহ্য',
       sajnekhaliWatchTower: 'সজনেখালি ওয়াচ টাওয়ার',
       tripComposer: 'কাস্টম ট্যুর প্ল্যান',

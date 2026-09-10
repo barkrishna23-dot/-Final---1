@@ -189,3 +189,38 @@
   will-change: transform;
 }
 
+/* 🌊 Automatic Cinematic Pan & Zoom Animation for Showcase Photos */
+@keyframes kenburns-slow {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+  50% {
+    transform: scale(1.08) translate(-1.5%, -1%);
+  }
+  100% {
+    transform: scale(1.04) translate(1.5%, 0.8%);
+  }
+}
+
+.animate-ken-burns {
+  animation: kenburns-slow 9s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes kenburns-drift {
+  0% {
+    transform: scale(1.03) translate(1%, 0.5%);
+  }
+  50% {
+    transform: scale(1.1) translate(-1.5%, -1.2%);
+  }
+  100% {
+    transform: scale(1) translate(0%, 0%);
+  }
+}
+
+.animate-ken-burns-drift {
+  animation: kenburns-drift 11s ease-in-out infinite alternate;
+  will-change: transform;
+}
+

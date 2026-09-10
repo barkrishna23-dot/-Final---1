@@ -17,6 +17,7 @@ import { YOUTUBE_VIDEOS } from '../data/youtubeVideos';
 import { BRAND_INFO } from '../data/brandInfo';
 import { BLOG_POSTS } from '../data/blogPosts';
 import sundarbanSafariImg from '../assets/images/regenerated_image_1788720175291.png';
+import { AnimatedShowcaseGallery } from '../components/common/AnimatedShowcaseGallery';
 
 interface HomePageProps {
   onNavigate: (route: string) => void;
@@ -174,24 +175,12 @@ export const HomePage: React.FC<HomePageProps> = ({
               </div>
             </div>
 
-            <div className="lg:col-span-5">
-              <div className="relative rounded-3xl overflow-hidden shadow-lg border-4 border-white">
-                <img
-                  src={sundarbanSafariImg}
-                  alt="Sundarban Vromon Team & Safari"
-                  className="w-full h-[320px] object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                <div className="absolute bottom-5 left-5 right-5 text-white">
-                  <span className="text-xs font-bold text-amber-300 uppercase tracking-widest block mb-1">
-                    Sundarban Vromon
-                  </span>
-                  <p className="text-xs sm:text-sm font-medium text-slate-100">
-                    {isBengali ? 'প্রকৃতির আরও কাছে — সুন্দরবনের আরও গভীরে।' : 'Closer to Nature — Deeper into Sundarbans.'}
-                  </p>
-                </div>
-              </div>
-            </div>
+            <AnimatedShowcaseGallery
+              borderColorClass="border-white"
+              containerClassName="lg:col-span-5"
+              heightClass="h-[320px] sm:h-[360px]"
+              showControls={false}
+            />
           </div>
         </div>
       </section>
@@ -290,66 +279,91 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="lg:col-span-6 space-y-6">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-100 text-[#064E3B] text-xs font-bold uppercase tracking-wider">
                 <Compass className="w-3.5 h-3.5 text-[#064E3B]" />
-                <span>{isBengali ? 'ইমারসিভ সাফারি অভিজ্ঞতা' : 'Visual Storytelling Odyssey'}</span>
+                <span>{isBengali ? '৯টি জীবন্ত অধ্যায় • ইমারসিভ সাফারি অভিজ্ঞতা' : 'Visual Storytelling Odyssey • 9 Chapters'}</span>
               </div>
 
               <h2 className="text-3xl sm:text-4xl font-bold font-heading text-[#064E3B] leading-tight">
                 {isBengali
-                  ? 'গদখালি থেকে নিস্তব্ধ খাঁড়ি: ৯টি অধ্যায়ে সুন্দরবনের রূপকথা'
-                  : 'From Wide Estuaries to Whispering Creeks: A 9-Chapter Narrative'}
+                  ? 'নদী থেকে নিস্তব্ধ খাঁড়ির ৯টি অধ্যায়'
+                  : 'The River-to-Creek Narrative: 9 Chapters'}
               </h2>
 
               <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
                 {isBengali
-                  ? 'উত্তাল মাতলা নদী পার হওয়া, ভাটার সময় কাদায় জেগে ওঠা হাজারো লাল কাঁকড়া, দোবাঁকির ঝুলন্ত তারের ক্যানোপি ওয়াক এবং পঞ্চমুখীর মোহনায় রক্তিম সূর্যাস্ত—প্রতিটি অধ্যায়ের ছবি ও বাস্তব অনুভূতি জানুন।'
-                  : 'Follow the chronological metamorphosis of a true safari: crossing roaring confluences, low-tide mudflat discoveries, high canopy walks, and evening island folk melodies.'}
+                  ? 'গদখালি ঘাট থেকে শুরু হয়ে উত্তাল মাতলা নদী, কাদামাটির শ্বাসমূল, দোবাঁকির ঝুলন্ত তারের ক্যানোপি ওয়াক এবং পঞ্চমুখীর মোহনায় রক্তিম সূর্যাস্ত পেরিয়ে রাতে বাউল গান—সুন্দরবনের প্রতিটি মুহূর্তের বাস্তব ও পজেটিভ টেলিকাস্ট।'
+                  : 'Follow the uplifting chronological metamorphosis of a true safari: crossing roaring confluences, low-tide mudflat discoveries, high canopy walks, and evening island folk melodies.'}
               </p>
 
               <div className="grid grid-cols-2 gap-3 text-xs text-slate-700">
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 shadow-xs">
-                  <strong className="block text-[#064E3B] mb-0.5">অধ্যায় ১–৩</strong>
-                  <span>গদখালি ও মাতলা নদী হয়ে বনের সীমায় প্রবেশ</span>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 shadow-xs">
-                  <strong className="block text-[#064E3B] mb-0.5">অধ্যায় ৪–৬</strong>
-                  <span>ভাটার কাঁকড়া ও সজনেখালি-সুধন্যখালি টাওয়ার</span>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 shadow-xs">
-                  <strong className="block text-[#064E3B] mb-0.5">অধ্যায় ৭–৮</strong>
-                  <span>দোবাঁকি ঝুলন্ত ওয়াকওয়ে ও পঞ্চমুখী সূর্যাস্ত</span>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 shadow-xs">
-                  <strong className="block text-[#064E3B] mb-0.5">অধ্যায় ৯</strong>
-                  <span>পাখিরালয়ে বাউলের গান ও রাতের ভোজ</span>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => onNavigate('experience-river-to-creek')}
+                  className="text-left p-3 bg-slate-50 hover:bg-emerald-50 rounded-xl border border-slate-200 hover:border-emerald-300 shadow-xs transition-all cursor-pointer group"
+                >
+                  <strong className="block text-[#064E3B] group-hover:text-emerald-700 mb-0.5 font-bold">অধ্যায় ১–৩</strong>
+                  <span className="text-slate-600">গদখালি ঘাট ও মাতলা নদী মোহনায় যাত্রা সূচনা</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onNavigate('experience-river-to-creek')}
+                  className="text-left p-3 bg-slate-50 hover:bg-emerald-50 rounded-xl border border-slate-200 hover:border-emerald-300 shadow-xs transition-all cursor-pointer group"
+                >
+                  <strong className="block text-[#064E3B] group-hover:text-emerald-700 mb-0.5 font-bold">অধ্যায় ৪–৬</strong>
+                  <span className="text-slate-600">ভাটার রঙিন কাঁকড়া ও সজনেখালি-সুধন্যখালি টাওয়ার</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onNavigate('experience-river-to-creek')}
+                  className="text-left p-3 bg-slate-50 hover:bg-emerald-50 rounded-xl border border-slate-200 hover:border-emerald-300 shadow-xs transition-all cursor-pointer group"
+                >
+                  <strong className="block text-[#064E3B] group-hover:text-emerald-700 mb-0.5 font-bold">অধ্যায় ৭–৮</strong>
+                  <span className="text-slate-600">দোবাঁকি ঝুলন্ত ক্যানোপি ওয়াক ও পঞ্চমুখী সূর্যাস্ত</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onNavigate('experience-river-to-creek')}
+                  className="text-left p-3 bg-slate-50 hover:bg-emerald-50 rounded-xl border border-slate-200 hover:border-emerald-300 shadow-xs transition-all cursor-pointer group"
+                >
+                  <strong className="block text-[#064E3B] group-hover:text-emerald-700 mb-0.5 font-bold">অধ্যায় ৯</strong>
+                  <span className="text-slate-600">পাখিরালয়ে বাউলের একতারা ও সুস্বাদু রাতের ভোজ</span>
+                </button>
               </div>
 
               <div className="pt-2">
                 <button
                   onClick={() => onNavigate('experience-river-to-creek')}
-                  className="px-7 py-3.5 rounded-full bg-[#064E3B] hover:bg-[#096049] text-white font-bold text-sm shadow-md transition-all duration-300 inline-flex items-center gap-2"
+                  className="px-7 py-3.5 rounded-full bg-[#064E3B] hover:bg-[#096049] text-white font-bold text-sm shadow-md transition-all duration-300 inline-flex items-center gap-2 transform hover:-translate-y-0.5 cursor-pointer"
                 >
-                  <span>{isBengali ? 'সাফারি গল্প পড়ুন' : 'Read Full 9-Chapter Narrative'}</span>
+                  <span>{isBengali ? 'নদী থেকে নিস্তব্ধ খাঁড়ির ৯টি অধ্যায় দেখুন' : 'Explore All 9 Chapters'}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
             <div className="lg:col-span-6">
-              <div className="relative rounded-3xl overflow-hidden shadow-xl border-4 border-white">
+              <div
+                onClick={() => onNavigate('experience-river-to-creek')}
+                className="relative rounded-3xl overflow-hidden shadow-xl border-4 border-white cursor-pointer group"
+              >
                 <img
                   src={sundarbanSafariImg}
                   alt="Sundarban Creek Safari"
-                  className="w-full h-[440px] object-cover"
+                  className="w-full h-[440px] object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+                <span className="absolute top-4 right-4 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-black/60 text-amber-300 backdrop-blur-sm border border-amber-400/40">
+                  {isBengali ? '৯টি জীবন্ত অধ্যায় • ক্লিক করে দেখুন' : '9 Chapters • Click to Open'}
+                </span>
                 <div className="absolute bottom-6 left-6 right-6">
                   <div className="text-xs font-bold text-amber-300 uppercase tracking-wider mb-1">
-                    {isBengali ? 'পীরখালি সরু ক্যানাল' : 'Pirkhali Creek Drift'}
+                    {isBengali ? 'পীরখালি সরু ক্যানাল ও নিস্তব্ধ খাঁড়ি' : 'Pirkhali Creek Drift'}
                   </div>
-                  <h4 className="text-xl font-bold font-heading text-white">
-                    {isBengali ? 'ইঞ্জিন বন্ধ করে বনের নিস্তব্ধ সুর' : 'Silent Drifting Under Mangrove Boughs'}
+                  <h4 className="text-xl sm:text-2xl font-bold font-heading text-white group-hover:text-amber-300 transition-colors">
+                    {isBengali ? 'নদী থেকে নিস্তব্ধ খাঁড়ির ৯টি অধ্যায়' : 'The 9-Chapter Narrative Odyssey'}
                   </h4>
+                  <p className="text-xs sm:text-sm text-slate-200 mt-1 line-clamp-2">
+                    {isBengali ? 'ক্লিক করে সরাসরি সুন্দরবনের প্রতিটি মোহনা, খাল ও বন্যপ্রাণীর ইতিবাচক বাস্তব অভিজ্ঞতা দেখুন' : 'Click to experience the complete chronological safari journey'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -460,31 +474,14 @@ export const HomePage: React.FC<HomePageProps> = ({
           {/* Photo & Video Showcase Grid */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             {/* Featured Video Embed (md:col-span-7) */}
-            <div className="md:col-span-7 bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm flex flex-col justify-between">
-              <div className="relative aspect-video w-full bg-black">
-                <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${YOUTUBE_VIDEOS[0]?.youtubeId || '3u_cE_pS58A'}`}
-                  title={YOUTUBE_VIDEOS[0]?.title.en || 'Sundarban Safari Video'}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full"
-                />
-              </div>
-              <div className="p-4 space-y-1.5 bg-white">
-                <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
-                  <span className="text-red-600 font-bold flex items-center gap-1">
-                    <Play className="w-3.5 h-3.5 fill-red-600" />
-                    {isBengali ? 'সাফারি ভিডিও ভ্লগ' : 'Safari Video'}
-                  </span>
-                  <span>{YOUTUBE_VIDEOS[0]?.duration || '14:20'}</span>
-                </div>
-                <h4 className="font-bold text-sm sm:text-base text-slate-900 font-heading line-clamp-1">
-                  {YOUTUBE_VIDEOS[0]?.title[language]}
-                </h4>
-                <p className="text-xs text-slate-600 line-clamp-2">
-                  {YOUTUBE_VIDEOS[0]?.description[language]}
-                </p>
-              </div>
+            <div className="md:col-span-7 relative aspect-video w-full bg-black rounded-2xl overflow-hidden border border-slate-200 shadow-sm self-start">
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${YOUTUBE_VIDEOS[0]?.youtubeId || '3u_cE_pS58A'}`}
+                title={YOUTUBE_VIDEOS[0]?.title.en || 'Sundarban Safari Video'}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
             </div>
 
             {/* Featured Gallery Highlights (md:col-span-5) */}

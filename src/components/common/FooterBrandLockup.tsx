@@ -63,7 +63,6 @@ export const FooterBrandLockup: React.FC<FooterProps> = ({ onNavigate }) => {
                     >
                       {isBengali ? 'পরিচয়' : 'Profile'}
                     </button>
-                    <span className="text-emerald-700 text-xs">•</span>
                     <a
                       id="footer-founder-call-btn"
                       href={`https://wa.me/${BRAND_INFO.whatsappRaw}?text=${encodeURIComponent(
@@ -73,7 +72,8 @@ export const FooterBrandLockup: React.FC<FooterProps> = ({ onNavigate }) => {
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[10.5px] font-bold text-emerald-950 bg-amber-400 hover:bg-amber-300 px-2 py-0.5 rounded-full transition-all inline-flex items-center gap-1"
+                      className="hidden"
+                      style={{ display: 'none' }}
                     >
                       <PhoneCall className="w-2.5 h-2.5" />
                       <span>{isBengali ? 'কথা বলুন' : 'Call'}</span>

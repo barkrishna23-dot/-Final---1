@@ -178,12 +178,12 @@ export const HeroCarousel3D: React.FC<HeroCarousel3DProps> = ({ onNavigate }) =>
             </button>
 
             <button
-              id="hero-guide-cta"
-              onClick={() => onNavigate('blog')}
+              id="hero-river-story-cta"
+              onClick={() => onNavigate('experience-river-to-creek')}
               className="px-5 sm:px-6 py-3.5 rounded-full bg-emerald-950/85 hover:bg-emerald-900 text-amber-300 hover:text-amber-200 font-bold text-sm sm:text-base border border-amber-400/60 shadow-lg hover:shadow-xl backdrop-blur-md transition-all duration-300 flex items-center gap-2 transform hover:-translate-y-0.5"
             >
-              <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
-              <span>{isBengali ? 'ভ্রমণ নির্দেশিকা' : 'Travel Guide'}</span>
+              <Compass className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
+              <span>{isBengali ? 'নদী থেকে খাঁড়ির ৯ অধ্যায়' : '9-Chapter Safari Story'}</span>
             </button>
 
             <button

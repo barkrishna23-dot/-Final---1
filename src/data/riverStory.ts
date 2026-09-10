@@ -1,4 +1,5 @@
 import { RiverStoryChapter } from '../types';
+import chapter1GodkhaliImg from '../assets/images/regenerated_image_1789038164104.png';
 
 export const RIVER_STORY_CHAPTERS: RiverStoryChapter[] = [
   {
@@ -16,7 +17,7 @@ export const RIVER_STORY_CHAPTERS: RiverStoryChapter[] = [
       en: 'Arriving at Godkhali Jetty marks the definitive boundary between mainland hustle and delta tranquility. The air turns rich with the scent of saline silt and river spray. As the cruiser casts off its moorings and enters the current, a profound sense of wild discovery begins.',
     },
     visualCue: 'wide-river-departure',
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+    image: chapter1GodkhaliImg,
     observationList: [
       { bn: 'জেটি ঘাটে ঐতিহ্যবাহী কাঠের নৌকা ও মাছের ট্রলার', en: 'Traditional wooden river craft and fishing trawlers' },
       { bn: 'নদীর বুকে দূরবর্তী দ্বীপ ও বাদাবনের প্রথম রেখা', en: 'First outlines of mangrove shores across tidal waters' },

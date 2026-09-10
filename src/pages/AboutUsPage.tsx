@@ -3,6 +3,7 @@ import { BRAND_INFO } from '../data/brandInfo';
 import { useLanguage } from '../context/LanguageContext';
 import gosabaTeamImg from '../assets/images/regenerated_image_1788720175291.png';
 import founderOwnerPhoto from '../assets/images/founder_optimized.jpg';
+import { AnimatedShowcaseGallery } from '../components/common/AnimatedShowcaseGallery';
 import {
   ShieldCheck,
   Heart,
@@ -75,26 +76,12 @@ export const AboutUsPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="lg:col-span-5">
-            <div className="relative rounded-3xl overflow-hidden shadow-xl border-4 border-emerald-950">
-              <img
-                src={gosabaTeamImg}
-                alt="Sundarban Gosaba & Mangrove Safari"
-                className="w-full h-[360px] object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              <div className="absolute bottom-5 left-5 right-5 text-white">
-                <span className="text-xs font-bold text-amber-300 uppercase tracking-widest block mb-1">
-                  {isBengali ? 'গোসাবাভিত্তিক নিজস্ব টিম' : 'Gosaba-Based Local Team'}
-                </span>
-                <p className="text-xs sm:text-sm text-slate-200">
-                  {isBengali
-                    ? 'প্রকৃতির আরও কাছে — সুন্দরবনের আরও গভীরে।'
-                    : 'Closer to Nature — Deeper into Sundarbans.'}
-                </p>
-              </div>
-            </div>
-          </div>
+          <AnimatedShowcaseGallery
+            borderColorClass="border-emerald-950"
+            containerClassName="lg:col-span-5 space-y-3"
+            heightClass="h-[360px] sm:h-[390px]"
+            showControls={true}
+          />
         </div>
       </div>
 

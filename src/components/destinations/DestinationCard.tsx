@@ -11,15 +11,6 @@ interface DestinationCardProps {
 export const DestinationCard: React.FC<DestinationCardProps> = ({ destination, onSelect }) => {
   const { language, isBengali } = useLanguage();
 
-  const catLabel = destination.categoryLabel || destination.categoryName || { en: 'Spot', bn: 'স্পট' };
-  const timingText = destination.bestTimeToVisit
-    ? destination.bestTimeToVisit[language]
-    : (destination as any).bestTiming
-    ? (destination as any).bestTiming[language]
-    : isBengali
-    ? 'ভোর ও জোয়ারের সময়'
-    : 'Early Morning & High Tide';
-
   const descText =
     destination.description?.[language] ||
     (destination as any).shortDesc?.[language] ||
@@ -38,16 +29,6 @@ export const DestinationCard: React.FC<DestinationCardProps> = ({ destination, o
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-
-        {/* Top Badges */}
-        <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#064E3B] text-amber-300 shadow-md">
-            {catLabel[language]}
-          </span>
-          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-black/60 backdrop-blur-xs text-white border border-white/20">
-            {timingText}
-          </span>
-        </div>
 
         {/* Bottom Title */}
         <div className="absolute bottom-3 left-4 right-4 text-white">
