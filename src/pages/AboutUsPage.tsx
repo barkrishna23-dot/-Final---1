@@ -1,5 +1,6 @@
 import React from 'react';
 import { BRAND_INFO } from '../data/brandInfo';
+import { BLOG_POSTS } from '../data/blogPosts';
 import { useLanguage } from '../context/LanguageContext';
 import gosabaTeamImg from '../assets/images/regenerated_image_1788720175291.png';
 import founderOwnerPhoto from '../assets/images/founder_optimized.jpg';
@@ -23,10 +24,17 @@ import {
   Eye,
   Binoculars,
   Info,
-  PhoneCall
+  PhoneCall,
+  BookOpen,
+  Clock,
+  ArrowRight
 } from 'lucide-react';
 
-export const AboutUsPage: React.FC = () => {
+interface AboutUsPageProps {
+  onNavigate?: (route: string) => void;
+}
+
+export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
   const { language, isBengali } = useLanguage();
 
   return (
@@ -378,6 +386,81 @@ export const AboutUsPage: React.FC = () => {
             >
               <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
               <span>{item[language]}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 8.5. ভ্রমণ নির্দেশিকা ও প্রস্তুতি (Sundarban Travel Guide & Safari Insights) */}
+      <div className="bg-gradient-to-br from-[#06241B] via-[#0A3527] to-[#06241B] text-white rounded-3xl p-6 sm:p-10 border border-emerald-700/50 shadow-xl space-y-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b border-white/10">
+          <div className="space-y-2 max-w-2xl">
+            <div className="inline-flex items-center gap-2 text-xs font-bold text-amber-300 uppercase tracking-widest bg-white/10 px-3.5 py-1.5 rounded-full border border-white/15">
+              <BookOpen className="w-3.5 h-3.5 text-amber-300" />
+              <span>{isBengali ? 'ভ্রমণ নির্দেশিকা ও প্রস্তুতি' : 'Travel Guide & Insights'}</span>
+            </div>
+            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-heading text-white">
+              {isBengali ? 'সুন্দরবন ভ্রমণ নির্দেশিকা: প্রস্তুতি, জোয়ার-ভাটা ও প্যাকিং' : 'Sundarban Safari Knowledge & Travel Guide'}
+            </h3>
+            <p className="text-sm text-emerald-100/90 leading-relaxed">
+              {isBengali
+                ? 'সুন্দরবন সাফারির আসল প্রস্তুতি, জোয়ার-ভাটার সেরা সময়, ক্যামেরা ও প্যাকিং টিপস—আমাদের অভিজ্ঞ গাইডদের বাস্তব অভিজ্ঞতা থেকে সংকলিত।'
+                : 'Practical field wisdom on tidal cycles, packing checklists, and safari logistics written by experienced local naturalists.'}
+            </p>
+          </div>
+
+          {onNavigate && (
+            <button
+              onClick={() => onNavigate('blog')}
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-bold text-sm sm:text-base shadow-lg hover:shadow-xl transition-all shrink-0 transform hover:scale-105 active:scale-95"
+            >
+              <BookOpen className="w-4 h-4 text-emerald-950" />
+              <span>{isBengali ? 'সকল ভ্রমণ নির্দেশিকা পড়ুন' : 'Explore All Travel Guides'}</span>
+              <ArrowRight className="w-4 h-4 text-emerald-950" />
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {BLOG_POSTS.slice(0, 2).map((post) => (
+            <div
+              key={post.id}
+              onClick={() => onNavigate && onNavigate('blog')}
+              className="group bg-white/10 hover:bg-white/15 backdrop-blur-md rounded-2xl overflow-hidden border border-white/15 hover:border-amber-400/50 transition-all duration-300 cursor-pointer flex flex-col justify-between shadow-lg"
+            >
+              <div className="relative h-48 sm:h-52 overflow-hidden">
+                <img
+                  src={post.image}
+                  alt={post.title.en}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <span className="absolute top-3 right-3 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-black/60 backdrop-blur-xs text-amber-300 border border-white/20">
+                  {post.category[language]}
+                </span>
+                <div className="absolute bottom-3 left-3 right-3">
+                  <span className="text-xs text-emerald-200 font-semibold flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-amber-400" />
+                    <span>{post.readTime}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                <div className="space-y-2">
+                  <h4 className="text-lg sm:text-xl font-bold font-heading text-white group-hover:text-amber-300 transition-colors leading-snug">
+                    {post.title[language]}
+                  </h4>
+                  <p className="text-xs sm:text-sm text-emerald-100/80 line-clamp-2 leading-relaxed">
+                    {post.excerpt[language]}
+                  </p>
+                </div>
+
+                <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs font-bold text-amber-300 group-hover:text-amber-200">
+                  <span>{isBengali ? 'সম্পূর্ণ নির্দেশিকা পড়ুন' : 'Read Full Guide'}</span>
+                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
             </div>
           ))}
         </div>

@@ -180,7 +180,7 @@ const AppContent: React.FC = () => {
 
         {currentRoute === 'reviews' && <ReviewsPage />}
 
-        {currentRoute === 'about-us' && <AboutUsPage />}
+        {currentRoute === 'about-us' && <AboutUsPage onNavigate={handleNavigate} />}
 
         {currentRoute === 'blog' && <BlogPage onSelectPost={handleSelectBlog} />}
         

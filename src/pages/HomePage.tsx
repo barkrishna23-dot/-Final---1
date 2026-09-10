@@ -11,13 +11,11 @@ import { useAdmin } from '../context/AdminContext';
 import { TOUR_PACKAGES } from '../data/packages';
 import { DESTINATIONS } from '../data/destinations';
 import { FOOD_MENU_ITEMS } from '../data/foodMenu';
-import { Compass, ArrowRight, Utensils, Star, ShieldCheck, Sparkles, Camera, Play, Image as ImageIcon, Video, Quote, PhoneCall, Award, BookOpen, Clock } from 'lucide-react';
+import { Compass, ArrowRight, Utensils, Star, ShieldCheck, Sparkles, Camera, Play, Image as ImageIcon, Video, Quote, PhoneCall, Award, BookOpen } from 'lucide-react';
 import { GALLERY_ITEMS } from '../data/galleryData';
 import { YOUTUBE_VIDEOS } from '../data/youtubeVideos';
 import { BRAND_INFO } from '../data/brandInfo';
-import { BLOG_POSTS } from '../data/blogPosts';
 import sundarbanSafariImg from '../assets/images/regenerated_image_1788720175291.png';
-import { AnimatedShowcaseGallery } from '../components/common/AnimatedShowcaseGallery';
 
 interface HomePageProps {
   onNavigate: (route: string) => void;
@@ -127,60 +125,6 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 3. আমাদের পরিচয় (About Us & Founder Story Spotlight) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-br from-white via-emerald-50/40 to-amber-50/30 rounded-3xl p-6 sm:p-10 border border-emerald-100 shadow-md space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-7 space-y-4">
-              <div className="inline-flex items-center gap-2 text-xs font-bold text-[#064E3B] uppercase tracking-wider bg-emerald-100/80 px-3.5 py-1.5 rounded-full">
-                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                <span>{isBengali ? 'আমাদের পরিচয় — সুন্দরবন ভ্রমণ—প্রকৃতির আরও কাছে' : 'About Us — Sundarban Vromon — Closer to Nature'}</span>
-              </div>
-
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-heading text-[#064E3B] leading-tight">
-                {isBengali
-                  ? 'গোসাবাভিত্তিক বিশ্বস্ত সুন্দরবন ভ্রমণ সেবা (২০১৯ থেকে)'
-                  : 'Gosaba-Based Trusted Sundarban Delta Safari (Since 2019)'}
-              </h2>
-
-              <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
-                {isBengali
-                  ? 'Sundarban Vromon পশ্চিমবঙ্গের দক্ষিণ ২৪ পরগনার গোসাবাভিত্তিক একটি সুন্দরবন ভ্রমণ পরিষেবা। সুন্দরবনের নদী, ম্যানগ্রোভ অরণ্য, বন্যপ্রাণী, ইতিহাস এবং স্থানীয় সংস্কৃতিকে পর্যটকদের সামনে দায়িত্বশীল ও সুন্দরভাবে তুলে ধরার লক্ষ্য নিয়ে ২০১৯ সালে আমাদের পথচলা শুরু হয়।'
-                  : 'Sundarban Vromon is a specialized tour operator based in Gosaba, South 24 Parganas, West Bengal. Founded in 2019, our mission is to present the rivers, mangrove wilderness, biodiversity, and local culture of Sundarbans responsibly and authentically.'}
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs sm:text-sm font-medium text-slate-800">
-                <div className="flex items-center gap-2 bg-white/80 p-2.5 rounded-xl border border-slate-200">
-                  <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
-                  <span>{isBengali ? 'বাঘ দেখানোর মিথ্যা নিশ্চয়তা না দেওয়া' : 'Zero Fake Guarantees for Sightings'}</span>
-                </div>
-                <div className="flex items-center gap-2 bg-white/80 p-2.5 rounded-xl border border-slate-200">
-                  <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
-                  <span>{isBengali ? 'নিবন্ধিত বোট, গাইড ও বাঙালি খাবার' : 'Registered Vessels & Authentic Hospitality'}</span>
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <button
-                  onClick={() => onNavigate('about-us')}
-                  className="px-6 py-3 rounded-full bg-[#064E3B] hover:bg-[#096049] text-white font-bold text-sm shadow-md transition-all duration-300 inline-flex items-center gap-2"
-                >
-                  <span>{isBengali ? 'আমাদের সম্পূর্ণ পরিচিতি ও অঙ্গীকার পড়ুন' : 'Read Full Story & Commitments'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            <AnimatedShowcaseGallery
-              borderColorClass="border-white"
-              containerClassName="lg:col-span-5"
-              heightClass="h-[320px] sm:h-[360px]"
-              showControls={false}
-            />
           </div>
         </div>
       </section>
@@ -515,82 +459,6 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 9. ভ্রমণ নির্দেশিকা ও প্রস্তুতি (Sundarban Travel Guide & Safari Insights) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-br from-[#06241B] via-[#0A3527] to-[#06241B] text-white rounded-3xl p-6 sm:p-10 border border-emerald-700/50 shadow-xl space-y-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b border-white/10">
-            <div className="space-y-2 max-w-2xl">
-              <div className="inline-flex items-center gap-2 text-xs font-bold text-amber-300 uppercase tracking-widest bg-white/10 px-3.5 py-1.5 rounded-full border border-white/15">
-                <BookOpen className="w-3.5 h-3.5 text-amber-300" />
-                <span>{isBengali ? 'ভ্রমণ নির্দেশিকা ও প্রস্তুতি' : 'Travel Guide & Insights'}</span>
-              </div>
-              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-heading text-white">
-                {isBengali ? 'সুন্দরবন ভ্রমণ নির্দেশিকা: প্রস্তুতি, জোয়ার-ভাটা ও প্যাকিং' : 'Sundarban Safari Knowledge & Travel Guide'}
-              </h3>
-              <p className="text-sm text-emerald-100/90 leading-relaxed">
-                {isBengali
-                  ? 'সুন্দরবন সাফারির আসল প্রস্তুতি, জোয়ার-ভাটার সেরা সময়, ক্যামেরা ও প্যাকিং টিপস—আমাদের অভিজ্ঞ গাইডদের বাস্তব অভিজ্ঞতা থেকে সংকলিত।'
-                  : 'Practical field wisdom on tidal cycles, packing checklists, and safari logistics written by experienced local naturalists.'}
-              </p>
-            </div>
-
-            <button
-              id="main-travel-guide-btn"
-              onClick={() => onNavigate('blog')}
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-bold text-sm sm:text-base shadow-lg hover:shadow-xl transition-all shrink-0 transform hover:scale-105 active:scale-95"
-            >
-              <BookOpen className="w-4 h-4 text-emerald-950" />
-              <span>{isBengali ? 'সকল ভ্রমণ নির্দেশিকা পড়ুন' : 'Explore All Travel Guides'}</span>
-              <ArrowRight className="w-4 h-4 text-emerald-950" />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {BLOG_POSTS.slice(0, 2).map((post) => (
-              <div
-                key={post.id}
-                onClick={() => onNavigate('blog')}
-                className="group bg-white/10 hover:bg-white/15 backdrop-blur-md rounded-2xl overflow-hidden border border-white/15 hover:border-amber-400/50 transition-all duration-300 cursor-pointer flex flex-col justify-between shadow-lg"
-              >
-                <div className="relative h-48 sm:h-52 overflow-hidden">
-                  <img
-                    src={post.image}
-                    alt={post.title.en}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <span className="absolute top-3 right-3 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-black/60 backdrop-blur-xs text-amber-300 border border-white/20">
-                    {post.category[language]}
-                  </span>
-                  <div className="absolute bottom-3 left-3 right-3">
-                    <span className="text-xs text-emerald-200 font-semibold flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-amber-400" />
-                      <span>{post.readTime}</span>
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                  <div className="space-y-2">
-                    <h4 className="text-lg sm:text-xl font-bold font-heading text-white group-hover:text-amber-300 transition-colors leading-snug">
-                      {post.title[language]}
-                    </h4>
-                    <p className="text-xs sm:text-sm text-emerald-100/80 line-clamp-2 leading-relaxed">
-                      {post.excerpt[language]}
-                    </p>
-                  </div>
-
-                  <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs font-bold text-amber-300 group-hover:text-amber-200">
-                    <span>{isBengali ? 'সম্পূর্ণ নির্দেশিকা পড়ুন' : 'Read Full Guide'}</span>
-                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>

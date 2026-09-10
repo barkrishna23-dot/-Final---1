@@ -196,19 +196,6 @@ export const MainHeader: React.FC<MainHeaderProps> = ({ currentRoute: propCurren
             </div>
 
             <button
-              id="nav-plan-trip"
-              onClick={() => handleNav('plan-my-trip')}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all ${
-                currentRoute === 'plan-my-trip'
-                  ? 'text-[#F59E0B] font-bold bg-[#143B2B] border border-amber-400/50 shadow-[0_0_10px_rgba(245,158,11,0.25)]'
-                  : 'hover:text-[#FBBF24] hover:bg-[#113224] text-cyan-300'
-              }`}
-            >
-              <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-              <span>{t.nav.tripComposer}</span>
-            </button>
-
-            <button
               id="nav-about"
               onClick={() => handleNav('about')}
               className={`px-2.5 py-1.5 rounded-lg transition-all ${
@@ -231,18 +218,6 @@ export const MainHeader: React.FC<MainHeaderProps> = ({ currentRoute: propCurren
             >
               <BookOpen className="w-3.5 h-3.5 text-amber-400" />
               <span>{t.nav.blog}</span>
-            </button>
-
-            <button
-              id="nav-contact"
-              onClick={() => handleNav('contact')}
-              className={`px-2.5 py-1.5 rounded-lg transition-all ${
-                currentRoute === 'contact'
-                  ? 'text-[#F59E0B] font-bold bg-[#143B2B] border border-amber-400/50 shadow-[0_0_10px_rgba(245,158,11,0.25)]'
-                  : 'hover:text-[#FBBF24] hover:bg-[#113224]'
-              }`}
-            >
-              {t.nav.contact}
             </button>
           </nav>
 
