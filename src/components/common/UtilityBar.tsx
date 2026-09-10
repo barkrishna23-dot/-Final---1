@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, MessageCircle, Mail, Clock, Globe, BookmarkCheck, ShieldCheck } from 'lucide-react';
+import { Phone, MessageCircle, Mail, Clock, Globe, BookmarkCheck } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useSavedTrip } from '../../context/SavedTripContext';
 import { BRAND_INFO } from '../../data/brandInfo';
@@ -45,11 +45,6 @@ export const UtilityBar: React.FC<UtilityBarProps> = ({ onNavigate }) => {
           <div className="hidden lg:flex items-center gap-1.5 text-slate-300">
             <Clock className="w-3.5 h-3.5 text-[#F4B942]" />
             <span>{isBengali ? 'সর্বদা খোলা • ২৪/৭ সাপোর্ট' : 'Always Open • 24/7 Support'}</span>
-          </div>
-
-          <div className="hidden xl:flex items-center gap-1.5 text-amber-300 font-medium">
-            <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-            <span>{isBengali ? '২০১৯ সাল থেকে বিশ্বস্ত পরিষেবা' : 'Trusted Since 2019'}</span>
           </div>
         </div>
 
