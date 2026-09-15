@@ -1,5 +1,5 @@
 import React from 'react';
-import { History, ArrowRight, Award, BookOpen, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { History, ArrowRight, BookOpen, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import hamiltonEstateImg from '../../assets/images/regenerated_image_1788724130011.jpg';
 
@@ -48,19 +48,6 @@ export const HamiltonStorySection: React.FC<HamiltonStoryProps> = ({ onNavigate 
                   {isBengali ? '১৯৩২ সালের ডিসেম্বর মাসে রবীন্দ্রনাথের ঐতিহাসিক গোসাবা সফর।' : 'December 1932: Tagore’s historic visit to Gosaba cooperative republic.'}
                 </p>
               </div>
-            </div>
-
-            {/* Verified Fact Floating Pill */}
-            <div className="absolute -bottom-3 -right-2 sm:right-4 bg-emerald-900 text-white p-3.5 rounded-2xl shadow-xl border border-amber-300/80 max-w-[240px] text-xs">
-              <div className="flex items-center gap-1.5 text-amber-300 font-bold mb-1">
-                <Award className="w-3.5 h-3.5 text-amber-300 shrink-0" />
-                <span>{isBengali ? 'সঠিক ঐতিহাসিক তথ্য' : 'Historical Fact'}</span>
-              </div>
-              <p className="text-[11px] leading-tight text-slate-200">
-                {isBengali
-                  ? '১৯৩২ সালে রবীন্দ্রনাথ ছিলেন Beacon’s Bungalow-এ; হ্যামিল্টন বাংলো ছিল স্যার ড্যানিয়েলের কর্মস্থল।'
-                  : 'Tagore stayed at Beacon’s Bungalow in 1932 during his Gosaba study.'}
-              </p>
             </div>
           </div>
 

@@ -117,6 +117,11 @@ const DEFAULT_PHOTOS: ShowcasePhoto[] = [
 
 const STORAGE_KEY = 'sv_showcase_custom_photos_v1';
 
+const toBengaliNumber = (num: number | string) => {
+  const bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+  return String(num).replace(/\d/g, (d) => bnDigits[Number(d)]);
+};
+
 interface AnimatedShowcaseGalleryProps {
   borderColorClass?: string;
   heightClass?: string;
@@ -395,21 +400,12 @@ export const AnimatedShowcaseGallery: React.FC<AnimatedShowcaseGalleryProps> = (
       {/* 2. Action & Control Header Bar (Shown where Identity / Admin is) */}
       {showControls && (
         <div className="flex items-center justify-between gap-2 px-1">
-          {/* Automatic Animation Movement Indicator */}
-          <div className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-900 bg-emerald-50/90 border border-emerald-200/80 px-3 py-1 rounded-full shadow-2xs">
-            <span className="relative flex h-2 w-2">
-              {isPlaying && (
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              )}
-              <span className={`relative inline-flex rounded-full h-2 w-2 ${isPlaying ? 'bg-emerald-600' : 'bg-amber-500'}`} />
-            </span>
-            <span className="truncate text-[11.5px]">
-              {isPlaying
-                ? (isBengali ? 'অটোমেটিক অ্যানিমেশন মুভমেন্ট চালু' : 'Auto Movement Active')
-                : (isBengali ? 'অ্যানিমেশন থামানো আছে' : 'Movement Paused')}
-            </span>
-            <span className="text-emerald-700 text-[11px] font-bold">
-              ({currentIndex + 1}/{photos.length})
+          {/* Image Count Indicator Only */}
+          <div className="inline-flex items-center text-xs font-bold text-emerald-900 bg-emerald-50/90 border border-emerald-200/80 px-3 py-1 rounded-full shadow-2xs">
+            <span className="text-emerald-800 text-xs font-bold">
+              {isBengali
+                ? `${toBengaliNumber(currentIndex + 1)} / ${toBengaliNumber(photos.length)}`
+                : `${currentIndex + 1} / ${photos.length}`}
             </span>
           </div>
 

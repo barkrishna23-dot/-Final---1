@@ -17,11 +17,11 @@ export const BRAND_INFO = {
   email: "sundarbon.vromon.official@gmail.com",
   locations: {
     kolkataOffice: "Indian Museum / Science City Pickup Desk, Kolkata, West Bengal 700016",
-    godkhaliDesk: "Godkhali Ferry Ghat Jetty No. 1, Canning Subdivision, South 24 Parganas, WB 743370",
-    gosabaHQ: "Gosaba Main Market Road, Gosaba Island, South 24 Parganas, WB 743370"
+    godkhaliDesk: "Godkhali Ferry Ghat Jetty No. 1, Canning Subdivision, South 24 Parganas, WB 743611",
+    gosabaHQ: "Gosaba Main Market Road, Gosaba Island, South 24 Parganas, WB 743611"
   },
-  addressBn: "গোসাবা, সুন্দরবন, দক্ষিণ ২৪ পরগনা, পশ্চিমবঙ্গ, ভারত — পিন ৭৪৩৩৭০",
-  addressEn: "Gosaba, Sundarban, South 24 Parganas, West Bengal, India — PIN 743370",
+  addressBn: "গোসাবা, সুন্দরবন, দক্ষিণ ২৪ পরগনা, পশ্চিমবঙ্গ, ভারত — পিন ৭৪৩৬১১",
+  addressEn: "Gosaba, Sundarban, South 24 Parganas, West Bengal, India — PIN 743611",
   pickupPointsBn: ["কলকাতা (ভারতীয় যাদুঘর/সায়েন্স সিটি)", "ক্যানিং স্টেশন", "গদখালি ফেরি ঘাট", "ধামাখালি ঘাট"],
   pickupPointsEn: ["Kolkata (Indian Museum / Science City)", "Canning Railway Station", "Godkhali Ferry Ghat", "Dhamakhali Ghat"],
   socials: {
@@ -34,11 +34,11 @@ export const BRAND_INFO = {
   wildlifeDisclaimerBn: "বন্যপ্রাণী (রয়্যাল বেঙ্গল টাইগার, হরিণ, কুমির ইত্যাদি) দর্শন সম্পূর্ণ প্রাকৃতিক ও ভাগ্যের ওপর নির্ভরশীল। কোনো দৃশ্যমানতার নিশ্চয়তা দেওয়া হয় না।",
   wildlifeDisclaimerEn: "Wildlife sightings (Royal Bengal Tiger, Spotted Deer, Crocodiles) are completely natural and subject to chance and tides. Sightings are never guaranteed.",
   founder: {
-    nameBn: "সুন্দরবন ভ্রমণ কর্ণধার ও প্রতিষ্ঠাতা",
-    nameEn: "Founder & Owner, Sundarban Vromon",
-    titleBn: "কোম্পানি প্রতিষ্ঠাতা ও প্রধান ভ্রমণ পরিচালক",
-    titleEn: "Company Founder & Lead Expedition Host",
-    roleBn: "সুন্দরবন ভ্রমণ-এর প্রতিষ্ঠাতা ও ভ্রমণ আয়োজক (২০১৯ থেকে)",
+    nameBn: "শ্রীকৃষ্ণ বার (SRIKRISHNA BAR)",
+    nameEn: "SRIKRISHNA BAR",
+    titleBn: "প্রতিষ্ঠাতা ও প্রধান ভ্রমণ পরিচালক",
+    titleEn: "Founder & Lead Expedition Host",
+    roleBn: "সুন্দরবন ভ্রমণ-এর প্রতিষ্ঠাতা ও স্বত্বাধিকারী (২০১৯ থেকে)",
     roleEn: "Creator & Owner of Sundarban Vromon (Since 2019)",
     photo: "/DSC_0390.JPG",
     locationBn: "গোসাবা, দক্ষিণ ২৪ পরগনা",

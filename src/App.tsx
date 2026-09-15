@@ -11,6 +11,7 @@ import { AdminProvider } from './context/AdminContext';
 // Common Components
 import { UtilityBar } from './components/common/UtilityBar';
 import { MainHeader } from './components/common/MainHeader';
+import { BreadcrumbBar } from './components/common/BreadcrumbBar';
 import { FooterBrandLockup } from './components/common/FooterBrandLockup';
 import { FloatingContactDock } from './components/common/FloatingContactDock';
 
@@ -113,10 +114,19 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-transparent text-slate-900 flex flex-col font-sans selection:bg-[#F59E0B] selection:text-slate-950 relative">
-      {/* 1 & 2. Unified Sticky Header (Utility Bar + Main Header together on scroll) */}
+      {/* 1 & 2. Unified Sticky Header (Utility Bar + Main Header + Breadcrumb Trail together on scroll) */}
       <div className="sticky top-0 z-50">
         <UtilityBar onNavigate={handleNavigate} />
         <MainHeader currentRoute={currentRoute} onNavigate={handleNavigate} />
+        {currentRoute !== 'home' && (
+          <BreadcrumbBar
+            currentRoute={currentRoute}
+            onNavigate={handleNavigate}
+            activePackage={activePackage}
+            selectedDestinationSlug={selectedDestinationSlug || undefined}
+            activeBlogPost={activeBlogPost}
+          />
+        )}
       </div>
 
       {/* 3. Primary Content View Area */}

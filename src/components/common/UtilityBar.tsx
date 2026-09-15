@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, MessageCircle, Mail, Clock, Globe, BookmarkCheck } from 'lucide-react';
+import { Phone, MessageCircle, Mail, Clock, Globe, BookmarkCheck, Lock } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useSavedTrip } from '../../context/SavedTripContext';
 import { BRAND_INFO } from '../../data/brandInfo';
@@ -97,9 +97,11 @@ export const UtilityBar: React.FC<UtilityBarProps> = ({ onNavigate }) => {
           <button
             id="util-admin-link"
             onClick={() => onNavigate('admin')}
-            className="text-[11px] text-emerald-300/80 hover:text-[#F4B942] transition-colors"
+            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-semibold text-emerald-300 hover:text-amber-300 hover:bg-emerald-900/50 transition-all border border-transparent hover:border-emerald-700/50"
+            title={isBengali ? 'সাইট ওনার সিকিউরিটি লগইন' : 'Site Owner Security Portal'}
           >
-            {isBengali ? 'অ্যাডমিন' : 'Admin'}
+            <Lock className="w-3 h-3 text-amber-400" />
+            <span>{isBengali ? 'ওনার অ্যাডমিন' : 'Owner Admin'}</span>
           </button>
         </div>
       </div>

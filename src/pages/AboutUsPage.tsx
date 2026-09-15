@@ -1,41 +1,31 @@
 import React from 'react';
-import { BRAND_INFO } from '../data/brandInfo';
-import { BLOG_POSTS } from '../data/blogPosts';
 import { useLanguage } from '../context/LanguageContext';
-import gosabaTeamImg from '../assets/images/regenerated_image_1788720175291.png';
 import founderOwnerPhoto from '../assets/images/founder_optimized.jpg';
 import { AnimatedShowcaseGallery } from '../components/common/AnimatedShowcaseGallery';
 import {
   ShieldCheck,
-  Heart,
-  Users,
   Compass,
   Award,
   Trees,
-  Anchor,
   MapPin,
   CheckCircle2,
-  Calendar,
-  Sparkles,
-  Camera,
-  Utensils,
-  Navigation,
   Quote,
-  Eye,
   Binoculars,
-  Info,
-  PhoneCall,
-  BookOpen,
-  Clock,
-  ArrowRight
+  FileText,
+  ExternalLink,
+  Eye,
+  Download,
+  Printer,
+  X
 } from 'lucide-react';
 
 interface AboutUsPageProps {
   onNavigate?: (route: string) => void;
 }
 
-export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
+export const AboutUsPage: React.FC<AboutUsPageProps> = () => {
   const { language, isBengali } = useLanguage();
+  const [showDriveModal, setShowDriveModal] = React.useState(false);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
@@ -82,6 +72,17 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
                 ? 'ছোট পরিসরে শুরু হওয়া এই যাত্রায় আমাদের প্রধান উদ্দেশ্য ছিল—পর্যটকদের সহজ ও সঠিক তথ্য দেওয়া, সুন্দরভাবে ভ্রমণ পরিকল্পনা করা এবং শুরু থেকে শেষ পর্যন্ত আন্তরিক সহযোগিতা প্রদান করা। অতিথিদের বিশ্বাস ও ভালোবাসা সঙ্গে নিয়ে আমরা আজও একই নিষ্ঠায় সুন্দরবন ভ্রমণের আয়োজন করে চলেছি।'
                 : 'Starting modestly, our core vision has always been to provide travelers with transparent, factual information, well-structured itineraries, and heartfelt assistance from start to finish. Fueled by our guests’ trust and love, we continue organizing delta safaris with unyielding dedication.'}
             </p>
+
+            {/* Quick link to Terms & Drive Copy */}
+            <div className="pt-2 flex flex-wrap items-center gap-3">
+              <a
+                href="#terms-cancellation-policy"
+                className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#064E3B] bg-[#E6F4EA] hover:bg-emerald-100 border border-emerald-300 px-4 py-2 rounded-xl transition-all shadow-xs group"
+              >
+                <FileText className="w-4 h-4 text-[#064E3B] group-hover:scale-110 transition-transform" />
+                <span>{isBengali ? 'শর্তাবলী ও বাতিলকরণ নীতি (ড্রাইভ কপি দেখুন)' : 'Terms & Cancellation Policy (View Drive Copy)'}</span>
+              </a>
+            </div>
           </div>
 
           <AnimatedShowcaseGallery
@@ -121,79 +122,7 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* 4. আমাদের ট্যুর পরিষেবা (Our Tour Packages & Scope) */}
-      <div className="space-y-6">
-        <div className="text-center max-w-3xl mx-auto space-y-2">
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#064E3B] uppercase tracking-wider bg-[#E6F4EA] px-3.5 py-1.5 rounded-full">
-            <Sparkles className="w-3.5 h-3.5 text-[#F4B942]" />
-            <span>{isBengali ? 'আমাদের ট্যুর পরিষেবা' : 'Our Tour Packages & Scope'}</span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-bold font-heading text-slate-900">
-            {isBengali ? 'সময় ও দলের প্রয়োজন অনুযায়ী সাজানো প্যাকেজ' : 'Tailored Safari Plans for Every Traveler'}
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-600">
-            {isBengali
-              ? 'আমরা পর্যটকদের সময়, দলের সদস্যসংখ্যা ও প্রয়োজন অনুযায়ী বিভিন্ন ধরনের সুন্দরবন ভ্রমণ প্যাকেজ আয়োজন করি:'
-              : 'We organize customized Sundarban tour packages tailored to your available time, group size, and preferences:'}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {[
-            {
-              title: { bn: 'একদিনের সুন্দরবন ভ্রমণ', en: '1-Day Day Tour' },
-              desc: { bn: 'সকাল থেকে সন্ধ্যা পর্যন্ত নদীভ্রমণ ও প্রধান স্পট দর্শন।', en: 'Full-day river safari covering iconic watch towers from morning till dusk.' }
-            },
-            {
-              title: { bn: '১ রাত ২ দিনের ট্যুর', en: '1 Night 2 Days Package' },
-              desc: { bn: 'সাপ্তাহিক ছুটির জন্য সবচেয়ে জনপ্রিয় ও রিফ্রেশিং ট্যুর।', en: 'The most popular short weekend gateway with night stay in eco-resorts.' }
-            },
-            {
-              title: { bn: '২ রাত ৩ দিনের জনপ্রিয় প্যাকেজ', en: '2 Nights 3 Days Popular Package' },
-              desc: { bn: 'সুন্দরবনের গভীর খাঁড়ি, ক্যানোপি ও গ্রাম্য জীবনের নিবিড় অভিজ্ঞতা।', en: 'Deep delta immersion covering Dobanki, Sudhanyakhali, and island villages.' }
-            },
-            {
-              title: { bn: '৩ রাত ৪ দিনের বিস্তারিত সুন্দরবন সফর', en: '3 Nights 4 Days Extensive Safari' },
-              desc: { bn: 'সম্পূর্ণ সুন্দরবন অরণ্য, দূরবর্তী ভিউ পয়েন্ট ও নিস্তব্ধ প্রকৃতির স্বাদ।', en: 'Comprehensive delta expedition exploring remote watch towers and creeks.' }
-            },
-            {
-              title: { bn: 'পরিবার, বন্ধু ও শিক্ষার্থীদের গ্রুপ ট্যুর', en: 'Family, Friends & Student Groups' },
-              desc: { bn: 'বিশেষ ছাড় ও আনন্দদায়ক গ্রুপ এক্টিভিটিসহ কাস্টমাইজড আয়োজন।', en: 'Special group discounts, family-friendly care, and educational tours.' }
-            },
-            {
-              title: { bn: 'বিশেষ উৎসব ও মৌসুমি ট্যুর', en: 'Seasonal & Festive Expeditions' },
-              desc: { bn: 'শীতকালীন পাখি দর্শন, পুজো ও নববর্ষের বিশেষ সাংস্কৃতিক প্যাকেজ।', en: 'Winter migratory bird watching, Durga Puja, and New Year festive specials.' }
-            },
-          ].map((item, idx) => (
-            <div
-              key={idx}
-              className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:border-emerald-300 hover:shadow-md transition-all flex items-start gap-4"
-            >
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-5 h-5" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="font-bold text-sm sm:text-base text-slate-900 font-heading">
-                  {item.title[language]}
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  {item.desc[language]}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 sm:p-6 text-center max-w-4xl mx-auto">
-          <p className="text-xs sm:text-sm text-emerald-950 font-medium">
-            {isBengali
-              ? 'প্যাকেজ অনুযায়ী যাতায়াত, নিবন্ধিত পর্যটক নৌকা, হোটেল বা রিসোর্ট, বাঙালি খাবার, ইকো-ট্যুরিজম গাইড এবং প্রয়োজন হলে ক্যামেরাম্যানের ব্যবস্থা করা হয়।'
-              : 'Depending on the selected package, we arrange pickup & drop transport, licensed tourist boats, hygienic resorts/hotels, fresh Bengali cuisine, eco-guides, and dedicated camera operators.'}
-          </p>
-        </div>
-      </div>
-
-      {/* 5. যেসব স্থান ঘুরে দেখানো হয় (All Key Sightseeing Spots) */}
+      {/* 4. যেসব স্থান ঘুরে দেখানো হয় (All Key Sightseeing Spots) */}
       <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-sm space-y-6">
         <div className="space-y-2 text-center max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-900 uppercase tracking-wider bg-emerald-100 px-3 py-1 rounded-full">
@@ -219,144 +148,81 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
             { bn: 'গোসাবা বাজার ও দ্বীপ', en: 'Gosaba Island' },
             { bn: 'ঐতিহাসিক হ্যামিল্টন ও বেকন বাংলো', en: 'Historic Hamilton & Beacon Bungalow' },
             { bn: 'পঞ্চমুখী নদীর মিলনস্থল', en: 'Panchamukhi 5-River Confluence' },
-            { bn: 'পীরখালি ও গাজিখালির নদীপথ', en: 'Pirkhali & Gajikhali Creeks' },
-            { bn: 'ঝড়খালি টাইগার রেসকিউ সেন্টার', en: 'Jharkhali Tiger Reserve' },
-            { bn: 'বুড়িরডাবরি ওয়াচ টাওয়ার', en: 'Burirdabri Watch Tower' },
-            { bn: 'রাইমঙ্গল ভিউ পয়েন্ট', en: 'Raimangal River Viewpoint' },
-            { bn: 'ভাগবতপুর কুমির প্রকল্প', en: 'Bhagabatpur Crocodile Project' },
+            { bn: 'পীরখালি ও গাজিখালি খাঁড়ি', en: 'Pirkhali & Gajikhali Narrow Creeks' },
+            { bn: 'দেউলভারানী ও বনি ক্যাম্প (বিশেষ ট্যুর)', en: 'Deulbharani & Bonnie Camp' },
+            { bn: 'ঝড়খালি ব্যাঘ্র পুনর্বাসন কেন্দ্র', en: 'Jharkhali Tiger Rescue Centre' },
+            { bn: 'নেতিধোপানি ঐতিহাসিক ঘাট', en: 'Netidhopani Historic Ruins' },
+            { bn: 'ম্যানগ্রোভ ইন্টারপ্রিটেশন সেন্টার', en: 'Mangrove Interpretation Centre' },
           ].map((spot, idx) => (
             <div
               key={idx}
-              className="bg-[#FAF8F5] p-3.5 rounded-2xl border border-stone-200 flex items-center gap-2.5 text-xs sm:text-sm text-slate-800 font-medium hover:bg-emerald-50 hover:border-emerald-300 transition-all"
+              className="bg-[#FAF8F5] p-3.5 rounded-xl border border-stone-200/80 flex items-center gap-2.5 text-xs sm:text-sm text-slate-800 font-medium"
             >
-              <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
-              <span>{spot[language]}</span>
+              <MapPin className="w-4 h-4 text-[#F4B942] shrink-0" />
+              <span className="line-clamp-1">{spot[language]}</span>
             </div>
           ))}
         </div>
-
-        <p className="text-xs text-center text-slate-500 italic pt-2">
-          {isBengali
-            ? 'বোট সাফারি এবং সজনেখালি, সুধন্যখালি ও দোবাঁকির মতো পর্যটনকেন্দ্র পশ্চিমবঙ্গ পর্যটন দপ্তরের সুন্দরবন ভ্রমণ তথ্যেও বিশেষ আকর্ষণ হিসেবে উল্লেখিত।'
-            : 'Cruising safaris and major watchtowers like Sajnekhali, Sudhanyakhali, and Dobanki are highlighted in West Bengal Tourism official guidelines.'}
-        </p>
       </div>
 
-      {/* 6. নিরাপত্তা ও দায়িত্বশীল পর্যটন */}
-      <div className="bg-[#FAF8F5] rounded-3xl p-6 sm:p-10 border border-stone-200 space-y-6">
-        <div className="max-w-3xl space-y-3">
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-900 uppercase tracking-wider bg-emerald-100 px-3 py-1 rounded-full">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-800" />
-            <span>{isBengali ? 'নিরাপত্তা ও দায়িত্বশীল পর্যটন' : 'Safety & Responsible Tourism'}</span>
+      {/* 5. আমাদের বৈশিষ্ট্য ও বিশেষত্ব (Why Choose Us) */}
+      <div className="space-y-6">
+        <div className="text-center max-w-3xl mx-auto space-y-2">
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#064E3B] uppercase tracking-wider bg-[#E6F4EA] px-3.5 py-1.5 rounded-full">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#064E3B]" />
+            <span>{isBengali ? 'আমাদের বৈশিষ্ট্য' : 'Why Choose Sundarban Vromon'}</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold font-heading text-[#064E3B]">
-            {isBengali ? 'অতিথিদের সুরক্ষা ও সুন্দরবনের পরিবেশ রক্ষা' : 'Guest Safety & Environmental Protection'}
+          <h2 className="text-2xl sm:text-3xl font-bold font-heading text-slate-900">
+            {isBengali ? 'কেন সুন্দরবন ভ্রমণ বেছে নেবেন?' : 'Why Travelers Trust Us Since 2019'}
           </h2>
-          <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
-            {isBengali
-              ? 'অতিথিদের নিরাপত্তা এবং সুন্দরবনের পরিবেশ রক্ষা আমাদের কাছে অত্যন্ত গুরুত্বপূর্ণ। তাই আমরা বনদপ্তরের নিয়ম মেনে নিবন্ধিত নৌকা ও ইকো-ট্যুরিজম গাইডের সমন্বয়ে ভ্রমণ পরিচালনার চেষ্টা করি।'
-              : 'Guest safety and mangrove forest conservation are our highest priorities. We conduct every safari in strict compliance with Forest Department mandates using registered boats and authorized eco-guides.'}
-          </p>
-          <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
-            {isBengali
-              ? 'সরকারি নিয়ম অনুযায়ী সুন্দরবনের পর্যটক নৌকায় পর্যাপ্ত লাইফ জ্যাকেট, প্রাথমিক চিকিৎসার বাক্স, অগ্নিনির্বাপক যন্ত্র এবং ময়লা রাখার ব্যবস্থা থাকা প্রয়োজন।'
-              : 'As mandated by official regulations, all tourist boats are fully equipped with certified life vests, emergency first-aid kits, fire extinguishers, and onboard waste management bins.'}
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
-            { bn: 'প্লাস্টিক বা আবর্জনা নদী বা বনে না ফেলা', en: 'Zero plastic or waste disposal in waters' },
-            { bn: 'উচ্চ শব্দে গান না বাজানো', en: 'No loud music to maintain natural silence' },
-            { bn: 'বন্যপ্রাণীকে বিরক্ত বা প্রলুব্ধ না করা', en: 'Zero wildlife disturbance or feeding' },
-            { bn: 'স্থানীয় মানুষের সংস্কৃতিকে সম্মান প্রদর্শন', en: 'Respect for local culture and customs' },
-          ].map((rule, idx) => (
+            {
+              title: { bn: 'স্থানীয় বাস্তব অভিজ্ঞতা', en: 'Authentic Local Heritage' },
+              desc: { bn: 'গোসাবাভিত্তিক স্থানীয় দল হওয়ায় সুন্দরবনের নদী, আবহাওয়া ও রুট সম্পর্কে আমাদের সরাসরি স্পষ্ট ধারণা রয়েছে।', en: 'Rooted in Gosaba, we know every mangrove turn, tidal flow, and village pathway first-hand.' }
+            },
+            {
+              title: { bn: 'বাস্তবধর্মী ভ্রমণ পরিকল্পনা', en: 'Realistic Safari Planning' },
+              desc: { bn: 'জোয়ার-ভাটা ও সময়ের হিসেব মিলিয়ে এমনভাবে ট্যুর সাজানো হয় যাতে ভ্রমণ আরামদায়ক ও উপভোগ্য হয়।', en: 'Itineraries matched scientifically with tide cycles so guests maximize wildlife and creek exploration.' }
+            },
+            {
+              title: { bn: 'নিরাপত্তা ও নিয়মশৃঙ্খলা', en: 'Safety & Forest Compliance' },
+              desc: { bn: 'বনদপ্তরের সমস্ত নিয়ম মেনে লাইফ জ্যাকেট, দক্ষ মাঝি ও নিবন্ধিত গাইড নিয়ে ভ্রমণ পরিচালিত হয়।', en: 'Strict compliance with Forest Dept safety protocols, life vests, licensed navigators, and trained naturalists.' }
+            },
+            {
+              title: { bn: 'সুস্বাদু বাঙালি খাবার', en: 'Fresh & Hygienic Meals' },
+              desc: { bn: 'নৌকা ও রিসোর্টে স্থানীয় টাটকা মাছ, সবজি ও ঘরোয়া বাঙালি রান্নার তৃপ্তিদায়ক স্বাদ।', en: 'Hearty, fresh, locally procured fish, crabs, and traditional Bengali dishes cooked fresh on boat/resort.' }
+            },
+            {
+              title: { bn: 'দায়িত্বশীল ইকো-ট্যুরিজম', en: 'Responsible Eco-Tourism' },
+              desc: { bn: 'প্লাস্টিক বর্জন, নদীর পরিচ্ছন্নতা রক্ষা এবং বন্যপ্রাণীদের বিরক্ত না করার নীতিতে আমরা অবিচল।', en: 'Strict zero-plastic policies, minimizing noise pollution, and preserving fragile mangrove biodiversity.' }
+            },
+            {
+              title: { bn: 'সত্য ও স্বচ্ছ তথ্য', en: 'Transparency & Honest Truth' },
+              desc: { bn: 'বন্যপ্রাণী দেখার নিশ্চিত গ্যারান্টি বা অবাস্তব প্রতিশ্রুতি না দিয়ে আমরা সত্য তথ্য ও আন্তরিক সেবা দিই।', en: 'Honest guidance without false wildlife sighting promises; complete pricing transparency.' }
+            },
+          ].map((card, idx) => (
             <div
               key={idx}
-              className="p-3.5 bg-white rounded-xl border border-stone-200 flex items-center gap-2.5 text-xs text-slate-800 font-medium"
+              className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs hover:border-emerald-300 hover:shadow-md transition-all space-y-3"
             >
-              <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-              <span>{rule[language]}</span>
+              <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold font-heading">
+                0{idx + 1}
+              </div>
+              <h3 className="text-base sm:text-lg font-bold font-heading text-slate-900">
+                {card.title[language]}
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                {card.desc[language]}
+              </p>
             </div>
           ))}
         </div>
-
-        <div className="p-4 bg-emerald-950 text-white rounded-2xl space-y-1">
-          <div className="flex items-center gap-2 text-amber-300 text-xs font-bold uppercase tracking-wider">
-            <Info className="w-4 h-4" />
-            <span>{isBengali ? 'বন্যপ্রাণী দেখার বাস্তব সত্যতা' : 'Truthful Wildlife Policy'}</span>
-          </div>
-          <p className="text-xs sm:text-sm text-emerald-100">
-            {isBengali
-              ? 'সুন্দরবন একটি প্রাকৃতিক অরণ্য—তাই বাঘ বা অন্য কোনো বন্যপ্রাণী দেখার নিশ্চয়তা দেওয়া সম্ভব নয়। আমরা কোনো মিথ্যা প্রতিশ্রুতি না দিয়ে সুন্দরবনের প্রকৃত সৌন্দর্য উপভোগ করার অভিজ্ঞতাকেই গুরুত্ব দিই।'
-              : 'Sundarbans is an untouched natural wilderness—wildlife sightings depend entirely on nature. We strictly avoid making false guarantees about tiger sightings, emphasizing the real, authentic wonder of the mangrove delta.'}
-          </p>
-        </div>
       </div>
 
-      {/* 7. প্রতিষ্ঠাতার কথা (Founder's Personal Message) */}
-      <div className="bg-gradient-to-br from-[#06241B] via-[#064E3B] to-[#0A3D2E] rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden space-y-6">
-        <div className="flex flex-col md:flex-row gap-8 items-center">
-          <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-3xl overflow-hidden border-4 border-amber-400 shrink-0 shadow-2xl bg-emerald-950 group">
-            <img
-              src={founderOwnerPhoto}
-              alt={isBengali ? 'সুন্দরবন ভ্রমণের প্রতিষ্ঠাতা ও মালিক' : 'Founder & Owner, Sundarban Vromon'}
-              onError={(e) => {
-                e.currentTarget.src = '/DSC_0390.JPG';
-              }}
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-            <div className="absolute bottom-1.5 left-1.5 right-1.5 bg-black/80 backdrop-blur-xs text-[11px] text-amber-300 font-bold text-center py-1 rounded-md border border-amber-400/30">
-              {isBengali ? 'মালিক ও প্রতিষ্ঠাতা' : 'Founder & Owner'}
-            </div>
-          </div>
-
-          <div className="space-y-3 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="inline-flex items-center gap-2 text-xs font-bold text-amber-300 uppercase tracking-widest bg-white/10 px-3.5 py-1 rounded-full border border-white/20">
-                <Quote className="w-3 h-3 text-amber-300" />
-                <span>{isBengali ? 'প্রতিষ্ঠাতার কথা' : 'Founder’s Message'}</span>
-              </div>
-              <span className="text-xs font-bold text-emerald-200 bg-white/10 px-3 py-1 rounded-full border border-white/15">
-                {isBengali ? 'গোসাবা, সুন্দরবন (২০১৯ থেকে)' : 'Gosaba, Sundarban (Since 2019)'}
-              </span>
-            </div>
-
-            <h3 className="text-2xl sm:text-3xl font-bold font-heading text-white">
-              {isBengali ? 'সুন্দরবন ভ্রমণ (Sundarban Vromon)-এর প্রতিষ্ঠাতা ও পরিচালক' : 'Founder & Owner, Sundarban Vromon'}
-            </h3>
-            <p className="text-sm sm:text-base text-emerald-100 leading-relaxed">
-              {isBengali
-                ? 'সুন্দরবনের প্রকৃতি ও মানুষের প্রতি ভালোবাসা থেকেই ২০১৯ সালে পর্যটকদের নিয়ে ভ্রমণ আয়োজন শুরু করি। আমার লক্ষ্য শুধু ট্যুর প্যাকেজ বিক্রি করা নয়—প্রতিটি অতিথি যেন সুন্দরবনের প্রকৃতি, ইতিহাস ও সংস্কৃতিকে কাছ থেকে জানতে পারেন এবং আনন্দময় স্মৃতি নিয়ে নিরাপদে বাড়ি ফিরে যান।'
-                : 'Driven by deep love for the mangrove delta and its hardworking people, I started hosting travelers in 2019. My goal is never just to sell packages—it is to ensure every guest intimately experiences the nature, history, and folklore of Sundarbans, returning home with cherished memories.'}
-            </p>
-            <p className="text-sm sm:text-base text-emerald-100 leading-relaxed">
-              {isBengali
-                ? 'ভ্রমণের পরিকল্পনা থেকে যাতায়াত, নৌকা, থাকা, খাবার, গাইড এবং দর্শনীয় স্থান পরিদর্শন—প্রতিটি পর্যায়ে অতিথিদের পাশে থাকার চেষ্টা করি। অতিথিদের বিশ্বাস ও সন্তুষ্টিই আমাদের পথচলার সবচেয়ে বড় অনুপ্রেরণা।'
-                : 'From itinerary planning to transportation, riverboats, accommodation, food, guides, and watchtower visits—we stand by our guests at every step. Your trust and satisfaction remain our greatest inspiration.'}
-            </p>
-
-            <div className="pt-2">
-              <a
-                href={`https://wa.me/${BRAND_INFO.whatsappRaw}?text=${encodeURIComponent(
-                  isBengali
-                    ? 'নমস্কার, সুন্দরবন ভ্রমণের প্রতিষ্ঠাতার সাথে সরাসরি কথা বলতে চাই।'
-                    : 'Hello, I would like to speak directly with the founder of Sundarban Vromon.'
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-amber-400 hover:bg-amber-300 text-emerald-950 font-bold text-xs sm:text-sm shadow-md transition-all duration-300"
-              >
-                <PhoneCall className="w-4 h-4" />
-                <span>{isBengali ? 'প্রতিষ্ঠাতার সাথে সরাসরি কথা বলুন (WhatsApp)' : 'Connect with Founder directly (WhatsApp)'}</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 8. আমাদের অঙ্গীকার (Our Commitments) */}
+      {/* 6. আমাদের অঙ্গীকার (Our Commitments) */}
       <div className="space-y-6">
         <div className="text-center max-w-3xl mx-auto space-y-2">
           <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-900 uppercase tracking-wider bg-emerald-100 px-3 py-1 rounded-full">
@@ -391,121 +257,444 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* 8.5. ভ্রমণ নির্দেশিকা ও প্রস্তুতি (Sundarban Travel Guide & Safari Insights) */}
-      <div className="bg-gradient-to-br from-[#06241B] via-[#0A3527] to-[#06241B] text-white rounded-3xl p-6 sm:p-10 border border-emerald-700/50 shadow-xl space-y-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b border-white/10">
-          <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-2 text-xs font-bold text-amber-300 uppercase tracking-widest bg-white/10 px-3.5 py-1.5 rounded-full border border-white/15">
-              <BookOpen className="w-3.5 h-3.5 text-amber-300" />
-              <span>{isBengali ? 'ভ্রমণ নির্দেশিকা ও প্রস্তুতি' : 'Travel Guide & Insights'}</span>
+      {/* 7. শর্তাবলী ও বাতিলকরণ নীতি (Terms & Cancellation Policy) */}
+      <div id="terms-cancellation-policy" className="bg-[#FAF8F5] rounded-3xl p-6 sm:p-10 border border-stone-200 shadow-xs space-y-8 scroll-mt-24">
+        <div className="text-center max-w-3xl mx-auto space-y-2">
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#064E3B] uppercase tracking-wider bg-[#E6F4EA] px-3.5 py-1.5 rounded-full border border-emerald-200">
+            <FileText className="w-3.5 h-3.5 text-[#064E3B]" />
+            <span>{isBengali ? 'বুকিং নীতি ও শর্তাবলী' : 'Booking Terms & Conditions'}</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-bold font-heading text-slate-900">
+            {isBengali ? 'শর্তাবলী ও বাতিলকরণ নীতি' : 'Terms, Cancellation & Refund Policy'}
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-600">
+            {isBengali
+              ? 'সুন্দরবন ভ্রমণের প্রতিটি সফর সুশৃঙ্খল, নিরাপদ ও স্বচ্ছ রাখতে আমাদের নির্ধারিত নিয়মাবলী ও নীতিমালা।'
+              : 'Our established guidelines to ensure every Sundarban expedition is disciplined, safe, and transparent.'}
+          </p>
+        </div>
+
+        {/* Google Drive Document Access Card */}
+        <div className="bg-gradient-to-br from-[#05291F] via-[#064E3B] to-[#0D3B2E] text-white p-5 sm:p-7 rounded-2xl border border-emerald-700/80 shadow-md flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+          <div className="flex items-start gap-4">
+            {/* Google Drive SVG Logo */}
+            <div className="w-12 h-12 rounded-2xl bg-white p-2.5 shadow-md shrink-0 flex items-center justify-center">
+              <svg viewBox="0 0 87.3 78" className="w-full h-full" aria-label="Google Drive">
+                <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
+                <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44c-.8 1.4-1.2 2.95-1.2 4.5h27.5z" fill="#00ac47"/>
+                <path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/>
+                <path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
+                <path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/>
+                <path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/>
+              </svg>
             </div>
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-heading text-white">
-              {isBengali ? 'সুন্দরবন ভ্রমণ নির্দেশিকা: প্রস্তুতি, জোয়ার-ভাটা ও প্যাকিং' : 'Sundarban Safari Knowledge & Travel Guide'}
-            </h3>
-            <p className="text-sm text-emerald-100/90 leading-relaxed">
-              {isBengali
-                ? 'সুন্দরবন সাফারির আসল প্রস্তুতি, জোয়ার-ভাটার সেরা সময়, ক্যামেরা ও প্যাকিং টিপস—আমাদের অভিজ্ঞ গাইডদের বাস্তব অভিজ্ঞতা থেকে সংকলিত।'
-                : 'Practical field wisdom on tidal cycles, packing checklists, and safari logistics written by experienced local naturalists.'}
-            </p>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="bg-amber-400/20 text-amber-300 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-amber-400/40">
+                  {isBengali ? 'গুগল ড্রাইভ অফিসিয়াল কপি' : 'Official Google Drive Document'}
+                </span>
+                <span className="text-emerald-200 text-xs">
+                  {isBengali ? 'শ্রীকৃষ্ণ বার স্বাক্ষরিত ও সত্যায়িত' : 'Signed & Verified by Srikrishna Bar'}
+                </span>
+              </div>
+              <h3 className="text-base sm:text-lg font-bold font-heading text-white">
+                {isBengali ? 'সুন্দরবন ভ্রমণ — শর্তাবলী ও বাতিলকরণ নীতি ড্রাইভ' : 'Sundarban Vromon — Terms & Cancellation Policy Drive'}
+              </h3>
+              <p className="text-xs sm:text-sm text-emerald-100/90 leading-relaxed max-w-2xl">
+                {isBengali
+                  ? 'আমাদের পরিচয় ও স্বত্বাধিকারী শ্রীকৃষ্ণ বার কর্তৃক অনুমোদিত সম্পূর্ণ শর্তাবলী, বাতিল ও রিফান্ড নীতি এবং বন দপ্তর নির্দেশিকা সরাসরি গুগল ড্রাইভ ফাইলে দেখুন বা প্রিন্ট ও সেভ করুন।'
+                  : 'Official document authorized by founder Srikrishna Bar containing full booking terms, refund schedules, and forest safety protocols.'}
+              </p>
+            </div>
           </div>
 
-          {onNavigate && (
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full lg:w-auto shrink-0">
             <button
-              onClick={() => onNavigate('blog')}
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-bold text-sm sm:text-base shadow-lg hover:shadow-xl transition-all shrink-0 transform hover:scale-105 active:scale-95"
+              onClick={() => setShowDriveModal(true)}
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-emerald-950 font-bold text-xs sm:text-sm hover:bg-emerald-50 transition-colors shadow-sm cursor-pointer"
             >
-              <BookOpen className="w-4 h-4 text-emerald-950" />
-              <span>{isBengali ? 'সকল ভ্রমণ নির্দেশিকা পড়ুন' : 'Explore All Travel Guides'}</span>
-              <ArrowRight className="w-4 h-4 text-emerald-950" />
+              <Eye className="w-4 h-4 text-emerald-800" />
+              <span>{isBengali ? 'ড্রাইভ কপি প্রিভিউ' : 'Preview Document'}</span>
             </button>
-          )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {BLOG_POSTS.slice(0, 2).map((post) => (
-            <div
-              key={post.id}
-              onClick={() => onNavigate && onNavigate('blog')}
-              className="group bg-white/10 hover:bg-white/15 backdrop-blur-md rounded-2xl overflow-hidden border border-white/15 hover:border-amber-400/50 transition-all duration-300 cursor-pointer flex flex-col justify-between shadow-lg"
-            >
-              <div className="relative h-48 sm:h-52 overflow-hidden">
-                <img
-                  src={post.image}
-                  alt={post.title.en}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <span className="absolute top-3 right-3 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-black/60 backdrop-blur-xs text-amber-300 border border-white/20">
-                  {post.category[language]}
+          {/* Card 1: বুকিং ও পেমেন্ট */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+            <div className="flex items-center gap-2.5 text-[#064E3B] font-bold font-heading text-base sm:text-lg">
+              <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center justify-center border border-emerald-200">১</span>
+              <h3>{isBengali ? 'বুকিং ও পেমেন্ট নিয়মাবলী' : 'Booking & Payment Terms'}</h3>
+            </div>
+            <ul className="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                <span>
+                  {isBengali
+                    ? 'বুকিং নিশ্চিত করতে মোট খরচের ২৫% অগ্রিম ডিপোজিট প্রদান করতে হবে।'
+                    : 'A 25% advance deposit of the total package cost is required to confirm the booking.'}
                 </span>
-                <div className="absolute bottom-3 left-3 right-3">
-                  <span className="text-xs text-emerald-200 font-semibold flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-amber-400" />
-                    <span>{post.readTime}</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                <span>
+                  {isBengali
+                    ? 'অবশিষ্ট ৭৫% অর্থ যাত্রা শুরুর দিন গদখালি ফেরি ঘাটে পৌঁছানোর পর নগদ বা ইউপিআই (UPI) মাধ্যমে পরিশোধযোগ্য।'
+                    : 'The remaining 75% balance is payable upon arriving at Godkhali Ferry Ghat via cash or UPI.'}
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                <span>
+                  {isBengali
+                    ? 'পেমেন্ট সম্পন্ন হলে তাৎক্ষণিক ই-রসিদ ও বুকিং কনফার্মেশন স্লিপ প্রদান করা হয়।'
+                    : 'Instant digital invoice and booking confirmation slip are provided upon advance payment.'}
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Card 2: বাতিল ও রিফান্ড */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+            <div className="flex items-center gap-2.5 text-[#064E3B] font-bold font-heading text-base sm:text-lg">
+              <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center justify-center border border-emerald-200">২</span>
+              <h3>{isBengali ? 'বাতিল ও রিফান্ড নীতি' : 'Cancellation & Refund Policy'}</h3>
+            </div>
+            <ul className="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                <span>
+                  {isBengali
+                    ? 'ভ্রমণের ৭ দিন বা তার বেশি পূর্বে বাতিলের ক্ষেত্রে: অগ্রিম অর্থের ৮০% ফেরতযোগ্য।'
+                    : 'Cancellation 7 days or more prior to travel date: 80% of advance deposit is refundable.'}
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                <span>
+                  {isBengali
+                    ? 'ভ্রমণের ৩ থেকে ৬ দিন পূর্বে বাতিলের ক্ষেত্রে: অগ্রিম অর্থের ৫০% ফেরতযোগ্য।'
+                    : 'Cancellation 3 to 6 days prior to travel date: 50% of advance deposit is refundable.'}
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                <span>
+                  {isBengali
+                    ? 'ভ্রমণের ৪৮ ঘণ্টার মধ্যে বাতিলের ক্ষেত্রে: বনদপ্তরের বোট পারমিট ও হোটেল বুকিং প্রিপেমেন্টের কারণে কোনো অর্থ ফেরতযোগ্য নয়।'
+                    : 'Cancellation within 48 hours of journey: Advance is non-refundable due to non-refundable forest permits and resort lock-ins.'}
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Card 3: বনদপ্তর ও আবহাওয়া সংক্রান্ত বিধিনিষেধ */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+            <div className="flex items-center gap-2.5 text-[#064E3B] font-bold font-heading text-base sm:text-lg">
+              <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center justify-center border border-emerald-200">৩</span>
+              <h3>{isBengali ? 'আবহাওয়া ও বনদপ্তরের বিধিমালা' : 'Weather & Forest Regulations'}</h3>
+            </div>
+            <ul className="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                <span>
+                  {isBengali
+                    ? 'প্রাকৃতিক দুর্যোগ, সাইক্লোন বা বন বিভাগের জরুরি নির্দেশে জলপথ বন্ধ থাকলে নিরাপত্তা বিবেচনায় রুট পুনর্নির্ধারণ করা হবে।'
+                    : 'In cases of cyclones or sudden Forest Dept waterway closures, routes will be rescheduled prioritizing safety.'}
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                <span>
+                  {isBengali
+                    ? 'সুন্দরবন একটি উন্মুক্ত প্রাকৃতিক সংরক্ষিত বনাঞ্চল; বাঘ বা নির্দিষ্ট বন্যপ্রাণী দর্শনের কোনো অবাস্তব গ্যারান্টি দেওয়া হয় না।'
+                    : 'Sundarbans is an untamed natural reserve; wildlife sightings depend entirely on nature, tides, and luck without false guarantees.'}
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                <span>
+                  {isBengali
+                    ? 'বোট সাফারিতে লাইফ জ্যাকেট পরিধান ও প্লাস্টিক বর্জন বাধ্যতামূলক।'
+                    : 'Wearing life jackets on boat safari and strictly zero single-use plastics are mandatory.'}
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Card 4: পরিচয়পত্র ও আইনি তথ্যাদি */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+            <div className="flex items-center gap-2.5 text-[#064E3B] font-bold font-heading text-base sm:text-lg">
+              <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center justify-center border border-emerald-200">৪</span>
+              <h3>{isBengali ? 'পরিচয়পত্র ও সরকারি পারমিট নীতি' : 'ID Proof & Government Permits'}</h3>
+            </div>
+            <ul className="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                <span>
+                  {isBengali
+                    ? 'প্রত্যেক যাত্রীকে সরকারি ফটো আইডি কার্ড (আধার/ভোটার/পাসপোর্ট) সঙ্গে রাখা বাধ্যতামূলক।'
+                    : 'Every traveler must carry a valid government photo ID (Aadhaar / Voter ID / Passport / Driving License).'}
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                <span>
+                  {isBengali
+                    ? 'অতিথিদের পরিচয়পত্র শুধুমাত্র পশ্চিমবঙ্গ বন বিভাগের অফিসিয়াল এন্ট্রি পারমিটের জন্য ব্যবহৃত হয়।'
+                    : 'Guest identification is solely used for issuing official West Bengal Forest Department entry permits.'}
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                <span>
+                  {isBengali
+                    ? 'বিদেশি পর্যটকদের ক্ষেত্রে আসল পাসপোর্ট ও বৈধ ভারতীয় ভিসা প্রয়োজন।'
+                    : 'Foreign nationals require an original valid Passport with a current Indian Visa for forest clearance.'}
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Founder Sign-off / Policy declaration */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-emerald-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs sm:text-sm text-slate-700">
+          <div className="space-y-1">
+            <p className="font-semibold text-slate-900">
+              {isBengali
+                ? 'পরিচালনা ও তত্ত্বাবধানে: শ্রীকৃষ্ণ বার (SRIKRISHNA BAR)'
+                : 'Directed & Supervised by: SRIKRISHNA BAR (Sundarban Vromon)'}
+            </p>
+            <p className="text-xs text-slate-500">
+              {isBengali
+                ? 'প্রতিষ্ঠাতা ও স্বত্বাধিকারী, সুন্দরবন ভ্রমণ (Sundarban Vromon), গোসাবা, দক্ষিণ ২৪ পরগনা • ২০১৯ থেকে'
+                : 'Founder & Owner, Sundarban Vromon, Gosaba, South 24 Parganas • Est. 2019'}
+            </p>
+          </div>
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 text-[#064E3B] font-bold text-xs border border-emerald-200 shrink-0">
+            <ShieldCheck className="w-4 h-4 text-emerald-700" />
+            <span>{isBengali ? 'সরকারি অনুমোদিত নীতি' : 'Official Guidelines'}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 8. প্রতিষ্ঠাতার কথা (Founder's Personal Message - শ্রীকৃষ্ণ বার) - ফুটার সেকশনের ঠিক উপরে */}
+      <div className="bg-gradient-to-br from-[#06241B] via-[#064E3B] to-[#0A3D2E] rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden space-y-6">
+        <div className="flex flex-col md:flex-row gap-8 items-center">
+          <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-3xl overflow-hidden border-4 border-amber-400 shrink-0 shadow-2xl bg-emerald-950 group">
+            <img
+              src={founderOwnerPhoto}
+              alt={isBengali ? 'সুন্দরবন ভ্রমণের প্রতিষ্ঠাতা ও মালিক' : 'Founder & Owner, Sundarban Vromon'}
+              onError={(e) => {
+                e.currentTarget.src = '/DSC_0390.JPG';
+              }}
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute bottom-1.5 left-1.5 right-1.5 bg-black/80 backdrop-blur-xs text-[11px] text-amber-300 font-bold text-center py-1 rounded-md border border-amber-400/30">
+              {isBengali ? 'শ্রীকৃষ্ণ বার • প্রতিষ্ঠাতা' : 'SRIKRISHNA BAR • Founder'}
+            </div>
+          </div>
+
+          <div className="space-y-3 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-2 text-xs font-bold text-amber-300 uppercase tracking-widest bg-white/10 px-3.5 py-1 rounded-full border border-white/20">
+                <Quote className="w-3 h-3 text-amber-300" />
+                <span>{isBengali ? 'প্রতিষ্ঠাতার কথা' : 'Founder’s Message'}</span>
+              </div>
+              <span className="text-xs font-bold text-emerald-200 bg-white/10 px-3 py-1 rounded-full border border-white/15">
+                {isBengali ? 'গোসাবা, সুন্দরবন (২০১৯ থেকে)' : 'Gosaba, Sundarban (Since 2019)'}
+              </span>
+            </div>
+
+            <div>
+              <h3 className="text-2xl sm:text-3xl font-bold font-heading text-white">
+                {isBengali ? 'শ্রীকৃষ্ণ বার (SRIKRISHNA BAR)' : 'SRIKRISHNA BAR'}
+              </h3>
+              <p className="text-amber-300 text-sm sm:text-base font-semibold mt-1">
+                {isBengali ? 'প্রতিষ্ঠাতা ও স্বত্বাধিকারী, সুন্দরবন ভ্রমণ' : 'Founder & Owner, Sundarban Vromon'}
+              </p>
+            </div>
+
+            <p className="text-sm sm:text-base text-emerald-100 leading-relaxed">
+              {isBengali
+                ? 'সুন্দরবনের প্রকৃতি ও মানুষের প্রতি ভালোবাসা থেকেই ২০১৯ সালে পর্যটকদের নিয়ে ভ্রমণ আয়োজন শুরু করি। আমার লক্ষ্য শুধু ট্যুর প্যাকেজ বিক্রি করা নয়—প্রতিটি অতিথি যেন সুন্দরবনের প্রকৃতি, ইতিহাস ও সংস্কৃতিকে কাছ থেকে জানতে পারেন এবং আনন্দময় স্মৃতি নিয়ে নিরাপদে বাড়ি ফিরে যান।'
+                : 'Driven by deep love for the mangrove delta and its hardworking people, I started hosting travelers in 2019. My goal is never just to sell packages—it is to ensure every guest intimately experiences the nature, history, and folklore of Sundarbans, returning home with cherished memories.'}
+            </p>
+            <p className="text-sm sm:text-base text-emerald-100 leading-relaxed">
+              {isBengali
+                ? 'ভ্রমণের পরিকল্পনা থেকে যাতায়াত, নৌকা, থাকা, খাবার, গাইড এবং দর্শনীয় স্থান পরিদর্শন—প্রতিটি পর্যায়ে অতিথিদের পাশে থাকার চেষ্টা করি। অতিথিদের বিশ্বাস ও সন্তুষ্টিই আমাদের পথচলার সবচেয়ে বড় অনুপ্রেরণা।'
+                : 'From itinerary planning to transportation, riverboats, accommodation, food, guides, and watchtower visits—we stand by our guests at every step. Your trust and satisfaction remain our greatest inspiration.'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Google Drive Document Preview Modal */}
+      {showDriveModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+            {/* Modal Top Bar */}
+            <div className="bg-[#064E3B] text-white px-5 sm:px-6 py-4 flex items-center justify-between border-b border-emerald-800 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <FileText className="w-5 h-5 text-amber-300" />
+                <div>
+                  <h3 className="text-sm sm:text-base font-bold font-heading">
+                    {isBengali ? 'অফিসিয়াল পলিসি ড্রাইভ ডকুমেন্ট প্রিভিউ' : 'Official Policy Drive Document Preview'}
+                  </h3>
+                  <p className="text-[11px] text-emerald-200">
+                    {isBengali ? 'সুন্দরবন ভ্রমণ • শ্রীকৃষ্ণ বার স্বাক্ষরিত কপি' : 'Sundarban Vromon • Signed Copy by Srikrishna Bar'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowDriveModal(false)}
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors cursor-pointer"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Document Content - Styled as Official Letterhead */}
+            <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-xs sm:text-sm text-slate-800 leading-relaxed bg-stone-50/50">
+              <div className="border-b-2 border-emerald-900 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3">
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-bold font-heading text-[#064E3B]">
+                    SUNDARBAN VROMON (সুন্দরবন ভ্রমণ)
+                  </h2>
+                  <p className="text-xs text-slate-600 font-medium">
+                    {isBengali
+                      ? 'গোসাবা বাজার, সুন্দরবন, দক্ষিণ ২৪ পরগনা, পশ্চিমবঙ্গ — ৭৪৩৬১১'
+                      : 'Gosaba Market, Sundarban, South 24 Parganas, West Bengal — 743611'}
+                  </p>
+                  <p className="text-[11px] text-slate-500">
+                    হেল্পলাইন: +91 90024 13094 • ইমেল: sundarbon.vromon.official@gmail.com
+                  </p>
+                </div>
+                <div className="text-left sm:text-right text-[11px] text-slate-600 space-y-0.5">
+                  <div className="font-bold text-slate-900">ডকুমেন্ট আইডি: SV/POL/2026-01</div>
+                  <div>তারিখ: জানুয়ারি ২০২৬ (আপডেটেড)</div>
+                  <span className="inline-block bg-emerald-100 text-[#064E3B] font-bold px-2 py-0.5 rounded text-[10px]">
+                    APPROVED & VERIFIED
                   </span>
                 </div>
               </div>
 
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-2">
-                  <h4 className="text-lg sm:text-xl font-bold font-heading text-white group-hover:text-amber-300 transition-colors leading-snug">
-                    {post.title[language]}
+              <div className="text-center space-y-1">
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 underline decoration-[#F4B942] decoration-2 underline-offset-4">
+                  {isBengali
+                    ? 'সুন্দরবন ভ্রমণ — অফিসিয়াল বুকিং নিয়মাবলী, শর্তাবলী ও বাতিলকরণ নীতি'
+                    : 'Official Booking Rules, Terms and Cancellation Policy'}
+                </h3>
+                <p className="text-xs text-slate-500">
+                  {isBengali
+                    ? 'পরিচালনা ও স্বত্বাধিকারী: শ্রীকৃষ্ণ বার (SRIKRISHNA BAR)'
+                    : 'Directed & Owned by: SRIKRISHNA BAR'}
+                </p>
+              </div>
+
+              {/* Terms Points */}
+              <div className="space-y-4 bg-white p-5 rounded-2xl border border-stone-200">
+                <div className="space-y-1.5">
+                  <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-xs flex items-center justify-center font-bold">১</span>
+                    <span>বুকিং ও পেমেন্ট নিয়মাবলী (Booking & Advance Payments)</span>
                   </h4>
-                  <p className="text-xs sm:text-sm text-emerald-100/80 line-clamp-2 leading-relaxed">
-                    {post.excerpt[language]}
+                  <ul className="list-disc list-inside text-slate-700 pl-2 space-y-1">
+                    <li>বুকিং নিশ্চিত করতে মোট ট্যুর প্যাকেজ মূল্যের ২৫% অগ্রিম অর্থ পরিশোধ বাধ্যতামূলক।</li>
+                    <li>অবশিষ্ট ৭৫% অর্থ যাত্রা শুরুর দিন গদখালি ফেরি ঘাটে পৌঁছানোর পর নগদ বা ইউপিআই (UPI)-এ পরিশোধ করতে হবে।</li>
+                    <li>অগ্রিম পেমেন্ট প্রাপ্তির পর তাৎক্ষণিক কনফার্মেশন ও ডিজিটাল ইনভয়েস প্রদান করা হবে।</li>
+                  </ul>
+                </div>
+
+                <div className="space-y-1.5">
+                  <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-xs flex items-center justify-center font-bold">২</span>
+                    <span>বাতিল ও ফেরত নীতি (Cancellation & Refund Policy)</span>
+                  </h4>
+                  <ul className="list-disc list-inside text-slate-700 pl-2 space-y-1">
+                    <li>ভ্রমণের ৭ দিন বা তার আগে বুকিং বাতিল করলে: অগ্রিম অর্থের ৮০% ফেরত দেওয়া হবে।</li>
+                    <li>ভ্রমণের ৩ থেকে ৬ দিন আগে বুকিং বাতিল করলে: অগ্রিম অর্থের ৫০% ফেরত দেওয়া হবে।</li>
+                    <li>ভ্রমণের ৪৮ ঘণ্টার মধ্যে বুকিং বাতিল করলে: অগ্রিম অর্থ ফেরতযোগ্য নয় (যেহেতু বনদপ্তরের পারমিট ও হোটেল ফি অগ্রিম লক থাকে)।</li>
+                  </ul>
+                </div>
+
+                <div className="space-y-1.5">
+                  <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-xs flex items-center justify-center font-bold">৩</span>
+                    <span>আবহাওয়া, নিরাপত্তা ও বন দপ্তর বিধিমালা (Force Majeure & Forest Rules)</span>
+                  </h4>
+                  <ul className="list-disc list-inside text-slate-700 pl-2 space-y-1">
+                    <li>সাইক্লোন, তীব্র ঝড় বা বনদপ্তরের আকস্মিক নিষেধাজ্ঞায় জলপথ বন্ধ থাকলে নিরাপত্তা বিবেচনায় রুট পুনর্নির্ধারণ করা হবে।</li>
+                    <li>বন্যপ্রাণী (রয়্যাল বেঙ্গল টাইগার ইত্যাদি) দর্শন প্রাকৃতিক ভাগ্যের উপর নির্ভরশীল; কোনো কৃত্রিম গ্যারান্টি দেওয়া হয় না।</li>
+                    <li>বোটে লাইফ জ্যাকেট পরা বাধ্যতামূলক এবং সুন্দরবনে কোনো সিঙ্গেল-ইউজ প্লাস্টিক বা ময়লা ফেলা সম্পূর্ণ নিষিদ্ধ।</li>
+                  </ul>
+                </div>
+
+                <div className="space-y-1.5">
+                  <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-xs flex items-center justify-center font-bold">৪</span>
+                    <span>পরিচয়পত্র ও সরকারি পারমিট (Govt ID Proof Requirements)</span>
+                  </h4>
+                  <ul className="list-disc list-inside text-slate-700 pl-2 space-y-1">
+                    <li>প্রত্যেক পর্যটককে সরকারি বৈধ পরিচয়পত্র (আধার/ভোটার/পাসপোর্ট) সাথে রাখা আবশ্যক।</li>
+                    <li>অতিথিদের পরিচয়পত্র শুধুমাত্র বনদপ্তরের সরকারি এন্ট্রি পারমিটের কাজে সুরক্ষিতভাবে ব্যবহৃত হয়।</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Official Seal and Sign-off */}
+              <div className="pt-4 border-t border-stone-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="space-y-1">
+                  <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-900 bg-emerald-100 px-3 py-1 rounded-full">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-800" />
+                    <span>পশ্চিমবঙ্গ বনদপ্তর মান্যতাপ্রাপ্ত ইকো-ট্যুর গাইডলাইন</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500">
+                    সুন্দরবন ভ্রমণ • গোসাবা • রেজিস্টার্ড ইকো-ট্যুরিজম সার্ভিস
                   </p>
                 </div>
 
-                <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs font-bold text-amber-300 group-hover:text-amber-200">
-                  <span>{isBengali ? 'সম্পূর্ণ নির্দেশিকা পড়ুন' : 'Read Full Guide'}</span>
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                <div className="text-left sm:text-right border-l-2 sm:border-l-0 sm:border-r-2 border-[#F4B942] pl-3 sm:pl-0 sm:pr-3">
+                  <div className="font-bold text-slate-900 text-sm">শ্রীকৃষ্ণ বার (SRIKRISHNA BAR)</div>
+                  <div className="text-xs text-[#064E3B] font-semibold">প্রতিষ্ঠাতা ও স্বত্বাধিকারী</div>
+                  <div className="text-[11px] text-slate-500">সুন্দরবন ভ্রমণ (Sundarban Vromon)</div>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* 9. আমাদের সঙ্গে সুন্দরবন আবিষ্কার করুন (Closing Call to Action) */}
-      <div className="bg-gradient-to-r from-[#064E3B] via-[#0D5C43] to-[#064E3B] rounded-3xl p-8 sm:p-12 text-white shadow-xl space-y-6">
-        <div className="max-w-3xl space-y-3">
-          <span className="text-xs font-bold text-amber-300 uppercase tracking-widest block">
-            {isBengali ? 'আমাদের সঙ্গে সুন্দরবন আবিষ্কার করুন' : 'Discover Sundarbans With Us'}
-          </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-heading text-white">
-            {isBengali
-              ? 'প্রশস্ত নদী, সরু খাঁড়ি, ম্যানগ্রোভের শ্বাসমূল, পাখির ডাক, গ্রামের সহজ জীবন এবং নদীর ওপর সূর্যাস্ত—সুন্দরবনের প্রতিটি মুহূর্তে রয়েছে নতুন গল্প।'
-              : 'Wide tidal rivers, narrow mangrove creeks, pneumatophores, bird calls, simple village life, and sunsets over the water—every moment holds a new story.'}
-          </h2>
-          <p className="text-sm sm:text-base text-emerald-100 leading-relaxed">
-            {isBengali
-              ? 'সেই গল্পের অংশ হতে আপনার পরিবার ও প্রিয়জনদের নিয়ে চলে আসুন সুন্দরবনে। আপনার ভ্রমণকে পরিকল্পিত, আনন্দময় ও স্মরণীয় করে তুলতে পাশে থাকবে— Sundarban Vromon।'
-              : 'Be part of this story with your family and loved ones. Sundarban Vromon stands by your side to make your journey perfectly planned, joyful, and unforgettable.'}
-          </p>
-        </div>
+            {/* Modal Actions */}
+            <div className="bg-slate-100 px-5 sm:px-6 py-3.5 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 shrink-0">
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://drive.google.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#F4B942] text-slate-950 font-bold text-xs sm:text-sm hover:bg-amber-300 transition-colors shadow-xs cursor-pointer"
+                >
+                  <ExternalLink className="w-4 h-4 text-slate-950" />
+                  <span>{isBengali ? 'গুগল ড্রাইভে ফাইল খুলুন' : 'Open in Google Drive'}</span>
+                </a>
+                <button
+                  onClick={() => window.print()}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white text-slate-800 font-semibold text-xs sm:text-sm border border-slate-300 hover:bg-slate-50 transition-colors cursor-pointer"
+                >
+                  <Printer className="w-4 h-4 text-slate-700" />
+                  <span>{isBengali ? 'প্রিন্ট / সেভ' : 'Print / Save'}</span>
+                </button>
+              </div>
 
-        <div className="pt-4 border-t border-emerald-700/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <div className="text-lg font-bold text-white font-heading">
-              Sundarban Vromon
-            </div>
-            <div className="text-xs text-amber-300 font-medium">
-              {isBengali
-                ? '২০১৯ সাল থেকে সুন্দরবন ভ্রমণে আপনার বিশ্বস্ত সহযোগী।'
-                : 'Your Trusted Companion in Sundarban Safaris Since 2019.'}
-            </div>
-            <div className="text-xs text-emerald-200 font-semibold mt-0.5">
-              {isBengali ? 'প্রকৃতির আরও কাছে — সুন্দরবনের আরও গভীরে।' : 'Closer to Nature — Deeper into Sundarbans.'}
+              <button
+                onClick={() => setShowDriveModal(false)}
+                className="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold text-xs sm:text-sm transition-colors cursor-pointer"
+              >
+                {isBengali ? 'বন্ধ করুন' : 'Close'}
+              </button>
             </div>
           </div>
-
-          <div className="text-xs text-slate-200 bg-white/10 px-4 py-2.5 rounded-xl border border-white/20">
-            {BRAND_INFO.locations.kolkataOffice} • {BRAND_INFO.locations.godkhaliDesk} • {BRAND_INFO.phone}
-          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
-
-

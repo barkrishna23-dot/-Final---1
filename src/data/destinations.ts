@@ -2,6 +2,9 @@ import { Destination } from '../types';
 import sajnekhaliDestImg from '../assets/images/regenerated_image_1788721456767.jpg';
 import sudhanyakhaliDestImg from '../assets/images/regenerated_image_1788721454884.jpg';
 import dobankiDestImg from '../assets/images/regenerated_image_1788721457725.jpg';
+import panchamukhiDestImg from '../assets/images/regenerated_image_1789501618239.jpg';
+import pirkhaliDestImg from '../assets/images/regenerated_image_1789501623637.jpg';
+import gazikhaliDestImg from '../assets/images/regenerated_image_1789502201126.png';
 
 export const DESTINATIONS: Destination[] = [
   {
@@ -184,7 +187,7 @@ export const DESTINATIONS: Destination[] = [
       bn: 'নদীর তীব্র স্রোত ও বাতাসে সতর্ক থাকুন। নৌকার একপাশে ভিড় করবেন না এবং লাইফ জ্যাকেট ব্যবহার করুন।',
       en: 'High tidal currents and strong winds. Avoid overcrowding one side of the boat; wear life jackets.',
     },
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+    image: panchamukhiDestImg,
     isHeroFeatured: true,
     verificationStatus: 'operator-route-verified',
     verificationSource: 'Local Tour Navigation & Maritime Route Verification',
@@ -230,7 +233,7 @@ export const DESTINATIONS: Destination[] = [
       bn: 'খাঁড়িতে চরম নীরবতা বজায় রাখুন। কোনো বন্যপ্রাণীর দিকে ঝুঁকে যাবেন না বা আওয়াজ করবেন না।',
       en: 'Maintain absolute quiet in narrow creeks. Do not lean over gunwales or shout.',
     },
-    image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80',
+    image: pirkhaliDestImg,
     isHeroFeatured: true,
     verificationStatus: 'officially-verified',
     verificationSource: 'Sundarban Tiger Reserve Standard Eco-Tourism Safari Route',
@@ -274,7 +277,7 @@ export const DESTINATIONS: Destination[] = [
       bn: 'নদীতীরে নামার চেষ্টা করবেন না; তীব্র পলিমাটি অত্যন্ত বিপজ্জনক।',
       en: 'Never attempt to step onto river mudflats; deep silt is treacherous and strictly forbidden.',
     },
-    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',
+    image: gazikhaliDestImg,
     verificationStatus: 'officially-verified',
     verificationSource: 'STR Tourism Route Map & Local Permit Guidelines',
     lastCheckedDate: '2026-08-10',

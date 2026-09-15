@@ -1,5 +1,6 @@
 import { RiverStoryChapter } from '../types';
-import chapter1GodkhaliImg from '../assets/images/regenerated_image_1789038164104.png';
+import chapter1GodkhaliImg from '../assets/images/regenerated_image_1789501885755.png';
+import panchamukhiDestImg from '../assets/images/regenerated_image_1789501618239.jpg';
 
 export const RIVER_STORY_CHAPTERS: RiverStoryChapter[] = [
   {
@@ -199,7 +200,7 @@ export const RIVER_STORY_CHAPTERS: RiverStoryChapter[] = [
       en: 'As late afternoon wanes, the cruiser emerges into the immense open junction of Panchamukhi. The setting sun bathes the merging waterways in hues of amber, crimson, and violet. Standing at the bow with hot tea in hand is pure serenity.',
     },
     visualCue: 'panchamukhi-sunset',
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+    image: panchamukhiDestImg,
     observationList: [
       { bn: 'নদীর বুকে সূর্যাস্তের সোনালি আলোর মায়াবী প্রতিফলন', en: 'Golden light reflecting across five converging river pathways' },
       { bn: 'সন্ধ্যার নীড়ে ফেরা হাজার হাজার বক ও পানকৌড়ির সারি', en: 'V-formations of egrets and cormorants flying home to roost' },
