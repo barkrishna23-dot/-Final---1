@@ -1,5 +1,5 @@
 import { RiverStoryChapter } from '../types';
-import chapter1GodkhaliImg from '../assets/images/regenerated_image_1789501885755.png';
+const chapter1GodkhaliImg = 'https://res.cloudinary.com/v6celbjp/image/upload/v1790276194/ChatGPT_Image_Sep_10_2026_04_00_50_PM.png';
 import panchamukhiDestImg from '../assets/images/regenerated_image_1789501618239.jpg';
 
 export const RIVER_STORY_CHAPTERS: RiverStoryChapter[] = [

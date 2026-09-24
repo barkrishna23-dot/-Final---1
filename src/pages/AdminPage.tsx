@@ -24,7 +24,10 @@ import {
   KeyRound,
   ArrowLeft,
   MessageCircle,
+  Calendar,
+  Plus,
 } from 'lucide-react';
+import { getAvailableDates, saveAvailableDates, AvailableSafariDate } from '../data/bookingAvailability';
 
 export const AdminPage: React.FC = () => {
   const {
@@ -64,7 +67,12 @@ export const AdminPage: React.FC = () => {
   const [isResetting, setIsResetting] = useState(false);
 
   // Admin tabs & Settings state
-  const [activeTab, setActiveTab] = useState<'enquiries' | 'reviews' | 'credentials'>('enquiries');
+  const [activeTab, setActiveTab] = useState<'enquiries' | 'reviews' | 'credentials' | 'dates'>('enquiries');
+  const [datesList, setDatesList] = useState<AvailableSafariDate[]>(() => getAvailableDates());
+  const [newDateInput, setNewDateInput] = useState('');
+  const [newDateSeats, setNewDateSeats] = useState(8);
+  const [newDateHighlight, setNewDateHighlight] = useState('');
+  const [dateSuccessMsg, setDateSuccessMsg] = useState('');
   const [newUsername, setNewUsername] = useState(currentUsername || 'admin');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -756,6 +764,17 @@ export const AdminPage: React.FC = () => {
           <Settings className="w-3.5 h-3.5" />
           <span>{isBengali ? 'ওনার ক্রিডেনশিয়াল সেটিংস' : 'Owner Credentials'}</span>
         </button>
+        <button
+          onClick={() => setActiveTab('dates')}
+          className={`px-5 py-2.5 font-bold text-xs sm:text-sm border-b-2 transition-all flex items-center gap-1.5 ${
+            activeTab === 'dates'
+              ? 'border-[#064E3B] text-[#064E3B]'
+              : 'border-transparent text-slate-500 hover:text-slate-700'
+          }`}
+        >
+          <Calendar className="w-3.5 h-3.5" />
+          <span>{isBengali ? 'সাফারি এভেলেবেল ডেট কন্ট্রোল' : 'Safari Available Dates'}</span>
+        </button>
       </div>
 
       {/* 1. Enquiries Tab */}
@@ -1012,6 +1031,201 @@ export const AdminPage: React.FC = () => {
               {isBengali ? 'সংরক্ষণ করুন' : 'Save Changes'}
             </button>
           </form>
+        </div>
+      )}
+
+      {/* 4. Dates Tab - Safari Available Dates Control */}
+      {activeTab === 'dates' && (
+        <div className="space-y-6">
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+              <div>
+                <h3 className="text-lg font-bold font-heading text-[#064E3B] flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-emerald-700" />
+                  <span>{isBengali ? 'সাফারি এভেলেবেল তারিখ ব্যবস্থাপনা' : 'Manage Available Safari Dates'}</span>
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {isBengali
+                    ? 'গ্রাহকরা বুকিং ফর্মে শুধুমাত্র এই অনুমোদিত তারিখগুলোতেই সিট বুক করতে পারবেন। অন্য কোনো তারিখে ক্লিক করলে লাল সতর্কবার্তা ("নট এভেলেবেল 🔴") দেখাবে।'
+                    : 'Guests can only book seats on these approved dates. Any other date will show "Not Available 🔴".'}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
+                  {datesList.length} {isBengali ? 'টি তারিখ সক্রিয়' : 'Active Dates'}
+                </span>
+              </div>
+            </div>
+
+            {/* Quick Add Date Form */}
+            <form
+              onSubmit={e => {
+                e.preventDefault();
+                if (!newDateInput) return;
+                if (datesList.some(d => d.date === newDateInput)) {
+                  alert(isBengali ? 'এই তারিখটি ইতিমধ্যে যুক্ত রয়েছে।' : 'This date already exists.');
+                  return;
+                }
+                const dateObj = new Date(newDateInput + 'T00:00:00');
+                const daysBn = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
+                const daysEn = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                const dayOfWeekBn = daysBn[dateObj.getDay()];
+                const dayOfWeekEn = daysEn[dateObj.getDay()];
+                const formattedBn = `${dateObj.getDate()} ডিসেম্বর ২০২৬`;
+                const formattedEn = `${String(dateObj.getDate()).padStart(2, '0')} Dec 2026`;
+
+                const updated = [
+                  ...datesList,
+                  {
+                    date: newDateInput,
+                    dayOfWeekBn,
+                    dayOfWeekEn,
+                    formattedBn,
+                    formattedEn,
+                    seatsLeft: Number(newDateSeats) || 8,
+                    highlightBn: newDateHighlight || (isBengali ? 'বিশেষ ব্যাচ' : 'Special Batch'),
+                    highlightEn: newDateHighlight || 'Special Batch',
+                  },
+                ].sort((a, b) => a.date.localeCompare(b.date));
+
+                setDatesList(updated);
+                saveAvailableDates(updated);
+                setNewDateInput('');
+                setNewDateHighlight('');
+                setDateSuccessMsg(isBengali ? 'নতুন সাফারি তারিখ সফলভাবে যুক্ত হয়েছে!' : 'New date added successfully!');
+                setTimeout(() => setDateSuccessMsg(''), 4000);
+              }}
+              className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3"
+            >
+              <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                <Plus className="w-3.5 h-3.5 text-emerald-700" />
+                <span>{isBengali ? 'নতুন এভেলেবেল তারিখ যুক্ত করুন' : 'Add New Available Date'}</span>
+              </h4>
+
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                    {isBengali ? 'তারিখ নির্বাচন করুন' : 'Select Date'}
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={newDateInput}
+                    min="2026-12-01"
+                    max="2026-12-31"
+                    onChange={e => setNewDateInput(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                    {isBengali ? 'আসন সংখ্যা (Seats Left)' : 'Seats Count'}
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="50"
+                    value={newDateSeats}
+                    onChange={e => setNewDateSeats(Number(e.target.value))}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                    {isBengali ? 'হাইলাইট / ব্যাচ ট্যাগ' : 'Highlight Note'}
+                  </label>
+                  <input
+                    type="text"
+                    value={newDateHighlight}
+                    onChange={e => setNewDateHighlight(e.target.value)}
+                    placeholder={isBengali ? 'যেমন: উইকেন্ড স্পেশাল' : 'e.g. Weekend Batch'}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white"
+                  />
+                </div>
+
+                <div className="flex items-end">
+                  <button
+                    type="submit"
+                    className="w-full py-2 px-4 rounded-xl bg-[#064E3B] hover:bg-[#08614a] text-white font-bold text-xs shadow-sm flex items-center justify-center gap-1.5 transition-colors"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>{isBengali ? 'তারিখ সেভ করুন' : 'Add Date'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {dateSuccessMsg && (
+                <div className="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-xs text-emerald-800 font-semibold flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
+                  <span>{dateSuccessMsg}</span>
+                </div>
+              )}
+            </form>
+
+            {/* List of currently active available dates */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 text-slate-500 uppercase font-semibold border-b border-slate-200">
+                  <tr>
+                    <th className="p-3.5">তারিখ (Date)</th>
+                    <th className="p-3.5">বার (Day)</th>
+                    <th className="p-3.5">বাকি আসন (Seats)</th>
+                    <th className="p-3.5">ট্যাগ / বিবরণ (Highlight)</th>
+                    <th className="p-3.5">স্ট্যাটাস (Status)</th>
+                    <th className="p-3.5 text-right">অ্যাকশন (Action)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {datesList.map(item => (
+                    <tr key={item.date} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="p-3.5 font-bold font-heading text-slate-900">
+                        {item.date}
+                        <span className="block text-[11px] font-normal text-slate-500">
+                          {isBengali ? item.formattedBn : item.formattedEn}
+                        </span>
+                      </td>
+                      <td className="p-3.5 font-semibold text-slate-700">
+                        {isBengali ? item.dayOfWeekBn : item.dayOfWeekEn}
+                      </td>
+                      <td className="p-3.5">
+                        <span className="inline-flex items-center gap-1 font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">
+                          {item.seatsLeft} {isBengali ? 'টি' : 'seats'}
+                        </span>
+                      </td>
+                      <td className="p-3.5 text-slate-600">
+                        {isBengali ? (item.highlightBn || '—') : (item.highlightEn || '—')}
+                      </td>
+                      <td className="p-3.5">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                          <span>এভেলেবেল 🟢</span>
+                        </span>
+                      </td>
+                      <td className="p-3.5 text-right">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (confirm(isBengali ? `${item.date} তারিখটি এভেলেবেল তালিকা থেকে মুছে ফেলতে চান?` : `Remove ${item.date}?`)) {
+                              const updated = datesList.filter(d => d.date !== item.date);
+                              setDatesList(updated);
+                              saveAvailableDates(updated);
+                            }
+                          }}
+                          className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-800 transition-colors"
+                          title="Remove Date"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       )}
     </div>

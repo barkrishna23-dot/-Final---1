@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Check, Phone, MessageCircle, Calendar, Users, MapPin, Sparkles, CheckCircle2, ShieldCheck, AlertCircle, Heart, Smile, CreditCard, Globe } from 'lucide-react';
+import { Check, Phone, MessageCircle, Calendar, Users, MapPin, Sparkles, CheckCircle2, ShieldCheck, AlertCircle, Heart, Smile, CreditCard, Globe, AlertTriangle, XCircle, Clock } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAdmin } from '../../context/AdminContext';
 import { TOUR_PACKAGES } from '../../data/packages';
 import { BRAND_INFO } from '../../data/brandInfo';
+import { getAvailableDates, checkDateAvailability, AvailableSafariDate } from '../../data/bookingAvailability';
+import { BookingPaymentModal } from './BookingPaymentModal';
 
 interface BookingFormProps {
   initialPackageSlug?: string;
@@ -27,7 +29,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
     packageSlug: initialPackageSlug || 'one-day-sundarban-tour',
     preferredDate: '',
     isFlexibleDate: true,
-    groupType: 'family' as 'family' | 'couple' | 'friends' | 'female-friends',
+    groupType: 'family' as 'family' | 'couple' | 'friends' | 'female-friends' | string,
+    groupTypes: ['family'] as string[],
     adultsCount: 1,
     childrenCount: 0,
     childrenAges: '',
@@ -54,6 +57,17 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedId, setSubmittedId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [paymentBookingDetails, setPaymentBookingDetails] = useState<{
+    enquiryId: string;
+    fullName: string;
+    phone: string;
+    packageTitle: string;
+    preferredDate: string;
+    guestsCount: number;
+    totalAmount: number;
+    whatsappUrl: string;
+  } | null>(null);
 
   // Selected package reference dynamically found from packages data
   const selectedPkg =
@@ -62,6 +76,13 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
     TOUR_PACKAGES[0];
 
   const isDayTour = (selectedPkg.durationNights || 0) === 0;
+
+  // Availability status for preferred date
+  const availableDatesList = getAvailableDates();
+  const dateCheck = checkDateAvailability(formData.preferredDate);
+  const isDateSelected = !!formData.preferredDate;
+  const isDateAvailable = isDateSelected && dateCheck.isAvailable;
+  const isDateUnavailable = isDateSelected && !dateCheck.isAvailable;
 
   // Dynamic Price Estimate Math - strictly matches package rate
   const getPricingEstimate = () => {
@@ -110,83 +131,26 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMessage('');
-
-    if (!formData.fullName.trim()) {
-      setErrorMessage(isBengali ? 'দয়া করে আপনার পূর্ণ নাম লিখুন।' : 'Please provide your full name.');
-      return;
-    }
-
-    if (!formData.phone.trim() || formData.phone.length < 10) {
-      setErrorMessage(isBengali ? 'সঠিক ১০ সংখ্যার ফোন নম্বর প্রদান করুন।' : 'Please enter a valid 10-digit phone number.');
-      return;
-    }
-
-    if (!formData.preferredDate) {
-      setErrorMessage(isBengali ? 'দয়া করে যাত্রার সম্ভাব্য তারিখ নির্বাচন করুন।' : 'Please select your preferred travel date.');
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const finalPickup = formData.pickupPoint;
-
-      const enquiryId = await addEnquiry({
-        fullName: formData.fullName,
-        phone: formData.phone,
-        whatsapp: formData.whatsappSameAsPhone ? formData.phone : formData.whatsapp,
-        email: formData.email,
-        packageSlug: formData.packageSlug,
-        preferredDate: formData.preferredDate,
-        isFlexibleDate: formData.isFlexibleDate,
-        adultsCount: Number(formData.adultsCount),
-        childrenCount: Number(formData.childrenCount),
-        childrenAges: formData.childrenAges,
-        pickupPoint: finalPickup,
-        groupType: formData.groupType,
-        idType: formData.idType,
-        idNumber: formData.idNumber,
-        originType: formData.originType,
-        originStateOrCountry: formData.originStateOrCountry,
-        roomType: formData.roomType,
-        roomSharing: formData.roomSharing,
-        foodPreference: formData.foodPreference,
-        dietaryAllergies: formData.dietaryAllergies,
-        cameramanAddon: formData.cameramanAddon,
-        customRequests: formData.customRequests,
-      });
-
-      setSubmittedId(enquiryId);
-      if (onSuccess) onSuccess(enquiryId);
-    } catch (err) {
-      setErrorMessage(isBengali ? 'বুকিং জমা দিতে সমস্যা হয়েছে, অনুগ্রহ করে ফোন করুন।' : 'Submission failed. Please call us directly.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   // WhatsApp structured link generator
   const getWhatsAppBookingUrl = () => {
-    const groupTypeLabelBn =
-      formData.groupType === 'couple'
-        ? 'কাপেল (রোমান্টিক সফর)'
-        : formData.groupType === 'friends'
-        ? 'বন্ধু (বন্ধু-বান্ধব গ্রুপ)'
-        : formData.groupType === 'female-friends'
-        ? 'বান্ধবী (অল-গার্লস ট্যুর)'
-        : 'ফ্যামিলি (পারিবারিক)';
+    const activeTypes = (formData.groupTypes && formData.groupTypes.length > 0)
+      ? formData.groupTypes
+      : (formData.groupType ? formData.groupType.split(',').map(s => s.trim()) : ['family']);
 
-    const groupTypeLabelEn =
-      formData.groupType === 'couple'
-        ? 'Couple / Romantic'
-        : formData.groupType === 'friends'
-        ? 'Friends Group'
-        : formData.groupType === 'female-friends'
-        ? 'Female Friends / Girls Group'
-        : 'Family Tour';
+    const typeNamesBn = activeTypes.map(t => {
+      if (t === 'couple') return 'কাপেল';
+      if (t === 'friends') return 'বন্ধু';
+      if (t === 'female-friends') return 'বান্ধবী';
+      return 'ফ্যামিলি';
+    });
+    const typeNamesEn = activeTypes.map(t => {
+      if (t === 'couple') return 'Couple';
+      if (t === 'friends') return 'Friends';
+      if (t === 'female-friends') return 'Female Friends';
+      return 'Family';
+    });
+    const groupTypeLabelBn = typeNamesBn.join(' + ');
+    const groupTypeLabelEn = typeNamesEn.join(' + ');
 
     const idLabelBn =
       formData.idType === 'aadhaar'
@@ -255,6 +219,90 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
     return `https://wa.me/${BRAND_INFO.whatsappRaw}?text=${encodeURIComponent(text)}`;
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage('');
+
+    if (!formData.fullName.trim()) {
+      setErrorMessage(isBengali ? 'দয়া করে আপনার পূর্ণ নাম লিখুন।' : 'Please provide your full name.');
+      return;
+    }
+
+    if (!formData.phone.trim() || formData.phone.length < 10) {
+      setErrorMessage(isBengali ? 'সঠিক ১০ সংখ্যার ফোন নম্বর প্রদান করুন।' : 'Please enter a valid 10-digit phone number.');
+      return;
+    }
+
+    if (!formData.preferredDate) {
+      setErrorMessage(isBengali ? 'দয়া করে যাত্রার সম্ভাব্য তারিখ নির্বাচন করুন।' : 'Please select your preferred travel date.');
+      return;
+    }
+
+    const availability = checkDateAvailability(formData.preferredDate);
+    if (!availability.isAvailable) {
+      setErrorMessage(
+        isBengali
+          ? 'আপনার নির্বাচিত তারিখে কোনো আসন এভেলেবেল নেই (Not Available 🔴)। অনুগ্রহ করে নিচের ডিসেম্বরের নির্ধারিত এভেলেবেল তারিখগুলো থেকে নির্বাচন করুন।'
+          : 'Selected date is not available (Not Available 🔴). Please choose one of the available December safari dates shown below.'
+      );
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const finalPickup = formData.pickupPoint;
+
+      const enquiryId = await addEnquiry({
+        fullName: formData.fullName,
+        phone: formData.phone,
+        whatsapp: formData.whatsappSameAsPhone ? formData.phone : formData.whatsapp,
+        email: formData.email,
+        packageSlug: formData.packageSlug,
+        preferredDate: formData.preferredDate,
+        isFlexibleDate: formData.isFlexibleDate,
+        adultsCount: Number(formData.adultsCount),
+        childrenCount: Number(formData.childrenCount),
+        childrenAges: formData.childrenAges,
+        pickupPoint: finalPickup,
+        groupType: formData.groupType,
+        idType: formData.idType,
+        idNumber: formData.idNumber,
+        originType: formData.originType,
+        originStateOrCountry: formData.originStateOrCountry,
+        roomType: formData.roomType,
+        roomSharing: formData.roomSharing,
+        foodPreference: formData.foodPreference,
+        dietaryAllergies: formData.dietaryAllergies,
+        cameramanAddon: formData.cameramanAddon,
+        customRequests: formData.customRequests,
+      });
+
+      setSubmittedId(enquiryId);
+
+      // Setup details for Payment Gateway Modal
+      const totalAmt = calculateEstimatedTotal();
+      const bookingInfo = {
+        enquiryId,
+        fullName: formData.fullName || (isBengali ? 'ভ্রমণকারী' : 'Traveler'),
+        phone: formData.phone,
+        packageTitle: isBengali ? selectedPkg.title.bn : selectedPkg.title.en,
+        preferredDate: formData.preferredDate,
+        guestsCount: Number(formData.adultsCount) + Number(formData.childrenCount),
+        totalAmount: totalAmt,
+        whatsappUrl: getWhatsAppBookingUrl(),
+      };
+      setPaymentBookingDetails(bookingInfo);
+      setIsPaymentModalOpen(true);
+
+      if (onSuccess) onSuccess(enquiryId);
+    } catch (err) {
+      setErrorMessage(isBengali ? 'বুকিং জমা দিতে সমস্যা হয়েছে, অনুগ্রহ করে ফোন করুন।' : 'Submission failed. Please call us directly.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (submittedId) {
     return (
       <div className="bg-white rounded-3xl p-8 sm:p-10 border border-emerald-300 shadow-xl text-center space-y-6 animate-in zoom-in-95 duration-500 max-w-2xl mx-auto">
@@ -281,6 +329,37 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
           <span className="text-xs text-slate-500 block">{isBengali ? 'রেফারেন্স কোড:' : 'Reference ID:'}</span>
           <span className="text-xl font-mono font-bold text-[#064E3B]">{submittedId}</span>
         </div>
+
+        {/* Online Payment Card & Re-open Modal */}
+        <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl border border-emerald-200 text-left space-y-2.5">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <span className="text-xs font-bold text-slate-800 block">
+                {isBengali ? 'অনলাইন পেমেন্ট (PhonePe / UPI / কিউআর কোড / কার্ড):' : 'Online Payment (PhonePe / UPI / QR / Card):'}
+              </span>
+              <span className="text-[11px] text-slate-600 block">
+                {isBengali ? 'ফোন থেকে ডিরেক্ট PhonePe/কার্ড অথবা কম্পিউটার থেকে কিউআর কোড স্ক্যান করুন।' : 'Direct PhonePe/Card on mobile or scan QR code on desktop.'}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsPaymentModalOpen(true)}
+              className="px-5 py-2.5 bg-[#064E3B] hover:bg-[#08614a] text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+            >
+              <CreditCard className="w-4 h-4 text-[#F4B942]" />
+              <span>{isBengali ? 'পেমেন্ট করুন / কিউআর দেখুন' : 'Make Payment / View QR'}</span>
+            </button>
+          </div>
+        </div>
+
+        {paymentBookingDetails && (
+          <BookingPaymentModal
+            isOpen={isPaymentModalOpen}
+            onClose={() => setIsPaymentModalOpen(false)}
+            bookingDetails={paymentBookingDetails}
+            isBengali={isBengali}
+          />
+        )}
 
         <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
           <a
@@ -625,10 +704,15 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
 
       {/* Section 2: Package & Travel Date */}
       <div className="space-y-4 pt-4 border-t border-slate-100">
-        <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider font-heading flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-[#064E3B]" />
-          <span>{isBengali ? '২. প্যাকেজ ও ভ্রমণের সময়সূচি' : '2. Package & Travel Dates'}</span>
-        </h4>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider font-heading flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-[#064E3B]" />
+            <span>{isBengali ? '২. প্যাকেজ ও ভ্রমণের সময়সূচি' : '2. Package & Travel Dates'}</span>
+          </h4>
+          <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+            {isBengali ? 'বর্তমানে শুধুমাত্র ডিসেম্বরের সিট এভেলেবেল' : 'Currently only Dec dates available'}
+          </span>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
@@ -649,10 +733,26 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-xs font-semibold text-slate-700">
-                {isBengali ? 'ভ্রমণের পছন্দসই তারিখ *' : 'Preferred Travel Date *'}
-              </label>
+            <div className="flex items-center justify-between mb-1.5 flex-wrap gap-1">
+              <div className="flex items-center gap-2">
+                <label className="block text-xs font-semibold text-slate-700">
+                  {isBengali ? 'ভ্রমণের পছন্দসই তারিখ *' : 'Preferred Travel Date *'}
+                </label>
+                {/* Live Status Badge beside label */}
+                {isDateSelected && (
+                  isDateAvailable ? (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-xs">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>{isBengali ? 'এভেলেবেল 🟢' : 'Available 🟢'}</span>
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-black bg-red-100 text-red-700 border-2 border-red-400 shadow-xs animate-pulse">
+                      <AlertCircle className="w-3.5 h-3.5 text-red-600" />
+                      <span>{isBengali ? 'নট এভেলেবেল 🔴' : 'Not Available 🔴'}</span>
+                    </span>
+                  )
+                )}
+              </div>
               <label className="flex items-center gap-1 text-[11px] text-slate-500 cursor-pointer">
                 <input
                   type="checkbox"
@@ -663,14 +763,150 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
                 <span>{isBengali ? 'তারিখ নমনীয় (+/- ২ দিন)' : 'Flexible (+/- 2 Days)'}</span>
               </label>
             </div>
+
             <input
               type="date"
               required
               value={formData.preferredDate}
               min={new Date().toISOString().split('T')[0]}
-              onChange={e => setFormData({ ...formData, preferredDate: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#064E3B] text-sm bg-white"
+              onChange={e => {
+                setFormData({ ...formData, preferredDate: e.target.value });
+                setErrorMessage('');
+              }}
+              className={`w-full px-4 py-2.5 rounded-xl text-sm transition-all ${
+                isDateUnavailable
+                  ? 'border-2 border-red-500 bg-red-50/60 text-red-950 font-bold ring-2 ring-red-200 focus:border-red-600 focus:ring-red-200'
+                  : isDateAvailable
+                  ? 'border-2 border-emerald-500 bg-emerald-50/40 text-emerald-950 font-semibold ring-2 ring-emerald-100 focus:border-emerald-600'
+                  : 'border border-slate-300 focus:border-[#064E3B] bg-white'
+              }`}
             />
+
+            {/* Red Alert Marker Box when an unavailable date is picked */}
+            {isDateUnavailable && (
+              <div className="mt-2.5 p-3 rounded-2xl bg-red-50 border-2 border-red-400 text-red-950 text-xs space-y-1.5 shadow-sm animate-in fade-in duration-200">
+                <div className="flex items-start gap-2">
+                  <div className="p-1 rounded-full bg-red-200 text-red-700 shrink-0 mt-0.5">
+                    <XCircle className="w-4 h-4 text-red-700" />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <strong className="text-red-700 text-sm font-bold">
+                        {isBengali ? 'নট এভেলেবেল (Not Available) 🔴' : 'Not Available 🔴'}
+                      </strong>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-red-600 text-white uppercase tracking-wider">
+                        {isBengali ? 'আসন খালি নেই' : 'No Seats'}
+                      </span>
+                    </div>
+                    <p className="text-[11.5px] text-red-800 leading-relaxed font-medium">
+                      {isBengali
+                        ? 'এই তারিখে বুকিং বন্ধ বা কোনো আসন খালি নেই। বর্তমানে পূর্ববর্তী কোনো তারিখ এভেলেবেল নেই—শুধুমাত্র নিচের ডিসেম্বরের নির্ধারিত তারিখে সিট খালি আছে।'
+                        : 'No seats available or booking is closed on this date. Currently, seats are only open on the scheduled December dates.'}
+                    </p>
+                    <p className="text-[11px] text-red-700 font-bold">
+                      👉 {isBengali ? 'নিচের ডিসেম্বরের এভেলেবেল তারিখগুলোতে সরাসরি ক্লিক করে বুক করুন:' : 'Click any of the December dates below to book:'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Green Success info when an available date is picked */}
+            {isDateAvailable && (
+              <div className="mt-2.5 p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs flex items-center justify-between shadow-xs">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span className="font-semibold">
+                    {isBengali
+                      ? `তারিখ এভেলেবেল! ${dateCheck.matchedDate?.highlightBn ? `(${dateCheck.matchedDate.highlightBn})` : ''} — আপনার সিট কনফার্মেশন প্রসেস করা হবে।`
+                      : `Date is Available! ${dateCheck.matchedDate?.highlightEn ? `(${dateCheck.matchedDate.highlightEn})` : ''}`}
+                  </span>
+                </div>
+                {dateCheck.matchedDate?.seatsLeft && (
+                  <span className="text-[11px] font-bold bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-full shrink-0">
+                    {isBengali ? `${dateCheck.matchedDate.seatsLeft}টি আসন বাকি` : `${dateCheck.matchedDate.seatsLeft} seats left`}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Available Dates Selection Showcase Strip ("এর পাশে এভেলেবেল ডেট থাকবে সেখানে ক্লিক করলে বুক করতে পারবে") */}
+        <div className="mt-4 p-4 rounded-2xl bg-gradient-to-br from-emerald-50/95 via-teal-50/60 to-amber-50/60 border-2 border-emerald-300 shadow-sm space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 border-b border-emerald-200/80 pb-2.5">
+            <div className="flex items-center gap-2">
+              <span className="p-1.5 rounded-lg bg-[#064E3B] text-white">
+                <Calendar className="w-4 h-4 text-amber-300" />
+              </span>
+              <div>
+                <h5 className="font-bold text-xs sm:text-sm text-[#064E3B] font-heading flex items-center gap-2">
+                  <span>{isBengali ? 'ডিসেম্বরের এভেলেবেল সাফারি তারিখ সমূহ' : 'Available December Safari Dates'}</span>
+                  <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300">
+                    {isBengali ? 'ক্লিক করলেই বুক হবে' : 'Click to Book'}
+                  </span>
+                </h5>
+                <p className="text-[11px] text-slate-600">
+                  {isBengali
+                    ? 'শুধুমাত্র এই তারিখগুলোতে সিট এভেলেবেল রয়েছে; যে কোনো তারিখে ক্লিক করলেই সাথে সাথে ফর্মের তারিখ সেট হয়ে যাবে।'
+                    : 'Only these dates have available seats; click any date to immediately set your booking date.'}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 text-[11px] font-bold">
+                <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping" />
+                <span>{isBengali ? '১০টি স্পেশাল ব্যাচ খালি' : '10 Batches Open'}</span>
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 pt-1">
+            {availableDatesList.map(item => {
+              const isSelected = formData.preferredDate === item.date;
+              return (
+                <button
+                  key={item.date}
+                  type="button"
+                  onClick={() => {
+                    setFormData(prev => ({ ...prev, preferredDate: item.date }));
+                    setErrorMessage('');
+                  }}
+                  className={`p-2.5 rounded-xl text-left border-2 transition-all cursor-pointer relative group flex flex-col justify-between ${
+                    isSelected
+                      ? 'bg-[#064E3B] text-white border-[#064E3B] shadow-lg ring-2 ring-amber-400 scale-[1.02]'
+                      : 'bg-white hover:bg-emerald-50 text-slate-900 border-slate-200 hover:border-emerald-400 shadow-xs'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-1 mb-1.5">
+                    <span className={`text-xs font-bold ${isSelected ? 'text-amber-300' : 'text-[#064E3B]'}`}>
+                      {isBengali ? item.dayOfWeekBn : item.dayOfWeekEn}
+                    </span>
+                    {isSelected ? (
+                      <span className="text-[10px] font-black bg-amber-400 text-slate-950 px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                        <Check className="w-3 h-3" /> {isBengali ? 'বাছাইকৃত' : 'Selected'}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-md">
+                        {isBengali ? `${item.seatsLeft} সিট` : `${item.seatsLeft} seats`}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className={`text-sm font-bold font-heading ${isSelected ? 'text-white' : 'text-slate-900'}`}>
+                    {isBengali ? item.formattedBn.split(' ২০২৬')[0] : item.formattedEn.split(' 2026')[0]}
+                  </div>
+
+                  <div className="mt-1 text-[10.5px] leading-tight">
+                    {isSelected ? (
+                      <span className="text-amber-200 font-semibold">{isBengali ? '✓ এভেলেবেল আসন' : '✓ Available'}</span>
+                    ) : (
+                      <span className="text-slate-500 line-clamp-1">{isBengali ? item.highlightBn : item.highlightEn}</span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -685,14 +921,14 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
         {/* Travel Companion / Group Type: ফ্যামিলি ,কাপেল ,বন্ধু ,বান্ধবী */}
         <div className="bg-gradient-to-b from-slate-50/90 to-emerald-50/30 border border-slate-200/90 rounded-2xl p-4 sm:p-5 space-y-3 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-            <label className="text-xs font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
+            <label className="text-xs font-bold text-slate-900 tracking-tight flex items-center gap-1.5 flex-wrap">
               <span>{isBengali ? 'ভ্রমণের ধরন ও সঙ্গী নির্বাচন করুন *' : 'Select Tour Group Type *'}</span>
               <span className="text-emerald-700 font-normal">
-                ({isBengali ? 'ফ্যামিলি / কাপেল / বন্ধু / বান্ধবী' : 'Family / Couple / Friends / Girls Trip'})
+                ({isBengali ? 'কাপেল, বন্ধু ও বান্ধবী একসাথে যুক্ত করা যাবে' : 'Combine Couple, Friends & Female Friends'})
               </span>
             </label>
             <span className="text-[11px] text-slate-500 font-medium">
-              {isBengali ? 'সঠিক রুম ও ব্যবস্থাপনা সাজাতে সহায়ক' : 'Helps us arrange custom rooms & care'}
+              {isBengali ? 'এক বা একাধিক সঙ্গী নির্বাচন করুন' : 'Select one or combine multiple'}
             </span>
           </div>
 
@@ -705,7 +941,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
                 subBn: 'পারিবারিক সফর',
                 subEn: 'Family Tour',
                 icon: Users,
-                activeBorder: 'border-emerald-600 ring-2 ring-emerald-600/20 bg-emerald-50/90 text-emerald-950',
+                activeBorder: 'border-emerald-600 ring-2 ring-emerald-600/30 bg-emerald-50/90 text-emerald-950',
                 badgeBg: 'bg-emerald-700 text-white',
               },
               {
@@ -715,7 +951,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
                 subBn: 'রোমান্টিক সফর',
                 subEn: 'Honeymoon / Couple',
                 icon: Heart,
-                activeBorder: 'border-rose-600 ring-2 ring-rose-600/20 bg-rose-50/90 text-rose-950',
+                activeBorder: 'border-rose-600 ring-2 ring-rose-600/30 bg-rose-50/90 text-rose-950',
                 badgeBg: 'bg-rose-600 text-white',
               },
               {
@@ -725,7 +961,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
                 subBn: 'বন্ধু-বান্ধব গ্রুপ',
                 subEn: 'Friends Group',
                 icon: Smile,
-                activeBorder: 'border-amber-600 ring-2 ring-amber-600/20 bg-amber-50/90 text-amber-950',
+                activeBorder: 'border-amber-600 ring-2 ring-amber-600/30 bg-amber-50/90 text-amber-950',
                 badgeBg: 'bg-amber-600 text-white',
               },
               {
@@ -735,25 +971,69 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
                 subBn: 'বান্ধবী / গার্লস গ্রুপ',
                 subEn: 'Girls Group',
                 icon: Sparkles,
-                activeBorder: 'border-purple-600 ring-2 ring-purple-600/20 bg-purple-50/90 text-purple-950',
+                activeBorder: 'border-purple-600 ring-2 ring-purple-600/30 bg-purple-50/90 text-purple-950',
                 badgeBg: 'bg-purple-600 text-white',
               },
             ].map(item => {
-              const isSelected = formData.groupType === item.id;
+              const currentTypes = formData.groupTypes && formData.groupTypes.length > 0
+                ? formData.groupTypes
+                : (formData.groupType ? formData.groupType.split(',').map(s => s.trim()) : ['family']);
+              const isSelected = currentTypes.includes(item.id);
+              const isAttachedWithOthers = isSelected && currentTypes.length > 1;
               const IconComp = item.icon;
               return (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => {
-                    setFormData(prev => ({
-                      ...prev,
-                      groupType: item.id as any,
-                      adultsCount: item.id === 'couple' && prev.adultsCount === 1 ? 2 : prev.adultsCount,
-                      roomSharing: item.id === 'couple' ? 'double' : prev.roomSharing,
-                    }));
+                    setFormData(prev => {
+                      const cur = prev.groupTypes && prev.groupTypes.length > 0
+                        ? prev.groupTypes
+                        : (prev.groupType ? prev.groupType.split(',').map(s => s.trim()) : ['family']);
+
+                      let next: string[];
+                      if (item.id === 'family') {
+                        // Family is standalone - resets to family only
+                        next = ['family'];
+                      } else {
+                        // Remove family if present to attach couple, friends, female-friends freely
+                        const withoutFamily = cur.filter(t => t !== 'family');
+                        if (withoutFamily.includes(item.id)) {
+                          // Toggle off if more than 1 selected; if only 1, switch back to family
+                          if (withoutFamily.length > 1) {
+                            next = withoutFamily.filter(t => t !== item.id);
+                          } else {
+                            next = ['family'];
+                          }
+                        } else {
+                          // Attach this companion to the group!
+                          next = [...withoutFamily, item.id];
+                        }
+                      }
+
+                      const hasCouple = next.includes('couple');
+                      const hasFemale = next.includes('female-friends');
+                      const hasFriends = next.includes('friends');
+
+                      let minAdults = 1;
+                      if (hasCouple && hasFemale && hasFriends) {
+                        minAdults = 4;
+                      } else if (hasCouple && (hasFemale || hasFriends)) {
+                        minAdults = 3;
+                      } else if (hasCouple || (hasFemale && hasFriends)) {
+                        minAdults = 2;
+                      }
+
+                      return {
+                        ...prev,
+                        groupTypes: next,
+                        groupType: next.join(', '),
+                        adultsCount: prev.adultsCount < minAdults ? minAdults : prev.adultsCount,
+                        roomSharing: hasCouple ? 'double' : prev.roomSharing,
+                      };
+                    });
                   }}
-                  className={`p-3 sm:p-3.5 rounded-xl border text-left transition-all duration-200 flex flex-col justify-between cursor-pointer ${
+                  className={`p-3 sm:p-3.5 rounded-xl border text-left transition-all duration-200 flex flex-col justify-between cursor-pointer relative group ${
                     isSelected
                       ? item.activeBorder
                       : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-800 hover:border-slate-300'
@@ -767,9 +1047,17 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
                     >
                       <IconComp className="w-4 h-4" />
                     </div>
-                    {isSelected && (
-                      <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${item.badgeBg}`}>
-                        ✓
+                    {isSelected ? (
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${item.badgeBg}`}>
+                        {isAttachedWithOthers
+                          ? (isBengali ? '🔗 এটাচড' : '🔗 Attached')
+                          : (isBengali ? '✓ যুক্ত' : '✓ Added')}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 group-hover:bg-slate-200">
+                        {item.id === 'family'
+                          ? (isBengali ? 'সিলেক্ট' : 'Select')
+                          : (isBengali ? '+ এটাচ' : '+ Attach')}
                       </span>
                     )}
                   </div>
@@ -786,28 +1074,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
             })}
           </div>
 
-          {/* Contextual Assurance for the Selected Companion Type */}
-          <div className="text-[11px] text-slate-700 bg-white/90 p-2.5 rounded-xl border border-slate-200/80 flex items-center gap-2">
-            <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-            <span>
-              {formData.groupType === 'couple' &&
-                (isBengali
-                  ? 'কাপেল প্যাকেজ: রিভারভিউ ওয়াটারফ্রন্ট প্রাইভেট কটেজ, নিরিবিলি পরিবেশ, বিশেষ কেয়ার ও রোমান্টিক ডেক অভিজ্ঞতা।'
-                  : 'Couple Package: Riverfront private cottage, peaceful privacy, special care & romantic deck views.')}
-              {formData.groupType === 'family' &&
-                (isBengali
-                  ? 'পারিবারিক প্যাকেজ: বয়োজ্যেষ্ঠ ও শিশুদের সুরক্ষায় লাইফজ্যাকেট, প্রশস্ত ফ্যামিলি কটেজ ও ঘরোয়া টাটকা খাবার।'
-                  : 'Family Package: Safety lifejackets for seniors & kids, spacious family cottages & fresh homely food.')}
-              {formData.groupType === 'friends' &&
-                (isBengali
-                  ? 'বন্ধু গ্রুপ: অ্যাডভেঞ্চার ক্রুজ সাফারি, বোট ডেকে সানসেট আড্ডা, মিউজিক ও রোমাঞ্চকর সুন্দরবন ট্রেইল।'
-                  : 'Friends Group: Thrilling wildlife boat cruise, deck sunset hangout & mangrove exploration.')}
-              {formData.groupType === 'female-friends' &&
-                (isBengali
-                  ? 'বান্ধবী / গার্লস গ্রুপ: ১০০% নিরাপদ ও ভেরিফাইড স্থানীয় কর্মী, সর্বোচ্চ প্রাইভেসি, নারী ভ্রমণবান্ধব কটেজ ও ফটোশুট।'
-                  : 'Female Friends / Girls Trip: 100% safe verified crew, complete privacy, woman-friendly cottages & photo ops.')}
-            </span>
-          </div>
+
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -975,13 +1242,18 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
             <div className="flex items-center justify-between text-slate-600">
               <span>{isBengali ? 'ভ্রমণের সঙ্গী ধরন:' : 'Tour Group Type:'}</span>
               <span className="font-semibold text-emerald-900 bg-emerald-100/80 px-2 py-0.5 rounded text-[11px]">
-                {formData.groupType === 'couple'
-                  ? (isBengali ? 'কাপেল (রোমান্টিক)' : 'Couple')
-                  : formData.groupType === 'friends'
-                  ? (isBengali ? 'বন্ধু গ্রুপ' : 'Friends')
-                  : formData.groupType === 'female-friends'
-                  ? (isBengali ? 'বান্ধবী গ্রুপ' : 'Female Friends')
-                  : (isBengali ? 'ফ্যামিলি' : 'Family')}
+                {(() => {
+                  const active = formData.groupTypes && formData.groupTypes.length > 0
+                    ? formData.groupTypes
+                    : (formData.groupType ? formData.groupType.split(',').map(s => s.trim()) : ['family']);
+                  const names = active.map(t => {
+                    if (t === 'couple') return isBengali ? 'কাপেল' : 'Couple';
+                    if (t === 'female-friends') return isBengali ? 'বান্ধবী' : 'Female Friends';
+                    if (t === 'friends') return isBengali ? 'বন্ধু' : 'Friends';
+                    return isBengali ? 'ফ্যামিলি' : 'Family';
+                  });
+                  return names.join(' + ') + (active.length > 1 ? (isBengali ? ' (একসাথে এটাচড)' : ' (Attached)') : '');
+                })()}
               </span>
             </div>
             <div className="flex items-center justify-between text-slate-600">
@@ -1084,21 +1356,35 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex-1 sm:flex-initial px-8 py-3.5 rounded-xl bg-[#064E3B] hover:bg-[#08614a] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            className="flex-1 sm:flex-initial px-8 py-3 rounded-xl bg-[#064E3B] hover:bg-[#08614a] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 cursor-pointer"
           >
             <Sparkles className="w-4 h-4 text-[#F4B942]" />
-            <span>
-              {isSubmitting
-                ? isBengali
-                  ? 'জমা হচ্ছে...'
-                  : 'Processing...'
-                : isBengali
-                ? 'বুকিং আবেদন জমা দিন'
-                : 'Submit Booking Request'}
-            </span>
+            <div className="text-left">
+              <span className="block leading-tight font-bold">
+                {isSubmitting
+                  ? isBengali
+                    ? 'জমা হচ্ছে...'
+                    : 'Processing...'
+                  : isBengali
+                  ? 'বুকিং আবেদন জমা দিন'
+                  : 'Submit Booking Request'}
+              </span>
+              <span className="text-[10px] text-emerald-200 font-normal block">
+                {isBengali ? 'ফোন থেকে ডিরেক্ট / কম্পিউটারে কিউআর কোড' : 'Direct on Phone / QR Code on Desktop'}
+              </span>
+            </div>
           </button>
         </div>
       </div>
+
+      {paymentBookingDetails && (
+        <BookingPaymentModal
+          isOpen={isPaymentModalOpen}
+          onClose={() => setIsPaymentModalOpen(false)}
+          bookingDetails={paymentBookingDetails}
+          isBengali={isBengali}
+        />
+      )}
     </form>
   );
 };

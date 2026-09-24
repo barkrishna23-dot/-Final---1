@@ -14,6 +14,8 @@ export const BRAND_INFO = {
   whatsapp: "+91 90024 13094",
   whatsappDisplay: "+91 90024 13094",
   whatsappRaw: "919002413094",
+  upiId: "9002413094@ybl",
+  upiPayeeName: "Sundarban Vromon",
   email: "sundarbon.vromon.official@gmail.com",
   locations: {
     kolkataOffice: "Indian Museum / Science City Pickup Desk, Kolkata, West Bengal 700016",
