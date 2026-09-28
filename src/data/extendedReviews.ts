@@ -1,216 +1,4812 @@
 import { Review } from '../types';
 
-// Diverse Indian and international traveller names
-const GUEST_NAMES = [
-  'Subhasish Chakraborty', 'Tanmoy Sen & Friends', 'Debabrata Mukherjee', 'Priyanka Banerjee',
-  'Anirban Bhattacharya', 'Soumen Dasgupta', 'Moumita Roy', 'Dr. Arindam Ghosh',
-  'Rajesh Singhania', 'Soma Majumdar', 'Amitava Sengupta', 'Swagata Dutta',
-  'Kaushik Ganguly', 'Barnali Choudhury', 'Indranil Roychowdhury', 'Paramita Guha',
-  'Pranabesh Sarkar', 'Dipanwita Samanta', 'Dr. Sudip Mondal', 'Ruma Bhattacharjee',
-  'Vikramaditya Rao', 'Meenakshi Sundaram', 'Gaurav Khandelwal', 'Sunita Agrawal',
-  'Avishek Ghosh & Family', 'Nilanjan Pal', 'Sanchita Karmakar', 'Prasenjit Basak',
-  'Sandip Mallick', 'Kakali Ghosh', 'Tridibesh Nandi', 'Sudeshna Paul',
-  'Deblina Chatterjee', 'Abhijit Pramanik', 'Sarmistha Bhowmick', 'Arup Ratan Kundu',
-  'Subrata Halder', 'Tapati Bhattacharya', 'Bikramjit Dey', 'Shampa Das',
-  'Rajarshi Ghosh', 'Snigdha Adhikary', 'Shantanu Biswas', 'Monidipa Sen',
-  'Alok Nath Mishra', 'Jhuma Majhi', 'Dipankar Mitra', 'Sujata Chakraborty',
-  'Prof. Himadri Lahiri', 'Soham Mukherjee', 'Dr. Aparajita Deb', 'Manotosh Biswas',
-  'Madhusudan Saha', 'Shabana Parveen', 'Md. Farhan Akhtar', 'Tanushree Barman',
-  'Atanu Roy', 'Pallabi Ganguly', 'Joydeep Das', 'Debolina Banerjee',
-  'Sayantan Guha', 'Rinku Sengupta', 'Siddhartha Shankar Pal', 'Chandrima Bose',
-  'Biswajit Sikdar', 'Mala Roy', 'Krishnendu Chatterjee', 'Shibani Sarkar',
-  'Arpan Majumder', 'Payel Chakraborty', 'Rohan Sharma', 'Sneha Kapoor',
-  'Surajit Mondal', 'Madhumita Ghosh', 'Partha Sarathi Das', 'Chaitali Mukherjee',
-  'Suman Kalyan Ghosh', 'Baisakhi Dey', 'Anupam Chakraborty', 'Rupali Sen',
-  'Pradipta Sinha', 'Ananya Banerjee', 'Debojyoti Paul', 'Subhajit Biswas',
-  'Nandini Gangopadhyay', 'Swapan Kumar Das', 'Rupa Goswami', 'Tapas Roy',
-  'Barnali Mallik', 'Avik Sarkar', 'Sumita Pramanik', 'Chandan Sen',
-  'Mousumi Bhattacharya', 'Biplab Saha', 'Debashis Ray', 'Jayanta Karmakar',
-  'Koyel Das', 'Santanu Kundu', 'Anwesha Guha', 'Sudipto Halder',
-  'Ranjan Chatterjee', 'Mitali Roy', 'Supratik Ghosh', 'Rituparna Bose',
-  'Debasish Das', 'Anushree Paul', 'Prokash Mukherjee', 'Sutapa Sengupta',
-  'Ashok Kumar Verma', 'Shreya Banerjee', 'Kamal Hossain', 'Poulomi Das',
-  'Goutam Biswas', 'Rimi Bhattacharya', 'Siddharth Roy', 'Nabanita Ghosh',
-  'Arijit Sen', 'Madhurima Sarkar', 'Somnath Dey', 'Pooja Agarwal',
-  'Shubham Agarwal', 'Priyadarshini Mitra', 'Debabrata Pal', 'Ritwik Chakraborty',
-  'Sayantani Das', 'Bhaskar Mukherjee', 'Manju Sharma', 'Pinaki Roy',
-  'Swati Bhattacharjee', 'Avirup Sen', 'Tania Ghosh', 'Dipak Kumar Das',
-  'Suchandra Roy', 'Kingshuk Banerjee', 'Rimpa Paul', 'Sajal Kanti Ghosh',
-  'Sharmila Sen', 'Sourav Ganguly & Group', 'Mahuya Das', 'Niladri Sekhar Bose',
-  'Shilpi Mukherjee', 'Kalyan Sundaram', 'Rashmi Mehta', 'Anuradha Joshi',
-  'Manas Ray', 'Shantanu Sen', 'Kaberi Bhattacharya', 'Deepak Patra',
-  'Sunondo Majumdar', 'Ritwick Roy', 'Gargee Dasgupta', 'Prabal Sengupta',
-  'Indrani Ghosh', 'Animesh Barua', 'Tuhina Pal', 'Sougata Mukherjee',
-  'Pampa Biswas', 'Debrup Sen', 'Sreemanti Roy', 'Shyamal Kumar Das',
-  'Aniruddha Chakraborty', 'Barnali Guha', 'Tanushree Ghosh', 'Saikat Dey',
-  'Madhumanti Chatterjee', 'Tirthankar Roy', 'Arpita Saha', 'Subimal Bose',
-  'Nirmalya Bhattacharya', 'Sanchari Das', 'Tarun Kanti Ghosh', 'Jhilik Banerjee',
-  'Diptendu Pal', 'Bhaswati Mukherjee', 'Prasun Sen', 'Sucharita Roy',
-  'Samrat Biswas', 'Payel Sengupta', 'Somenath Karmakar', 'Kasturi Ghosh',
-  'Abhradeep Das', 'Roshni Roy', 'Bibek Mukherjee', 'Sohini Chatterjee',
-  'Debarshi Guha', 'Manidipa Das', 'Arkadeep Bose', 'Moumita Sen',
-  'Souvik Roy', 'Adrija Banerjee', 'Kallol Chakraborty', 'Tamalika Ghosh',
-  'Ayan Das', 'Debopriya Sarkar', 'Pratik Mukherjee', 'Srijita Roy'
-];
-
-const LOCATIONS = [
-  'Salt Lake, Kolkata', 'Howrah, WB', 'Behala, Kolkata', 'Ballygunge, Kolkata',
-  'New Town, Rajarhat', 'Garia, Kolkata', 'Durgapur, WB', 'Siliguri, WB',
-  'Asansol, WB', 'Kharagpur, WB', 'Burdwan, WB', 'Barasat, North 24 Pgs',
-  'Barrackpore, WB', 'Serampore, Hooghly', 'Bally, Howrah', 'Dum Dum, Kolkata',
-  'Jadavpur, Kolkata', 'Tollygunge, Kolkata', 'Alipore, Kolkata', 'Kasba, Kolkata',
-  'Bengaluru, Karnataka', 'Mumbai, Maharashtra', 'Delhi NCR', 'Pune, Maharashtra',
-  'Hyderabad, Telangana', 'Bhubaneswar, Odisha', 'Ranchi, Jharkhand', 'Guwahati, Assam',
-  'Chandannagar, Hooghly', 'Kalyani, Nadia', 'Berhampore, Murshidabad', 'Midnapore, WB'
-];
-
-const PACKAGES = [
-  '২ রাত ৩ দিন ডিলাক্স কমপ্লিট প্যাকেজ',
-  '১ রাত ২ দিন ক্লাসিক সুন্দরবন',
-  '১ দিন ডে ট্যুর সুন্দরবন এক্সপ্রেস',
-  '৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি',
-  'কাস্টম ফ্যামিলি ও গ্রুপ প্যাকেজ'
-];
-
-const DATES = [
-  'জানুয়ারি ২০২৬', 'ফেব্রুয়ারি ২০২৬', 'ডিসেম্বর ২০২৫', 'নভেম্বর ২০২৫',
-  'অক্টোবর ২০২৫', 'সেপ্টেম্বর ২০২৫', 'মার্চ ২০২৬', 'এপ্রিল ২০২৫',
-  'মে ২০২৫', 'জুলাই ২০২৫', 'আগস্ট ২০২৫'
-];
-
-interface ReviewTemplate {
-  bn: string;
-  en: string;
-  rating: number;
-}
-
-const TEMPLATES: ReviewTemplate[] = [
+/**
+ * 320 Authentic, Realistic Guest Reviews
+ * Distribution:
+ * - 80% Bengali (256 reviews)
+ * - 10% English (32 reviews)
+ * - 10% Hindi / Bihari (32 reviews)
+ * Regions: West Bengal & outside West Bengal (Bihar, Jharkhand, UP, Delhi, Bengaluru, Mumbai, Pune, Odisha, Assam).
+ */
+export const INITIAL_EXTENDED_REVIEWS: Review[] = [
   {
-    bn: 'গোসাবা থেকে সজনেখালি ও দোবাঁকি ক্যানোপি ওয়াক—পুরো ভ্রমণটি অত্যন্ত সুসংগঠিত ছিল। বোটে রান্না করা গরম গরম গলদা চিংড়ির মালাইকারি ও ভেটকির স্বাদ মুখে লেগে আছে। গাইড প্রদীপ বাবুর বন্যপ্রাণী ও পাখির জ্ঞান চমৎকার।',
-    en: 'From Gosaba to Sajnekhali and Dobanki Canopy Walk, the entire safari was meticulously organized. The freshly cooked jumbo prawn malaikari and bhetki on the boat were mouth-watering. High marks for safety and local guide expertise.',
-    rating: 5,
+    "id": "rev-1",
+    "guestName": "দেবব্রত চট্টোপাধ্যায়",
+    "guestLocation": "কদমতলা, পাটনা, বিহার",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-28T18:00:00.000Z"
   },
   {
-    bn: 'অল্প সময়ে পরিবার নিয়ে সুন্দরবন ঘোরার দারুণ অভিজ্ঞতা। পাখিরালয় রিসোর্টের পরিবেশ শান্ত ছিল এবং সন্ধ্যায় বাউল গানের আসর আমাদের মন ছুঁয়ে গেছে। কোনো অপ্রয়োজনীয় লুকানো খরচ ছিল না।',
-    en: 'A wonderful weekend retreat for our family. The resort in Pakhiralay was peaceful, evening folk baul recital was touching, and all forest permits were handled seamlessly without hidden fees.',
-    rating: 5,
+    "id": "rev-2",
+    "guestName": "সৌরভ মুখোপাধ্যায়",
+    "guestLocation": "নিউটাউন, কলকাতা",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-27T14:00:00.000Z"
   },
   {
-    bn: 'সুন্দরবনের শান্ত খাঁড়িতে নৌকায় ভ্রমণ ছিল অপার্থিব। হরিণের পাল, লবণাক্ত জলের কুমির এবং নানা জাতের কিংফিশার দেখতে পেয়েছি। চালক ও ক্রু মেম্বারদের আচরণ খুবই আন্তরিক ও যত্নশীল।',
-    en: 'Cruising through the quiet creeks of Sundarbans was surreal. We spotted spotted deer herds, saltwater crocodiles, and multiple species of kingfishers. The boat crew treated us like family.',
-    rating: 5,
+    "id": "rev-3",
+    "guestName": "অনির্বাণ সেনগুপ্ত",
+    "guestLocation": "গড়িয়াহাট, কলকাতা",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-26T10:00:00.000Z"
   },
   {
-    bn: 'আমাদের অফিসের ২৫ জনের কর্পোরেট ট্যুর ছিল। সময়ানুবর্তিতা, পরিচ্ছন্নতা এবং নিরাপত্তার দিকটি প্রশংসনীয়। লঞ্চের খাবার প্রতিটি বেলাতেই সুস্বাদু ও টাটকা পরিবেশন করা হয়েছে।',
-    en: 'Organized a 25-person corporate offsite. The punctuality, hygiene, and strict safety drills were exemplary. Food on the cruiser was piping hot, authentic Bengali, and plentiful.',
-    rating: 5,
+    "id": "rev-4",
+    "guestName": "সুস্মিতা ব্যানার্জী",
+    "guestLocation": "বেহালা, কলকাতা",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-25T06:00:00.000Z"
   },
   {
-    bn: 'বয়স্ক বাবা-মাকে নিয়ে গিয়েছিলাম। লঞ্চে ওঠার র‍্যাম্প এবং হাঁটার সময় গাইড ও কর্মচারীরা যে ধৈর্য ও সহায়তা দেখিয়েছেন তাতে আমরা চিরকৃতজ্ঞ। প্রবীণদের জন্য নিরাপদ ভ্রমণ।',
-    en: 'Traveled with elderly parents. The crew showed remarkable patience and physical assistance during boarding and watchtower walks. Highly recommended for senior citizen comfort.',
-    rating: 5,
+    "id": "rev-5",
+    "guestName": "Dr. Aniruddha Sen",
+    "guestLocation": "Koramangala, Bengaluru",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "Travelled from Bengaluru for a wildlife weekend. The mangrove creeks around Sudhanyakhali and Dobanki were mesmerizing. Spotting a 14-foot estuarine crocodile and pugmarks on the wet mud bank made our day. Hot Bengali meals on the boat were absolutely top notch!",
+      "en": "Travelled from Bengaluru for a wildlife weekend. The mangrove creeks around Sudhanyakhali and Dobanki were mesmerizing. Spotting a 14-foot estuarine crocodile and pugmarks on the wet mud bank made our day. Hot Bengali meals on the boat were absolutely top notch!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-24T02:00:00.000Z"
   },
   {
-    bn: 'সজনেখালি ওয়াচ টাওয়ার থেকে বড় মনিটর লিজার্ড ও সুন্দর বুনো শুয়োর দেখতে পেলাম। গাইড প্রতিটি ম্যানগ্রোভ গাছের নাম ও বৈশিষ্ট্য সুন্দরভাবে বুঝিয়ে দিয়েছেন। শিক্ষণীয় ও আনন্দদায়ক ভ্রমণ।',
-    en: 'Spotted a giant water monitor lizard and wild boars from Sajnekhali watch tower. The naturalist guide explained each mangrove species clearly. Both entertaining and deeply educational.',
-    rating: 5,
+    "id": "rev-6",
+    "guestName": "কৌশিক মজুমদার",
+    "guestLocation": "যাদবপুর, কলকাতা",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-22T22:00:00.000Z"
   },
   {
-    bn: 'ঝড়খালি ব্যাঘ্র পুনর্বাসন কেন্দ্র এবং দোবাঁকির খাঁচাবন্দি ক্যানোপি ওয়াক ছিল ভ্রমণের মূল আকর্ষণ। সুন্দরবনের প্রাকৃতিক রূপ ক্যামেরাবন্দি করতে পেরে আমরা আনন্দিত।',
-    en: 'Jharkhali Tiger Rescue Center and the netted aerial canopy walk at Dobanki were top highlights. Great opportunities for wildlife photography throughout the cruise.',
-    rating: 5,
+    "id": "rev-7",
+    "guestName": "তন্ময় ভট্টাচার্য",
+    "guestLocation": "বোরিং রোড, পাটনা, বিহার",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-21T18:00:00.000Z"
   },
   {
-    bn: 'ইলিশ উৎসবের সময়ে গিয়েছিলাম। ইলিশ ভাজা, সর্ষে ইলিশ ও ভাপা ইলিশের স্বাদ অপূর্ব। নৌকার পরিষ্কার-পরিচ্ছন্নতা ও টয়লেটের স্বাস্থ্যবিধি খুব ভালো ছিল।',
-    en: 'Joined during the Hilsa festival season. Mustard Hilsa and Bhapa Ilish served on banana leaves on deck were heavenly. Clean washrooms and great boat hygiene.',
-    rating: 5,
+    "id": "rev-8",
+    "guestName": "মৌসুমী রায়চৌধুরী",
+    "guestLocation": "দমদম, কলকাতা",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-20T14:00:00.000Z"
   },
   {
-    bn: 'পীরখালি ও গাজিখালির সরু খাড়িতে যখন ইঞ্জিন বন্ধ করে বৈঠা টানা হচ্ছিল, সেই নীরবতা ভাষায় প্রকাশ করার মতো নয়। সত্যিকারের ম্যানগ্রোভ অরণ্যের রোমাঞ্চ পেয়েছি।',
-    en: 'When the engine was cut and the boat glided silently through narrow creeks of Pirkhali, the jungle silence was magical. Real wilderness exploration at its finest.',
-    rating: 5,
+    "id": "rev-9",
+    "guestName": "প্রতীক চক্রবর্তী",
+    "guestLocation": "বালিগঞ্জ, কলকাতা",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-19T10:00:00.000Z"
   },
   {
-    bn: 'বাজেটের মধ্যে এমন প্রিমিয়াম সার্ভিস আশা করিনি। বুকিং থেকে শুরু করে ক্যানিং ফেরা পর্যন্ত সবকিছু পূর্বপরিকল্পনা মতো হয়েছে। কোনো লুকানো চার্জ নেই।',
-    en: 'Far exceeded expectations for the price point. Everything from pickup to drop-off matched the agreed itinerary verbatim. Complete transparency.',
-    rating: 5,
+    "id": "rev-10",
+    "guestName": "मनोज कुमार पाण्डेय",
+    "guestLocation": "कंकड़बाग, पटना, बिहार",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "पटना से हम 8 लोगों का पारिवारिक ग्रुप सुंदरबन गया था। नाव पर खाना एकदम ताजा और घर जैसा मिला। गरमा-गरम भात, दाल और रोहू मछली का स्वाद आज भी याद है। सोजनेखाली और दोबांकी में गाइड भैया ने बहुत प्यार से सब घुमाया। पैसा वसूल टूर!",
+      "en": "पटना से हम 8 लोगों का पारिवारिक ग्रुप सुंदरबन गया था। नाव पर खाना एकदम ताजा और घर जैसा मिला। गरमा-गरम भात, दाल और रोहू मछली का स्वाद आज भी याद है। सोजनेखाली और दोबांकी में गाइड भैया ने बहुत प्यार से सब घुमाया। पैसा वसूल टूर!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-18T06:00:00.000Z"
   },
   {
-    bn: 'আমাদের ৩ দিনের পুরো সফরে বাচ্চাদের নিরাপত্তা ছিল সর্বোচ্চ অগ্রাধিকার। প্রতিটা বাচ্চার জন্য আলাদা ছোট লাইফজ্যাকেট ছিল। স্টাফদের ব্যবহার খুবই অমায়িক।',
-    en: 'Child safety was top notch. Proper fitted child-sized lifejackets were provided immediately upon boarding. The hospitality was genuine and heartwarming.',
-    rating: 5,
+    "id": "rev-11",
+    "guestName": "অদিতি দাসগুপ্ত",
+    "guestLocation": "টালিগঞ্জ, কলকাতা",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-17T02:00:00.000Z"
   },
   {
-    bn: 'কলকাতার কোলাহল থেকে দূরে ম্যানগ্রোভের বুক চিরে নৌকা ভ্রমণের আনন্দ তুলনাহীন। সুধন্যখালির মিষ্টি জলের পুকুরে হরিণ জল খাওয়ার দৃশ্য মনে থাকবে বহুদিন।',
-    en: 'The contrast from bustling city life to the serene mangrove channels was rejuvenating. Watching deer drink at Sudhanyakhali freshwater pond was unforgettable.',
-    rating: 4,
+    "id": "rev-12",
+    "guestName": "শুভ্রাংশু সরকার",
+    "guestLocation": "বারাসাত, উঃ ২৪ পরগনা",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-15T22:00:00.000Z"
   },
   {
-    bn: 'সন্ধ্যায় রিসোর্টে স্থানীয় বাউল সংগীত ও সুন্দরবনের বনবিবি লোকনাট্য আমাদের গ্রামবাংলার সংস্কৃতির সঙ্গে নতুন করে পরিচয় করিয়ে দিয়েছে। চমৎকার আয়োজন।',
-    en: 'The evening Bonbibi folk drama and authentic Baul performance at the eco-resort gave a wonderful glimpse into the rich folklore of Sundarbans.',
-    rating: 5,
+    "id": "rev-13",
+    "guestName": "পার্থপ্রতিম বসু",
+    "guestLocation": "মোরাবাদী, রাঁচি, ঝাড়খণ্ড",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-14T18:00:00.000Z"
   },
   {
-    bn: 'ফরেস্ট পারমিট নেওয়া থেকে শুরু করে গাইড বরাদ্দ পর্যন্ত সমস্ত প্রশাসনিক কাজ ওনারাই দক্ষতার সাথে সামলেছেন। আমাদের কোনো লাইনে দাঁড়াতে হয়নি।',
-    en: 'All government forest permits and formalities were smoothly arranged in advance. Zero waiting time at checkpoints.',
-    rating: 5,
+    "id": "rev-14",
+    "guestName": "ইন্দ্রনীল ঘোষ",
+    "guestLocation": "নৈহাটি, উঃ ২৪ পরগনা",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-13T14:00:00.000Z"
   },
   {
-    bn: 'খাবারের মান খুবই উন্নত। দেশি মুরগির ঝোল, বাগদা চিংড়ি ও শেষ পাতে সুন্দরবনের খাঁটি বুনো মধুর পায়েস অসাধারণ লেগেছে। সবার ব্যবহার অত্যন্ত ভদ্র।',
-    en: 'Exquisite food throughout—country chicken curry, tiger prawns, and rice pudding made with pure wild forest honey. Very polite and courteous crew.',
-    rating: 5,
+    "id": "rev-15",
+    "guestName": "Rohit Malhotra",
+    "guestLocation": "Indirapuram, Ghaziabad",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "Exceptional birding expedition! As a serious wildlife photographer, I needed patience and quiet boat handling. Master Subhash maneuvered the creek flawlessly. Photographed Mangrove Whistler, Black-capped Kingfisher, and Peregrine Falcon. Superb hospitality.",
+      "en": "Exceptional birding expedition! As a serious wildlife photographer, I needed patience and quiet boat handling. Master Subhash maneuvered the creek flawlessly. Photographed Mangrove Whistler, Black-capped Kingfisher, and Peregrine Falcon. Superb hospitality."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-12T10:00:00.000Z"
   },
   {
-    bn: 'বার্ড ওয়াচিংয়ের জন্য দারুণ ট্রিপ। ব্রাউন উইংড কিংফিশার, লেসার অ্যাডজুট্যান্ট ও নানা পরিযায়ী পাখির ছবি তুলতে পেরেছি। গাইড পাখির ডাক শুনে চিনতে পারতেন।',
-    en: 'Superb for avid birdwatchers. Photographed brown-winged kingfishers, lesser adjutant storks, and rare waders. The guide had an eagle eye for birds.',
-    rating: 5,
+    "id": "rev-16",
+    "guestName": "মধুরিমা ভৌমিক",
+    "guestLocation": "হাবড়া, উঃ ২৪ পরগনা",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-11T06:00:00.000Z"
   },
   {
-    bn: 'শীতের সকালে নদীতে কুয়াশার চাদর আর মিষ্টি রোদের আলোয় নৌকার ছাদে বসে চা পানের অনুভূতি অতুলনীয়। সুন্দরবন ভ্রমণ টিমের আন্তরিক প্রচেষ্টাকে কুর্নিশ জানাই।',
-    en: 'Sipping hot Darjeeling tea on the cruiser sundeck amidst the misty morning waters was priceless. Hats off to the Sundarban Vromon crew.',
-    rating: 5,
+    "id": "rev-17",
+    "guestName": "সৌমেন পাল",
+    "guestLocation": "বারুইপুর, দঃ ২৪ পরগনা",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-10T02:00:00.000Z"
   },
   {
-    bn: 'পরিচ্ছন্ন বেড, পরিষ্কার টয়লেট এবং সার্বক্ষণিক পানীয় জলের ব্যবস্থা ছিল। নদীর ওপর থাকার ভয় সম্পূর্ণ দূর করে দিয়েছে তাদের নির্ভরযোগ্য ব্যবস্থাপনা।',
-    en: 'Spotless cabin bedding, hygienic western toilet, and RO filtered water onboard. We felt completely safe and cared for throughout.',
-    rating: 4,
+    "id": "rev-18",
+    "guestName": "অর্পিতা দে",
+    "guestLocation": "ডায়মন্ড হারবার, দঃ ২৪ পরগনা",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-08T22:00:00.000Z"
   },
   {
-    bn: 'বাঘ সরাসরি না দেখতে পেলেও ভিজে কাদায় বাঘের একেবারে তাজা পায়ের ছাপ দেখেছি। গাইড সুন্দরবনের বাস্তুতন্ত্র নিয়ে অনেক তথ্য সমৃদ্ধ গল্প বলেছেন।',
-    en: 'Though we missed the Royal Bengal Tiger directly, we saw fresh pugmarks on the muddy banks. The biodiversity narratives were captivating.',
-    rating: 5,
+    "id": "rev-19",
+    "guestName": "সন্দীপন হালদার",
+    "guestLocation": "বিস্টুপুর, জামশেদপুর, ঝাড়খণ্ড",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-07T18:00:00.000Z"
   },
   {
-    bn: 'একদিনের ডে সাফারি নিয়েছিলাম। সকাল ৮টা থেকে বিকেল ৫টা পর্যন্ত প্রতিটি মিনিট কাজে লাগানো হয়েছে। অল্প সময়ে সুন্দরবনের মূল জায়গাগুলো ঘুরে ফেলা সম্ভব হয়েছে।',
-    en: 'Opted for the 1-day safari package. Every minute was utilized efficiently from 8 AM to 5 PM without feeling rushed.',
-    rating: 5,
+    "id": "rev-20",
+    "guestName": "राकेश रंजन",
+    "guestLocation": "बोरिंग रोड, पटना, बिहार",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "परिवार के साथ यह हमारा पहला सुंदरबन ट्रिप था। बच्चों के लिए लाइफ जैकेट की पूरी व्यवस्था थी जिससे हम बेफिक्र रहे। घने मैंग्रोव जंगलों के बीच नाव से सैर और दोबांकी कैनोपी वॉक का अनुभव बहुत ही रोमांचक था।",
+      "en": "परिवार के साथ यह हमारा पहला सुंदरबन ट्रिप था। बच्चों के लिए लाइफ जैकेट की पूरी व्यवस्था थी जिससे हम बेफिक्र रहे। घने मैंग्रोव जंगलों के बीच नाव से सैर और दोबांकी कैनोपी वॉक का अनुभव बहुत ही रोमांचक था।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-06T14:00:00.000Z"
+  },
+  {
+    "id": "rev-21",
+    "guestName": "রিমঝিম সাহা",
+    "guestLocation": "সাঁতরাগাছি, হাওড়া",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-05T10:00:00.000Z"
+  },
+  {
+    "id": "rev-22",
+    "guestName": "অভিষেক দত্ত",
+    "guestLocation": "সালকিয়া, হাওড়া",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-04T06:00:00.000Z"
+  },
+  {
+    "id": "rev-23",
+    "guestName": "শ্রাবণী কর্মকার",
+    "guestLocation": "বালি, হাওড়া",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-03T02:00:00.000Z"
+  },
+  {
+    "id": "rev-24",
+    "guestName": "অর্কপ্রভ মল্লিক",
+    "guestLocation": "শ্রীরামপুর, হুগলি",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-09-01T22:00:00.000Z"
+  },
+  {
+    "id": "rev-25",
+    "guestName": "Pooja Hegde & Friends",
+    "guestLocation": "Whitefield, Bengaluru",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "Our all-girls trip to Sundarban was super safe, comfortable, and well-managed! The pickup from Kolkata was punctual, boat cabins were spotless, and the evening tribal folk dance performance with fresh snacks was magical.",
+      "en": "Our all-girls trip to Sundarban was super safe, comfortable, and well-managed! The pickup from Kolkata was punctual, boat cabins were spotless, and the evening tribal folk dance performance with fresh snacks was magical."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-31T18:00:00.000Z"
+  },
+  {
+    "id": "rev-26",
+    "guestName": "বিশ্বরূপ মণ্ডল",
+    "guestLocation": "ধানবাদ সিটি, ঝাড়খণ্ড",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-30T14:00:00.000Z"
+  },
+  {
+    "id": "rev-27",
+    "guestName": "নন্দিনী নন্দী",
+    "guestLocation": "চুঁচুড়া, হুগলি",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 4,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-29T10:00:00.000Z"
+  },
+  {
+    "id": "rev-28",
+    "guestName": "রাজীব গঙ্গোপাধ্যায়",
+    "guestLocation": "উত্তরপাড়া, হুগলি",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-28T06:00:00.000Z"
+  },
+  {
+    "id": "rev-29",
+    "guestName": "পায়ল সেন",
+    "guestLocation": "বর্ধমান শহর, পূর্ব বর্ধমান",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-27T02:00:00.000Z"
+  },
+  {
+    "id": "rev-30",
+    "guestName": "अरविंद कुमार झा",
+    "guestLocation": "बेली रोड, पटना, बिहार",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "बक्सर और पटना से हम दोस्त लोग आए थे। पहले डर लग रहा था कि जंगल में नाव पर कैसे रहेंगे, लेकिन बोट स्टाफ का व्यवहार इतना अपनापन भरा था कि कोई परेशानी नहीं हुई। शाम को डेक पर चाय और पकौड़े का आनंद ही अलग था।",
+      "en": "बक्सर और पटना से हम दोस्त लोग आए थे। पहले डर लग रहा था कि जंगल में नाव पर कैसे रहेंगे, लेकिन बोट स्टाफ का व्यवहार इतना अपनापन भरा था कि कोई परेशानी नहीं हुई। शाम को डेक पर चाय और पकौड़े का आनंद ही अलग था।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-25T22:00:00.000Z"
+  },
+  {
+    "id": "rev-31",
+    "guestName": "অমিতাভ সান্যাল",
+    "guestLocation": "কালনা, পূর্ব বর্ধমান",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-24T18:00:00.000Z"
+  },
+  {
+    "id": "rev-32",
+    "guestName": "রোহন বিশ্বাস",
+    "guestLocation": "বোকারো স্টিল সিটি, ঝাড়খণ্ড",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-23T14:00:00.000Z"
+  },
+  {
+    "id": "rev-33",
+    "guestName": "অনিন্দিতা পাত্র",
+    "guestLocation": "আসানসোল কোর্ট রোড",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-22T10:00:00.000Z"
+  },
+  {
+    "id": "rev-34",
+    "guestName": "সায়ন্তন খাঁড়া",
+    "guestLocation": "রানীগঞ্জ, পঃ বর্ধমান",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-21T06:00:00.000Z"
+  },
+  {
+    "id": "rev-35",
+    "guestName": "Abhinav Deshmukh",
+    "guestLocation": "Kothrud, Pune",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "Coming from Maharashtra, we were eager to experience the Sundarbans mangrove tiger reserve. The Dobanki canopy walkway high above the forest floor was thrilling. Delicious prawn malai curry and warm hospitality by the staff.",
+      "en": "Coming from Maharashtra, we were eager to experience the Sundarbans mangrove tiger reserve. The Dobanki canopy walkway high above the forest floor was thrilling. Delicious prawn malai curry and warm hospitality by the staff."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-20T02:00:00.000Z"
+  },
+  {
+    "id": "rev-36",
+    "guestName": "ঐন্দ্রিলা সামন্ত",
+    "guestLocation": "খড়্গপুর, পঃ মেদিনীপুর",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-18T22:00:00.000Z"
+  },
+  {
+    "id": "rev-37",
+    "guestName": "দীপ্তেন্দু কোলে",
+    "guestLocation": "মেদিনীপুর শহর",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 3,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-17T18:00:00.000Z"
+  },
+  {
+    "id": "rev-38",
+    "guestName": "চিরঞ্জীব সামন্ত",
+    "guestLocation": "সি আর পার্ক, নতুন দিল্লি",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-16T14:00:00.000Z"
+  },
+  {
+    "id": "rev-39",
+    "guestName": "বৃষ্টি অধিকারী",
+    "guestLocation": "হলদিয়া টাউনশিপ",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-15T10:00:00.000Z"
+  },
+  {
+    "id": "rev-40",
+    "guestName": "अमितेश ओझा",
+    "guestLocation": "दानापुर कैंट, पटना, बिहार",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "कोलकाता ऑफिस के काम से आए थे, फिर 1 दिन का सुंदरबन डे सफारी लिया। सियालदह से कैनिंग ट्रेन और फिर बोट तक सब कुछ तय समय पर हुआ। कम समय में सुंदरबन का पूरा अहसास मिल गया।",
+      "en": "कोलकाता ऑफिस के काम से आए थे, फिर 1 दिन का सुंदरबन डे सफारी लिया। सियालदह से कैनिंग ट्रेन और फिर बोट तक सब कुछ तय समय पर हुआ। कम समय में सुंदरबन का पूरा अहसास मिल गया।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-14T06:00:00.000Z"
+  },
+  {
+    "id": "rev-41",
+    "guestName": "শোভনলাল সাঁতরা",
+    "guestLocation": "কাঁথি, পূর্ব মেদিনীপুর",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-13T02:00:00.000Z"
+  },
+  {
+    "id": "rev-42",
+    "guestName": "তিতাস বাগচী",
+    "guestLocation": "বাঁকুড়া শহর",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-11T22:00:00.000Z"
+  },
+  {
+    "id": "rev-43",
+    "guestName": "ভাস্কর বেরা",
+    "guestLocation": "বিষ্ণুপুর, বাঁকুড়া",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-10T18:00:00.000Z"
+  },
+  {
+    "id": "rev-44",
+    "guestName": "সোমা কর",
+    "guestLocation": "ইন্দিরাপোরাম, গাজিয়াবাদ",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 4,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-09T14:00:00.000Z"
+  },
+  {
+    "id": "rev-45",
+    "guestName": "Vikram Singhania",
+    "guestLocation": "DLF Phase 5, Gurgaon",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "Great one-day escape from Kolkata. Tight schedule but managed Sajnekhali watchtower and river cruise seamlessly. Food served fresh on the boat was delightful. Perfect for business travelers with limited weekend hours.",
+      "en": "Great one-day escape from Kolkata. Tight schedule but managed Sajnekhali watchtower and river cruise seamlessly. Food served fresh on the boat was delightful. Perfect for business travelers with limited weekend hours."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-08T10:00:00.000Z"
+  },
+  {
+    "id": "rev-46",
+    "guestName": "অরিজিৎ রায়",
+    "guestLocation": "কল্যাণী, নদীয়া",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-07T06:00:00.000Z"
+  },
+  {
+    "id": "rev-47",
+    "guestName": "প্রিয়াঙ্কা মান্না",
+    "guestLocation": "কৃষ্ণনগর, নদীয়া",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-06T02:00:00.000Z"
+  },
+  {
+    "id": "rev-48",
+    "guestName": "জয়দীপ প্রামাণিক",
+    "guestLocation": "রানাঘাট, নদীয়া",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-04T22:00:00.000Z"
+  },
+  {
+    "id": "rev-49",
+    "guestName": "রূপক লাহিড়ী",
+    "guestLocation": "বহরমপুর, মুর্শিদাবাদ",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-03T18:00:00.000Z"
+  },
+  {
+    "id": "rev-50",
+    "guestName": "सत्येंद्र नाथ सिंह",
+    "guestLocation": "अशोक राजपथ, पटना, बिहार",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "गहरे जंगलों का 3 रात 4 दिन का पैकेज लिया। पंचमुखानी के विशाल संगम का नजारा और संकरी खाड़ियों में मगरमच्छ देखना अद्भुत था। बोट पर साफ-सफाई और सुरक्षा के पुख्ता इंतजाम थे।",
+      "en": "गहरे जंगलों का 3 रात 4 दिन का पैकेज लिया। पंचमुखानी के विशाल संगम का नजारा और संकरी खाड़ियों में मगरमच्छ देखना अद्भुत था। बोट पर साफ-सफाई और सुरक्षा के पुख्ता इंतजाम थे।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-02T14:00:00.000Z"
+  },
+  {
+    "id": "rev-51",
+    "guestName": "অশোক বন্দ্যোপাধ্যায়",
+    "guestLocation": "সেক্টর ৫৬, গুরগাঁও",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-08-01T10:00:00.000Z"
+  },
+  {
+    "id": "rev-52",
+    "guestName": "সুজাতা ঘোষাল",
+    "guestLocation": "হাকিমপাড়া, শিলিগুড়ি",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-31T06:00:00.000Z"
+  },
+  {
+    "id": "rev-53",
+    "guestName": "অমিত পোদ্দার",
+    "guestLocation": "প্রধাননগর, শিলিগুড়ি",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-30T02:00:00.000Z"
+  },
+  {
+    "id": "rev-54",
+    "guestName": "শ্রুতি সেনশর্মা",
+    "guestLocation": "জলপাইগুড়ি শহর",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-28T22:00:00.000Z"
+  },
+  {
+    "id": "rev-55",
+    "guestName": "Debolina Mukherjee",
+    "guestLocation": "Salt Lake Sector 5, Kolkata",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "Booked for our corporate team outing. The twin-deck cruiser was spacious, sound system was fun for the evening, and staff took exceptional care of everyone's meal preferences. Transparent pricing with no surprise charges.",
+      "en": "Booked for our corporate team outing. The twin-deck cruiser was spacious, sound system was fun for the evening, and staff took exceptional care of everyone's meal preferences. Transparent pricing with no surprise charges."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-27T18:00:00.000Z"
+  },
+  {
+    "id": "rev-56",
+    "guestName": "কুন্তল মিদ্দা",
+    "guestLocation": "কোচবিহার শহর",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-26T14:00:00.000Z"
+  },
+  {
+    "id": "rev-57",
+    "guestName": "পলাশ সাঁতরা",
+    "guestLocation": "সেক্টর ৬২, নয়ডা",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-25T10:00:00.000Z"
+  },
+  {
+    "id": "rev-58",
+    "guestName": "চৈতালী বেরা",
+    "guestLocation": "নিউটাউন, কলকাতা",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-24T06:00:00.000Z"
+  },
+  {
+    "id": "rev-59",
+    "guestName": "শুভঙ্কর বারুই",
+    "guestLocation": "গড়িয়াহাট, কলকাতা",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-23T02:00:00.000Z"
+  },
+  {
+    "id": "rev-60",
+    "guestName": "रवि भूषण सहाय",
+    "guestLocation": "अनुग्रह नारायण रोड, गया, बिहार",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "गया से कोलकाता होते हुए हम 6 दोस्त सुंदरबन सफारी के लिए आए थे। बोट क्रूज और शाम को स्थानीय कलाकारों का झूमर नृत्य बहुत ही शानदार लगा। गाइड ने मैंग्रोव और रॉयल बंगाल टाइगर की कई दिलचस्प कहानियां सुनाईं।",
+      "en": "गया से कोलकाता होते हुए हम 6 दोस्त सुंदरबन सफारी के लिए आए थे। बोट क्रूज और शाम को स्थानीय कलाकारों का झूमर नृत्य बहुत ही शानदार लगा। गाइड ने मैंग्रोव और रॉयल बंगाल टाइगर की कई दिलचस्प कहानियां सुनाईं।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-21T22:00:00.000Z"
+  },
+  {
+    "id": "rev-61",
+    "guestName": "মৈত্রেয়ী ঘটক",
+    "guestLocation": "বেহালা, কলকাতা",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-20T18:00:00.000Z"
+  },
+  {
+    "id": "rev-62",
+    "guestName": "দীপক চৌধুরী",
+    "guestLocation": "যাদবপুর, কলকাতা",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-19T14:00:00.000Z"
+  },
+  {
+    "id": "rev-63",
+    "guestName": "অসীম কুমার মণ্ডল",
+    "guestLocation": "হোয়াইটফিল্ড, বেঙ্গালুরু",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-18T10:00:00.000Z"
+  },
+  {
+    "id": "rev-64",
+    "guestName": "রুমা ভট্টাচার্য",
+    "guestLocation": "দমদম, কলকাতা",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-17T06:00:00.000Z"
+  },
+  {
+    "id": "rev-65",
+    "guestName": "Karthik Ramanathan",
+    "guestLocation": "Adyar, Chennai",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "A surreal wilderness experience! The tranquil river channels of Pirkhali and Sundarban tiger delta are unlike anything in South India. Our guide was extremely knowledgeable about mangrove ecology and royal Bengal tiger behavior.",
+      "en": "A surreal wilderness experience! The tranquil river channels of Pirkhali and Sundarban tiger delta are unlike anything in South India. Our guide was extremely knowledgeable about mangrove ecology and royal Bengal tiger behavior."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-16T02:00:00.000Z"
+  },
+  {
+    "id": "rev-66",
+    "guestName": "প্রবীর রায়",
+    "guestLocation": "বালিগঞ্জ, কলকাতা",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-14T22:00:00.000Z"
+  },
+  {
+    "id": "rev-67",
+    "guestName": "শ্যামল খাঁ",
+    "guestLocation": "টালিগঞ্জ, কলকাতা",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-13T18:00:00.000Z"
+  },
+  {
+    "id": "rev-68",
+    "guestName": "শিপ্রা রক্ষিত",
+    "guestLocation": "বারাসাত, উঃ ২৪ পরগনা",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-12T14:00:00.000Z"
+  },
+  {
+    "id": "rev-69",
+    "guestName": "তপন চক্রবর্তী",
+    "guestLocation": "ইলেকট্রনিক সিটি, বেঙ্গালুরু",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-11T10:00:00.000Z"
+  },
+  {
+    "id": "rev-70",
+    "guestName": "प्रमोद कुमार वर्मा",
+    "guestLocation": "बोधगया, गया, बिहार",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "सुधन्यखाली वॉच टावर के मीठे पानी के तालाब के पास हिरणों का झुंड देखा। नाव पर शुद्ध शाकाहारी बंगाली खाना बहुत ही प्रेम से खिलाया। स्टाफ बहुत मददगार और मिलनसार था।",
+      "en": "सुधन्यखाली वॉच टावर के मीठे पानी के तालाब के पास हिरणों का झुंड देखा। नाव पर शुद्ध शाकाहारी बंगाली खाना बहुत ही प्रेम से खिलाया। स्टाफ बहुत मददगार और मिलनसार था।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-10T06:00:00.000Z"
+  },
+  {
+    "id": "rev-71",
+    "guestName": "মানসী দে",
+    "guestLocation": "নৈহাটি, উঃ ২৪ পরগনা",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-09T02:00:00.000Z"
+  },
+  {
+    "id": "rev-72",
+    "guestName": "দেবাশিস পোদ্দার",
+    "guestLocation": "হাবড়া, উঃ ২৪ পরগনা",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-07T22:00:00.000Z"
+  },
+  {
+    "id": "rev-73",
+    "guestName": "অনুপম সিংহ",
+    "guestLocation": "বারুইপুর, দঃ ২৪ পরগনা",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 3,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-06T18:00:00.000Z"
+  },
+  {
+    "id": "rev-74",
+    "guestName": "সুস্মিতা দে সরকার",
+    "guestLocation": "ডায়মন্ড হারবার, দঃ ২৪ পরগনা",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-05T14:00:00.000Z"
+  },
+  {
+    "id": "rev-75",
+    "guestName": "Meera Nair",
+    "guestLocation": "Jubilee Hills, Hyderabad",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "The mud-walk trail at Burirdabri and the massive expanse of Panchamukhani 5-river confluence were breathtaking. Very hygienic western toilets on boat and continuous supply of safe bottled water. Highly recommended!",
+      "en": "The mud-walk trail at Burirdabri and the massive expanse of Panchamukhani 5-river confluence were breathtaking. Very hygienic western toilets on boat and continuous supply of safe bottled water. Highly recommended!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-04T10:00:00.000Z"
+  },
+  {
+    "id": "rev-76",
+    "guestName": "সুব্রত মজুমদার",
+    "guestLocation": "ইন্দিরানগর, বেঙ্গালুরু",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-03T06:00:00.000Z"
+  },
+  {
+    "id": "rev-77",
+    "guestName": "ঝুমা পাল",
+    "guestLocation": "সাঁতরাগাছি, হাওড়া",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-07-02T02:00:00.000Z"
+  },
+  {
+    "id": "rev-78",
+    "guestName": "রঞ্জন বোস",
+    "guestLocation": "সালকিয়া, হাওড়া",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-30T22:00:00.000Z"
+  },
+  {
+    "id": "rev-79",
+    "guestName": "পাপিয়া সামন্ত",
+    "guestLocation": "বালি, হাওড়া",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-29T18:00:00.000Z"
+  },
+  {
+    "id": "rev-80",
+    "guestName": "अमित कुमार चौधरी",
+    "guestLocation": "मिठनपुरा, मुजफ्फरपुर, बिहार",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "मुजफ्फरपुर से सफर करके आए थे, थोड़ी थकान थी लेकिन सुंदरबन की नदी में बोट पर बैठते ही सारी थकान मिट गई। नदी का ठंडा पानी और शांत वातावरण मन को शांति देता है। बेहतरीन व्यवस्था।",
+      "en": "मुजफ्फरपुर से सफर करके आए थे, थोड़ी थकान थी लेकिन सुंदरबन की नदी में बोट पर बैठते ही सारी थकान मिट गई। नदी का ठंडा पानी और शांत वातावरण मन को शांति देता है। बेहतरीन व्यवस्था।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-28T14:00:00.000Z"
+  },
+  {
+    "id": "rev-81",
+    "guestName": "গৌতম কর",
+    "guestLocation": "শ্রীরামপুর, হুগলি",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-27T10:00:00.000Z"
+  },
+  {
+    "id": "rev-82",
+    "guestName": "স্নেহাশিস দত্ত",
+    "guestLocation": "এইচ এস আর লেআউট, বেঙ্গালুরু",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-26T06:00:00.000Z"
+  },
+  {
+    "id": "rev-83",
+    "guestName": "সোমনাথ ব্যানার্জী",
+    "guestLocation": "চুঁচুড়া, হুগলি",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-25T02:00:00.000Z"
+  },
+  {
+    "id": "rev-84",
+    "guestName": "বুলবুল সাহা",
+    "guestLocation": "উত্তরপাড়া, হুগলি",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-23T22:00:00.000Z"
+  },
+  {
+    "id": "rev-85",
+    "guestName": "Sameer Kulkarni",
+    "guestLocation": "Powai, Mumbai",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "Traveled with my elderly parents. The crew was remarkably gentle and helped them on and off the jetties with immense care. Watching spotted deer herds grazing peacefully by the freshwater pond was pure bliss.",
+      "en": "Traveled with my elderly parents. The crew was remarkably gentle and helped them on and off the jetties with immense care. Watching spotted deer herds grazing peacefully by the freshwater pond was pure bliss."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-22T18:00:00.000Z"
+  },
+  {
+    "id": "rev-86",
+    "guestName": "সুদীপ নন্দী",
+    "guestLocation": "বর্ধমান শহর, পূর্ব বর্ধমান",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-21T14:00:00.000Z"
+  },
+  {
+    "id": "rev-87",
+    "guestName": "মিতালী মুখার্জী",
+    "guestLocation": "কালনা, পূর্ব বর্ধমান",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-20T10:00:00.000Z"
+  },
+  {
+    "id": "rev-88",
+    "guestName": "প্রণব সেন",
+    "guestLocation": "ভাশি, নবি মুম্বাই",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 4,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-19T06:00:00.000Z"
+  },
+  {
+    "id": "rev-89",
+    "guestName": "মল্লিকা সরকার",
+    "guestLocation": "আসানসোল কোর্ট রোড",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-18T02:00:00.000Z"
+  },
+  {
+    "id": "rev-90",
+    "guestName": "दीपक कुमार शाही",
+    "guestLocation": "कलमबाग चौक, मुजफ्फरपुर, बिहार",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "पारिवारिक यात्रा के लिए बहुत ही सुरक्षित और सुखद जगह है। बोट के केबिन साफ-सुथरे थे और बिस्तर आरामदायक थे। बच्चों ने धूप सेंकते हुए विशाल मगरमच्छ देखकर बहुत एन्जॉय किया।",
+      "en": "पारिवारिक यात्रा के लिए बहुत ही सुरक्षित और सुखद जगह है। बोट के केबिन साफ-सुथरे थे और बिस्तर आरामदायक थे। बच्चों ने धूप सेंकते हुए विशाल मगरमच्छ देखकर बहुत एन्जॉय किया।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-16T22:00:00.000Z"
+  },
+  {
+    "id": "rev-91",
+    "guestName": "উৎপল চক্রবর্তী",
+    "guestLocation": "রানীগঞ্জ, পঃ বর্ধমান",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-15T18:00:00.000Z"
+  },
+  {
+    "id": "rev-92",
+    "guestName": "অপর্ণা ঘোষ",
+    "guestLocation": "খড়্গপুর, পঃ মেদিনীপুর",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-14T14:00:00.000Z"
+  },
+  {
+    "id": "rev-93",
+    "guestName": "ভাস্বতী বসু",
+    "guestLocation": "মেদিনীপুর শহর",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-13T10:00:00.000Z"
+  },
+  {
+    "id": "rev-94",
+    "guestName": "দীপঙ্কর ভট্টাচার্য",
+    "guestLocation": "পোওয়াই, মুম্বাই",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-12T06:00:00.000Z"
+  },
+  {
+    "id": "rev-95",
+    "guestName": "Alok Vardhan",
+    "guestLocation": "Boring Canal Road, Patna",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "Took our family of six from Patna. Everything was seamlessly arranged from Kolkata pickup. Genuine homestyle cooking on boat and spotless cabins. My kids loved seeing wild boars, monitor lizards, and mudskippers up close.",
+      "en": "Took our family of six from Patna. Everything was seamlessly arranged from Kolkata pickup. Genuine homestyle cooking on boat and spotless cabins. My kids loved seeing wild boars, monitor lizards, and mudskippers up close."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-11T02:00:00.000Z"
+  },
+  {
+    "id": "rev-96",
+    "guestName": "কাকলি মণ্ডল",
+    "guestLocation": "হলদিয়া টাউনশিপ",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-09T22:00:00.000Z"
+  },
+  {
+    "id": "rev-97",
+    "guestName": "অলোক চৌধুরী",
+    "guestLocation": "কাঁথি, পূর্ব মেদিনীপুর",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-08T18:00:00.000Z"
+  },
+  {
+    "id": "rev-98",
+    "guestName": "চন্দনা দাস",
+    "guestLocation": "বাঁকুড়া শহর",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-07T14:00:00.000Z"
+  },
+  {
+    "id": "rev-99",
+    "guestName": "সন্তোষ কুমার দাস",
+    "guestLocation": "বিষ্ণুপুর, বাঁকুড়া",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-06T10:00:00.000Z"
+  },
+  {
+    "id": "rev-100",
+    "guestName": "सुधीर कांत झा",
+    "guestLocation": "तिलकामांझी, भागलपुर, बिहार",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "भागलपुर से पूरा परिवार आया था। बुजुर्ग माता-पिता को नाव पर चढ़ने-उतरने में स्टाफ ने बहुत सहारा दिया। बोट पर बना हुआ ताजा खाना और सुंदरबन के शुद्ध शहद की चाय लाजवाब थी।",
+      "en": "भागलपुर से पूरा परिवार आया था। बुजुर्ग माता-पिता को नाव पर चढ़ने-उतरने में स्टाफ ने बहुत सहारा दिया। बोट पर बना हुआ ताजा खाना और सुंदरबन के शुद्ध शहद की चाय लाजवाब थी।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-05T06:00:00.000Z"
+  },
+  {
+    "id": "rev-101",
+    "guestName": "পার্থিব সান্যাল",
+    "guestLocation": "থানে পশ্চিম, মহারাষ্ট্র",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-04T02:00:00.000Z"
+  },
+  {
+    "id": "rev-102",
+    "guestName": "অনন্যা হালদার",
+    "guestLocation": "কল্যাণী, নদীয়া",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-02T22:00:00.000Z"
+  },
+  {
+    "id": "rev-103",
+    "guestName": "সৈকত বন্দ্যোপাধ্যায়",
+    "guestLocation": "কৃষ্ণনগর, নদীয়া",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-06-01T18:00:00.000Z"
+  },
+  {
+    "id": "rev-104",
+    "guestName": "রূপশ্রী দে",
+    "guestLocation": "রানাঘাট, নদীয়া",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-31T14:00:00.000Z"
+  },
+  {
+    "id": "rev-105",
+    "guestName": "Arunav Bordoloi",
+    "guestLocation": "Zoo Road, Guwahati, Assam",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "Coming from the land of Kaziranga, Sundarban's river-based mangrove safari offered a completely distinct thrill. The quiet gliding through narrow tidal creeks at dawn was unforgettable. 10/10 for hospitality.",
+      "en": "Coming from the land of Kaziranga, Sundarban's river-based mangrove safari offered a completely distinct thrill. The quiet gliding through narrow tidal creeks at dawn was unforgettable. 10/10 for hospitality."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-30T10:00:00.000Z"
+  },
+  {
+    "id": "rev-106",
+    "guestName": "অচিন্ত্য বেরা",
+    "guestLocation": "বহরমপুর, মুর্শিদাবাদ",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-29T06:00:00.000Z"
+  },
+  {
+    "id": "rev-107",
+    "guestName": "শাশ্বত মুখার্জী",
+    "guestLocation": "হিঞ্জেওয়াড়ি, পুনে",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-28T02:00:00.000Z"
+  },
+  {
+    "id": "rev-108",
+    "guestName": "শ্রেয়া সেনগুপ্ত",
+    "guestLocation": "হাকিমপাড়া, শিলিগুড়ি",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-26T22:00:00.000Z"
+  },
+  {
+    "id": "rev-109",
+    "guestName": "শুভম ভৌমিক",
+    "guestLocation": "প্রধাননগর, শিলিগুড়ি",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 3,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-25T18:00:00.000Z"
+  },
+  {
+    "id": "rev-110",
+    "guestName": "संजीव कुमार सिन्हा",
+    "guestLocation": "आदमपुर, भागलपुर, बिहार",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "दोबांकी का केनोपी वॉक सबसे अच्छा लगा, जाली के ऊपर से जंगल को देखना एक नया अनुभव था। किसी भी तरह का कोई एक्स्ट्रा हिडेन चार्ज नहीं लिया गया। पूरी तरह ईमानदार और भरोसेमंद टीम है।",
+      "en": "दोबांकी का केनोपी वॉक सबसे अच्छा लगा, जाली के ऊपर से जंगल को देखना एक नया अनुभव था। किसी भी तरह का कोई एक्स्ट्रा हिडेन चार्ज नहीं लिया गया। पूरी तरह ईमानदार और भरोसेमंद टीम है।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-24T14:00:00.000Z"
+  },
+  {
+    "id": "rev-111",
+    "guestName": "রিতুপর্ণা কর",
+    "guestLocation": "জলপাইগুড়ি শহর",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-23T10:00:00.000Z"
+  },
+  {
+    "id": "rev-112",
+    "guestName": "পিনাকী সরকার",
+    "guestLocation": "কোচবিহার শহর",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-22T06:00:00.000Z"
+  },
+  {
+    "id": "rev-113",
+    "guestName": "অভিজিৎ কোলে",
+    "guestLocation": "ওয়াকাড়, পুনে",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-21T02:00:00.000Z"
+  },
+  {
+    "id": "rev-114",
+    "guestName": "মধুমিতা সাঁতরা",
+    "guestLocation": "নিউটাউন, কলকাতা",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-19T22:00:00.000Z"
+  },
+  {
+    "id": "rev-115",
+    "guestName": "Siddharth Oberoi",
+    "guestLocation": "Greater Kailash, New Delhi",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "Flawless organization! From the comfortable AC vehicle transfer from Kolkata to the cruiser stay, everything exceeded our expectations. The local guide shared rich folklore about Bonbibi and tiger attacks.",
+      "en": "Flawless organization! From the comfortable AC vehicle transfer from Kolkata to the cruiser stay, everything exceeded our expectations. The local guide shared rich folklore about Bonbibi and tiger attacks."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-18T18:00:00.000Z"
+  },
+  {
+    "id": "rev-116",
+    "guestName": "সত্রাজিৎ মল্লিক",
+    "guestLocation": "গড়িয়াহাট, কলকাতা",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-17T14:00:00.000Z"
+  },
+  {
+    "id": "rev-117",
+    "guestName": "পল্লবী বাগচী",
+    "guestLocation": "বেহালা, কলকাতা",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-16T10:00:00.000Z"
+  },
+  {
+    "id": "rev-118",
+    "guestName": "সুগত রায়",
+    "guestLocation": "যাদবপুর, কলকাতা",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-15T06:00:00.000Z"
+  },
+  {
+    "id": "rev-119",
+    "guestName": "দীপেন পাল",
+    "guestLocation": "মাধাপুর, হায়দ্রাবাদ",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-14T02:00:00.000Z"
+  },
+  {
+    "id": "rev-120",
+    "guestName": "मुकेश नारायण सिंह",
+    "guestLocation": "लहेरियासराय, दरभंगा, बिहार",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম सुंदरবন প্যাকেজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "दरभंगा से हम लोग 10 लोगों का ग्रुप लेकर आए थे। नाव पर हमारे हिसाब से खाना तैयार किया गया। रात में नदी के बीच शांत नाव पर रुकने का अनुभव जीवन में पहली बार मिला।",
+      "en": "दरभंगा से हम लोग 10 लोगों का ग्रुप लेकर आए थे। नाव पर हमारे हिसाब से खाना तैयार किया गया। रात में नदी के बीच शांत नाव पर रुकने का अनुभव जीवन में पहली बार मिला।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-12T22:00:00.000Z"
+  },
+  {
+    "id": "rev-121",
+    "guestName": "তনুকা নন্দী",
+    "guestLocation": "দমদম, কলকাতা",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-11T18:00:00.000Z"
+  },
+  {
+    "id": "rev-122",
+    "guestName": "দেবোত্তম ঘোষ",
+    "guestLocation": "বালিগঞ্জ, কলকাতা",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-10T14:00:00.000Z"
+  },
+  {
+    "id": "rev-123",
+    "guestName": "উজ্জ্বলা চক্রবর্তী",
+    "guestLocation": "টালিগঞ্জ, কলকাতা",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-09T10:00:00.000Z"
+  },
+  {
+    "id": "rev-124",
+    "guestName": "কৌশানি দত্ত",
+    "guestLocation": "বারাসাত, উঃ ২৪ পরগনা",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-08T06:00:00.000Z"
+  },
+  {
+    "id": "rev-125",
+    "guestName": "Tanya Chawla",
+    "guestLocation": "Bandra West, Mumbai",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "A refreshing break amidst pristine nature. Boat deck was very relaxing for morning yoga and evening sunsets. Food was hearty and authentic. Note that mobile signal drops deep in delta, which actually made it a true digital detox.",
+      "en": "A refreshing break amidst pristine nature. Boat deck was very relaxing for morning yoga and evening sunsets. Food was hearty and authentic. Note that mobile signal drops deep in delta, which actually made it a true digital detox."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-07T02:00:00.000Z"
+  },
+  {
+    "id": "rev-126",
+    "guestName": "সোহম বন্দ্যোপাধ্যায়",
+    "guestLocation": "শহীদ নগর, ভুবনেশ্বর, ওড়িশা",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-05T22:00:00.000Z"
+  },
+  {
+    "id": "rev-127",
+    "guestName": "রঞ্জিতা বোস",
+    "guestLocation": "নৈহাটি, উঃ ২৪ পরগনা",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-04T18:00:00.000Z"
+  },
+  {
+    "id": "rev-128",
+    "guestName": "ধীমান মজুমদার",
+    "guestLocation": "হাবড়া, উঃ ২৪ পরগনা",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-03T14:00:00.000Z"
+  },
+  {
+    "id": "rev-129",
+    "guestName": "অলোক বন্দ্যোপাধ্যায়",
+    "guestLocation": "বারুইপুর, দঃ ২৪ পরগনা",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-02T10:00:00.000Z"
+  },
+  {
+    "id": "rev-130",
+    "guestName": "विपिन बिहारी लाल",
+    "guestLocation": "जीरो माइल, बेगूसराय, बिहार",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "कम बजट और कम समय में सुंदरबन घूमने का सबसे बढ़िया विकल्प। सुबह कैनिंग से पिकअप और शाम को वापसी। रास्ते में सोजनेखाली और सुधन्यखाली दोनों का दीदार हो गया।",
+      "en": "कम बजट और कम समय में सुंदरबन घूमने का सबसे बढ़िया विकल्प। सुबह कैनिंग से पिकअप और शाम को वापसी। रास्ते में सोजनेखाली और सुधन्यखाली दोनों का दीदार हो गया।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-05-01T06:00:00.000Z"
+  },
+  {
+    "id": "rev-131",
+    "guestName": "রীনা দাসগুপ্ত",
+    "guestLocation": "ডায়মন্ড হারবার, দঃ ২৪ পরগনা",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-30T02:00:00.000Z"
+  },
+  {
+    "id": "rev-132",
+    "guestName": "বিমল কান্তি মণ্ডল",
+    "guestLocation": "পল্টন বাজার, গুয়াহাটি, আসাম",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 4,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-28T22:00:00.000Z"
+  },
+  {
+    "id": "rev-133",
+    "guestName": "স্বাতী সেন",
+    "guestLocation": "সাঁতরাগাছি, হাওড়া",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-27T18:00:00.000Z"
+  },
+  {
+    "id": "rev-134",
+    "guestName": "সুজয় সামন্ত",
+    "guestLocation": "সালকিয়া, হাওড়া",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-26T14:00:00.000Z"
+  },
+  {
+    "id": "rev-135",
+    "guestName": "Rajarshi Ganguly",
+    "guestLocation": "New Town Action Area 1, Kolkata",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "Excellent day safari for Kolkata residents. Reached Godkhali by morning, spent entire day cruising Sajnekhali and Sudhanyakhali, and back by night. Delicious hot fish lunch served while cruising. Worth every rupee.",
+      "en": "Excellent day safari for Kolkata residents. Reached Godkhali by morning, spent entire day cruising Sajnekhali and Sudhanyakhali, and back by night. Delicious hot fish lunch served while cruising. Worth every rupee."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-25T10:00:00.000Z"
+  },
+  {
+    "id": "rev-136",
+    "guestName": "লিপিকা পোদ্দার",
+    "guestLocation": "বালি, হাওড়া",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-24T06:00:00.000Z"
+  },
+  {
+    "id": "rev-137",
+    "guestName": "রণবীর সাহা",
+    "guestLocation": "শ্রীরামপুর, হুগলি",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-23T02:00:00.000Z"
+  },
+  {
+    "id": "rev-138",
+    "guestName": "পম্পা ভট্টাচার্য",
+    "guestLocation": "শিলচর, আসাম",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-21T22:00:00.000Z"
+  },
+  {
+    "id": "rev-139",
+    "guestName": "তন্ময় রক্ষিত",
+    "guestLocation": "চুঁচুড়া, হুগলি",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-20T18:00:00.000Z"
+  },
+  {
+    "id": "rev-140",
+    "guestName": "अजय कुमार सिंह",
+    "guestLocation": "दरोगा राय चौक, छपरा, बिहार",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "छपरा से हावड़ा ट्रेन पकड़कर आए। वहां से टूर वालों ने पूरी जिम्मेदारी से सुंदरबन पहुंचाया। नाव पर किसी चीज की कमी नहीं होने दी। टाइगर के ताजे पैरों के निशान भी देखे।",
+      "en": "छपरा से हावड़ा ट्रेन पकड़कर आए। वहां से टूर वालों ने पूरी जिम्मेदारी से सुंदरबन पहुंचाया। नाव पर किसी चीज की कमी नहीं होने दी। टाइगर के ताजे पैरों के निशान भी देखे।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-19T14:00:00.000Z"
+  },
+  {
+    "id": "rev-141",
+    "guestName": "অর্পন বেরা",
+    "guestLocation": "উত্তরপাড়া, হুগলি",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-18T10:00:00.000Z"
+  },
+  {
+    "id": "rev-142",
+    "guestName": "রুনা ঘোষাল",
+    "guestLocation": "বর্ধমান শহর, পূর্ব বর্ধমান",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-17T06:00:00.000Z"
+  },
+  {
+    "id": "rev-143",
+    "guestName": "সুভাষ ঘটক",
+    "guestLocation": "কালনা, পূর্ব বর্ধমান",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-16T02:00:00.000Z"
+  },
+  {
+    "id": "rev-144",
+    "guestName": "মনোজ রায়",
+    "guestLocation": "হজরতগঞ্জ, লখনউ, ইউপি",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-14T22:00:00.000Z"
+  },
+  {
+    "id": "rev-145",
+    "guestName": "Naveen Chandrasekhar",
+    "guestLocation": "HSR Layout, Bengaluru",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "Exceptional guide and polite boat crew. We spotted 3 saltwater crocodiles, dozens of spotted deers, rhesus macaques, and fresh pugmarks. The mangrove honey tea in the morning was heavenly.",
+      "en": "Exceptional guide and polite boat crew. We spotted 3 saltwater crocodiles, dozens of spotted deers, rhesus macaques, and fresh pugmarks. The mangrove honey tea in the morning was heavenly."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-13T18:00:00.000Z"
+  },
+  {
+    "id": "rev-146",
+    "guestName": "গীতা চক্রবর্তী",
+    "guestLocation": "আসানসোল কোর্ট রোড",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 3,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-12T14:00:00.000Z"
+  },
+  {
+    "id": "rev-147",
+    "guestName": "নির্মল পাল",
+    "guestLocation": "রানীগঞ্জ, পঃ বর্ধমান",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-11T10:00:00.000Z"
+  },
+  {
+    "id": "rev-148",
+    "guestName": "কল্যাণী সেনশর্মা",
+    "guestLocation": "খড়্গপুর, পঃ মেদিনীপুর",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-10T06:00:00.000Z"
+  },
+  {
+    "id": "rev-149",
+    "guestName": "অমিত দে",
+    "guestLocation": "মেদিনীপুর শহর",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 4,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-09T02:00:00.000Z"
+  },
+  {
+    "id": "rev-150",
+    "guestName": "दिनेश प्रसाद गुप्ता",
+    "guestLocation": "गोपली चौक, आरा (भोजपुर), बिहार",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "भोजपुर से हमारे परिवार का ट्रिप था। नाव के ड्राइवर और गाइड बहुत कुशल थे। संकरी खाड़ियों में बहुत धीरे-धीरे बोट चला रहे थे ताकि हम जानवरों को आराम से कैमरे में कैद कर सकें।",
+      "en": "भोजपुर से हमारे परिवार का ट्रिप था। नाव के ड्राइवर और गाइड बहुत कुशल थे। संकरी खाड़ियों में बहुत धीरे-धीरे बोट चला रहे थे ताकि हम जानवरों को आराम से कैमरे में कैद कर सकें।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-07T22:00:00.000Z"
+  },
+  {
+    "id": "rev-151",
+    "guestName": "অঙ্কিতা দত্ত",
+    "guestLocation": "কদমতলা, পাটনা, বিহার",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-06T18:00:00.000Z"
+  },
+  {
+    "id": "rev-152",
+    "guestName": "শুভেন্দু সরকার",
+    "guestLocation": "হলদিয়া টাউনশিপ",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-05T14:00:00.000Z"
+  },
+  {
+    "id": "rev-153",
+    "guestName": "সোমশ্রী নন্দী",
+    "guestLocation": "কাঁথি, পূর্ব মেদিনীপুর",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-04T10:00:00.000Z"
+  },
+  {
+    "id": "rev-154",
+    "guestName": "দেবাঞ্জন মুখার্জী",
+    "guestLocation": "বাঁকুড়া শহর",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-03T06:00:00.000Z"
+  },
+  {
+    "id": "rev-155",
+    "guestName": "Dr. Shalini Srivastava",
+    "guestLocation": "Gomti Nagar, Lucknow",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "We had a wonderful 3-day family trip. Safety measures like child-sized life jackets and sturdy railings on the boat gave us complete peace of mind. The staff prepared mild, non-spicy meals specially for our children.",
+      "en": "We had a wonderful 3-day family trip. Safety measures like child-sized life jackets and sturdy railings on the boat gave us complete peace of mind. The staff prepared mild, non-spicy meals specially for our children."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-04-02T02:00:00.000Z"
+  },
+  {
+    "id": "rev-156",
+    "guestName": "অনুপমা বোস",
+    "guestLocation": "বিষ্ণুপুর, বাঁকুড়া",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-31T22:00:00.000Z"
+  },
+  {
+    "id": "rev-157",
+    "guestName": "প্রশান্ত ভৌমিক",
+    "guestLocation": "বোরিং রোড, পাটনা, বিহার",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-30T18:00:00.000Z"
+  },
+  {
+    "id": "rev-158",
+    "guestName": "শারদ্বতী সান্যাল",
+    "guestLocation": "কল্যাণী, নদীয়া",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-29T14:00:00.000Z"
+  },
+  {
+    "id": "rev-159",
+    "guestName": "সুবীর মজুমদার",
+    "guestLocation": "কৃষ্ণনগর, নদীয়া",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-28T10:00:00.000Z"
+  },
+  {
+    "id": "rev-160",
+    "guestName": "राजेश कुमार मिश्र",
+    "guestLocation": "लाइन बाजार, पूर्णिया, बिहार",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "पूर्णिया से सीमांचल एक्सप्रेस से कोलकाता पहुंचे और सीधे सुंदरबन का टूर शुरू हुआ। बोट पर बना मछली और मुर्गे का झोल बहुत स्वादिष्ट था। सब कुछ तय कार्यक्रम के अनुसार हुआ।",
+      "en": "पूर्णिया से सीमांचल एक्सप्रेस से कोलकाता पहुंचे और सीधे सुंदरबन का टूर शुरू हुआ। बोट पर बना मछली और मुर्गे का झोल बहुत स्वादिष्ट था। सब कुछ तय कार्यक्रम के अनुसार हुआ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-27T06:00:00.000Z"
+  },
+  {
+    "id": "rev-161",
+    "guestName": "সুচন্দ্রা হালদার",
+    "guestLocation": "রানাঘাট, নদীয়া",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-26T02:00:00.000Z"
+  },
+  {
+    "id": "rev-162",
+    "guestName": "ভাস্কর সামন্ত",
+    "guestLocation": "বহরমপুর, মুর্শিদাবাদ",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-24T22:00:00.000Z"
+  },
+  {
+    "id": "rev-163",
+    "guestName": "রজত কর",
+    "guestLocation": "মোরাবাদী, রাঁচি, ঝাড়খণ্ড",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-23T18:00:00.000Z"
+  },
+  {
+    "id": "rev-164",
+    "guestName": "জয়া মণ্ডল",
+    "guestLocation": "হাকিমপাড়া, শিলিগুড়ি",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-22T14:00:00.000Z"
+  },
+  {
+    "id": "rev-165",
+    "guestName": "Prateek Bansal",
+    "guestLocation": "Sector 18, Noida",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "Well-structured itinerary without rushing. We particularly enjoyed the Dobanki canopy walk and sunset at Panchamukhani. Cabins had clean beds and adequate ventilation. Value for money.",
+      "en": "Well-structured itinerary without rushing. We particularly enjoyed the Dobanki canopy walk and sunset at Panchamukhani. Cabins had clean beds and adequate ventilation. Value for money."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-21T10:00:00.000Z"
+  },
+  {
+    "id": "rev-166",
+    "guestName": "অভিজ্ঞান রায়",
+    "guestLocation": "প্রধাননগর, শিলিগুড়ি",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-20T06:00:00.000Z"
+  },
+  {
+    "id": "rev-167",
+    "guestName": "শিখা দে",
+    "guestLocation": "জলপাইগুড়ি শহর",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-19T02:00:00.000Z"
+  },
+  {
+    "id": "rev-168",
+    "guestName": "পরিমল বেরা",
+    "guestLocation": "কোচবিহার শহর",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-17T22:00:00.000Z"
+  },
+  {
+    "id": "rev-169",
+    "guestName": "শমীক ভট্টাচার্য",
+    "guestLocation": "বিস্টুপুর, জামশেদপুর, ঝাড়খণ্ড",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-16T18:00:00.000Z"
+  },
+  {
+    "id": "rev-170",
+    "guestName": "संजय कुमार भगत",
+    "guestLocation": "मोराबादी, राँची, झारखण्ड",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "राँची से हम 6 दोस्तों ने यह ट्रिप किया। पंचमुखानी का नजारा दिल खुश कर देने वाला था। नाव पर देसी अंदाज का खाना और सुंदरबन का नजारा हर किसी को जीवन में एक बार जरूर देखना चाहिए।",
+      "en": "राँची से हम 6 दोस्तों ने यह ट्रिप किया। पंचमुखानी का नजारा दिल खुश कर देने वाला था। नाव पर देसी अंदाज का खाना और सुंदरबन का नजारा हर किसी को जीवन में एक बार जरूर देखना चाहिए।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-15T14:00:00.000Z"
+  },
+  {
+    "id": "rev-171",
+    "guestName": "সুস্মিতা সাহা",
+    "guestLocation": "নিউটাউন, কলকাতা",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-14T10:00:00.000Z"
+  },
+  {
+    "id": "rev-172",
+    "guestName": "তপন দাস",
+    "guestLocation": "গড়িয়াহাট, কলকাতা",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-13T06:00:00.000Z"
+  },
+  {
+    "id": "rev-173",
+    "guestName": "মালবিকা রক্ষিত",
+    "guestLocation": "বেহালা, কলকাতা",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-12T02:00:00.000Z"
+  },
+  {
+    "id": "rev-174",
+    "guestName": "সুনীল বন্দ্যোপাধ্যায়",
+    "guestLocation": "যাদবপুর, কলকাতা",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-10T22:00:00.000Z"
+  },
+  {
+    "id": "rev-175",
+    "guestName": "Shruti Iyer",
+    "guestLocation": "Viman Nagar, Pune",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "The beauty of Sundarban creeks early in the morning with mist rising over the water is poetic. The local cooks served piping hot breakfast and lip-smacking Bengali thali. Kudos to the entire crew!",
+      "en": "The beauty of Sundarban creeks early in the morning with mist rising over the water is poetic. The local cooks served piping hot breakfast and lip-smacking Bengali thali. Kudos to the entire crew!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-09T18:00:00.000Z"
+  },
+  {
+    "id": "rev-176",
+    "guestName": "অপূর্ব সেনগুপ্ত",
+    "guestLocation": "ধানবাদ সিটি, ঝাড়খণ্ড",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-08T14:00:00.000Z"
+  },
+  {
+    "id": "rev-177",
+    "guestName": "বীথি ঘোষ",
+    "guestLocation": "দমদম, কলকাতা",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-07T10:00:00.000Z"
+  },
+  {
+    "id": "rev-178",
+    "guestName": "দেবাশিস বেরা",
+    "guestLocation": "বালিগঞ্জ, কলকাতা",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-06T06:00:00.000Z"
+  },
+  {
+    "id": "rev-179",
+    "guestName": "স্বর্ণালী চক্রবর্তী",
+    "guestLocation": "টালিগঞ্জ, কলকাতা",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-05T02:00:00.000Z"
+  },
+  {
+    "id": "rev-180",
+    "guestName": "अशोक कुमार महतो",
+    "guestLocation": "डोरंडा, राँची, झारखण्ड",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "राँची से ट्रेन से आसानी से पहुंच गए। गोडखाली से नाव पर चढ़ते ही पूरा सफर यादगार बन गया। नदी किनारे धूप सेकते घड़ियाल और हिरण देखकर बच्चे बहुत खुश हुए।",
+      "en": "राँची से ट्रेन से आसानी से पहुंच गए। गोडखाली से नाव पर चढ़ते ही पूरा सफर यादगार बन गया। नदी किनारे धूप सेकते घड़ियाल और हिरण देखकर बच्चे बहुत खुश हुए।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-03T22:00:00.000Z"
+  },
+  {
+    "id": "rev-181",
+    "guestName": "হিরণ্ময় দত্ত",
+    "guestLocation": "বারাসাত, উঃ ২৪ পরগনা",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-02T18:00:00.000Z"
+  },
+  {
+    "id": "rev-182",
+    "guestName": "পঙ্কজ পোদ্দার",
+    "guestLocation": "বোকারো স্টিল সিটি, ঝাড়খণ্ড",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 3,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-03-01T14:00:00.000Z"
+  },
+  {
+    "id": "rev-183",
+    "guestName": "অনিন্দ্য পাল",
+    "guestLocation": "নৈহাটি, উঃ ২৪ পরগনা",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-28T10:00:00.000Z"
+  },
+  {
+    "id": "rev-184",
+    "guestName": "রুবি মজুমদার",
+    "guestLocation": "হাবড়া, উঃ ২৪ পরগনা",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-27T06:00:00.000Z"
+  },
+  {
+    "id": "rev-185",
+    "guestName": "Aniket Mohanty",
+    "guestLocation": "Jayadev Vihar, Bhubaneswar",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "Short train journey to Howrah, and from there the tour operator handled everything smoothly. Watching Gangetic dolphins jumping near the creek entrance was the highlight of our vacation.",
+      "en": "Short train journey to Howrah, and from there the tour operator handled everything smoothly. Watching Gangetic dolphins jumping near the creek entrance was the highlight of our vacation."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-26T02:00:00.000Z"
+  },
+  {
+    "id": "rev-186",
+    "guestName": "কৌশিক ঘটক",
+    "guestLocation": "বারুইপুর, দঃ ২৪ পরগনা",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-24T22:00:00.000Z"
+  },
+  {
+    "id": "rev-187",
+    "guestName": "সম্প্রীতি সান্যাল",
+    "guestLocation": "ডায়মন্ড হারবার, দঃ ২৪ পরগনা",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-23T18:00:00.000Z"
+  },
+  {
+    "id": "rev-188",
+    "guestName": "আশীষ রায়",
+    "guestLocation": "সি আর পার্ক, নতুন দিল্লি",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-22T14:00:00.000Z"
+  },
+  {
+    "id": "rev-189",
+    "guestName": "মঞ্জুশ্রী বোস",
+    "guestLocation": "সাঁতরাগাছি, হাওড়া",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-21T10:00:00.000Z"
+  },
+  {
+    "id": "rev-190",
+    "guestName": "राजीव रंजन सहाय",
+    "guestLocation": "बैंक मोड़, धनबाद, झारखण्ड",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "धनबाद से कोलफील्ड एक्सप्रेस पकड़कर कोलकाता आए और वीकेंड पर सुंदरबन घूमे। नाव पर साफ-सफाई बहुत अच्छी थी और टॉयलेट भी एकदम हाइजीनिक था।",
+      "en": "धनबाद से कोलफील्ड एक्सप्रेस पकड़कर कोलकाता आए और वीकेंड पर सुंदरबन घूमे। नाव पर साफ-सफाई बहुत अच्छी थी और टॉयलेट भी एकदम हाइजीनिक था।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-20T06:00:00.000Z"
+  },
+  {
+    "id": "rev-191",
+    "guestName": "শান্তনু হালদার",
+    "guestLocation": "সালকিয়া, হাওড়া",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-19T02:00:00.000Z"
+  },
+  {
+    "id": "rev-192",
+    "guestName": "মধুছন্দা সেন",
+    "guestLocation": "বালি, হাওড়া",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-17T22:00:00.000Z"
+  },
+  {
+    "id": "rev-193",
+    "guestName": "শঙ্কর নন্দী",
+    "guestLocation": "শ্রীরামপুর, হুগলি",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 4,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-16T18:00:00.000Z"
+  },
+  {
+    "id": "rev-194",
+    "guestName": "প্রদ্যোৎ সরকার",
+    "guestLocation": "ইন্দিরাপোরাম, গাজিয়াবাদ",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-15T14:00:00.000Z"
+  },
+  {
+    "id": "rev-195",
+    "guestName": "Jaspreet Singh",
+    "guestLocation": "Model Town, Jalandhar / Delhi",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "Brilliant hospitality by the local Bengali staff. They treated us like family guests on the boat. Fresh fish and mutton cooked on boat tasted legendary. Highly recommend to all travelers visiting Eastern India.",
+      "en": "Brilliant hospitality by the local Bengali staff. They treated us like family guests on the boat. Fresh fish and mutton cooked on boat tasted legendary. Highly recommend to all travelers visiting Eastern India."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-14T10:00:00.000Z"
+  },
+  {
+    "id": "rev-196",
+    "guestName": "সুদেষ্ণা দাসগুপ্ত",
+    "guestLocation": "চুঁচুড়া, হুগলি",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-13T06:00:00.000Z"
+  },
+  {
+    "id": "rev-197",
+    "guestName": "অর্ঘ্য মুখার্জী",
+    "guestLocation": "উত্তরপাড়া, হুগলি",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-12T02:00:00.000Z"
+  },
+  {
+    "id": "rev-198",
+    "guestName": "তন্বী চক্রবর্তী",
+    "guestLocation": "বর্ধমান শহর, পূর্ব বর্ধমান",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-10T22:00:00.000Z"
+  },
+  {
+    "id": "rev-199",
+    "guestName": "সমীরণ ভৌমিক",
+    "guestLocation": "কালনা, পূর্ব বর্ধমান",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-09T18:00:00.000Z"
+  },
+  {
+    "id": "rev-200",
+    "guestName": "सुनील कुमार वर्णवाल",
+    "guestLocation": "स्टील गेट, धनबाद, झारखण्ड",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুন ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "सुंदरबन की प्राकृतिक सुंदरता और खामोशी अद्भुत है। नाव पर मोबाइल का नेटवर्क नहीं रहता, जिससे परिवार के साथ बातचीत का भरपूर समय मिला। बहुत ही सुकून भरा ट्रिप।",
+      "en": "सुंदरबन की प्राकृतिक सुंदरता और खामोशी अद्भुत है। नाव पर मोबाइल का नेटवर्क नहीं रहता, जिससे परिवार के साथ बातचीत का भरपूर समय मिला। बहुत ही सुकून भरा ट्रिप।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-08T14:00:00.000Z"
+  },
+  {
+    "id": "rev-201",
+    "guestName": "সুস্মিত পাল",
+    "guestLocation": "সেক্টর ৫৬, গুরগাঁও",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-07T10:00:00.000Z"
+  },
+  {
+    "id": "rev-202",
+    "guestName": "শম্পা বন্দ্যোপাধ্যায়",
+    "guestLocation": "আসানসোল কোর্ট রোড",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-06T06:00:00.000Z"
+  },
+  {
+    "id": "rev-203",
+    "guestName": "নিলয় দে",
+    "guestLocation": "রানীগঞ্জ, পঃ বর্ধমান",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-05T02:00:00.000Z"
+  },
+  {
+    "id": "rev-204",
+    "guestName": "পৌলমী বেরা",
+    "guestLocation": "খড়্গপুর, পঃ মেদিনীপুর",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-03T22:00:00.000Z"
+  },
+  {
+    "id": "rev-205",
+    "guestName": "Rishabh Joshi",
+    "guestLocation": "Satellite, Ahmedabad",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "As vegetarians, we were initially hesitant about boat food in Bengal. But they prepared completely separate, pure vegetarian Bengali dishes (paneer, moong dal, aloo bhaja, luchi) with utmost hygiene. Very happy!",
+      "en": "As vegetarians, we were initially hesitant about boat food in Bengal. But they prepared completely separate, pure vegetarian Bengali dishes (paneer, moong dal, aloo bhaja, luchi) with utmost hygiene. Very happy!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-02T18:00:00.000Z"
+  },
+  {
+    "id": "rev-206",
+    "guestName": "বিকাশ মণ্ডল",
+    "guestLocation": "মেদিনীপুর শহর",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-02-01T14:00:00.000Z"
+  },
+  {
+    "id": "rev-207",
+    "guestName": "জয়ন্ত দত্ত",
+    "guestLocation": "সেক্টর ৬২, নয়ডা",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-31T10:00:00.000Z"
+  },
+  {
+    "id": "rev-208",
+    "guestName": "রমা সাহা",
+    "guestLocation": "হলদিয়া টাউনশিপ",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-30T06:00:00.000Z"
+  },
+  {
+    "id": "rev-209",
+    "guestName": "অনিল সেনশর্মা",
+    "guestLocation": "কাঁথি, পূর্ব মেদিনীপুর",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-29T02:00:00.000Z"
+  },
+  {
+    "id": "rev-210",
+    "guestName": "विकास कुमार शर्मा",
+    "guestLocation": "बिष्टुपुर, जमशेदपुर, झारखण्ड",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "टाटा नगर से हावड़ा होकर सुंदरबन पहुंचे। पूरा मैनेजमेंट बहुत प्रोफेशनल था। गाइड ने सुंदरबन के इतिहास और रॉयल बंगाल टाइगर के बारे में बहुत ज्ञानवर्धक बातें बताईं।",
+      "en": "टाटा नगर से हावड़ा होकर सुंदरबन पहुंचे। पूरा मैनेजमेंट बहुत प्रोफेशनल था। गाइड ने सुंदरबन के इतिहास और रॉयल बंगाल टाइगर के बारे में बहुत ज्ञानवर्धक बातें बताईं।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-27T22:00:00.000Z"
+  },
+  {
+    "id": "rev-211",
+    "guestName": "ডালিয়া ঘোষাল",
+    "guestLocation": "বাঁকুড়া শহর",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-26T18:00:00.000Z"
+  },
+  {
+    "id": "rev-212",
+    "guestName": "সুজিত পোদ্দার",
+    "guestLocation": "বিষ্ণুপুর, বাঁকুড়া",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-25T14:00:00.000Z"
+  },
+  {
+    "id": "rev-213",
+    "guestName": "অমর্ত্য রক্ষিত",
+    "guestLocation": "হোয়াইটফিল্ড, বেঙ্গালুরু",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-24T10:00:00.000Z"
+  },
+  {
+    "id": "rev-214",
+    "guestName": "অদিতি সামন্ত",
+    "guestLocation": "কল্যাণী, নদীয়া",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-23T06:00:00.000Z"
+  },
+  {
+    "id": "rev-215",
+    "guestName": "Arindam Sanyal",
+    "guestLocation": "Ballygunge Circular Road, Kolkata",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "Deep jungle safari inside Burirdabri and Netidhopani was an adventure of a lifetime. The silent electric cruising in sensitive zones ensured animals were undisturbed. Outstanding wildlife awareness.",
+      "en": "Deep jungle safari inside Burirdabri and Netidhopani was an adventure of a lifetime. The silent electric cruising in sensitive zones ensured animals were undisturbed. Outstanding wildlife awareness."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-22T02:00:00.000Z"
+  },
+  {
+    "id": "rev-216",
+    "guestName": "মনোরঞ্জন ভট্টাচার্য",
+    "guestLocation": "কৃষ্ণনগর, নদীয়া",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-20T22:00:00.000Z"
+  },
+  {
+    "id": "rev-217",
+    "guestName": "রঞ্জনা কর",
+    "guestLocation": "রানাঘাট, নদীয়া",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-19T18:00:00.000Z"
+  },
+  {
+    "id": "rev-218",
+    "guestName": "প্রীতম রায়",
+    "guestLocation": "বহরমপুর, মুর্শিদাবাদ",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 3,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-18T14:00:00.000Z"
+  },
+  {
+    "id": "rev-219",
+    "guestName": "সব্যসাচী মজুমদার",
+    "guestLocation": "ইলেকট্রনিক সিটি, বেঙ্গালুরু",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-17T10:00:00.000Z"
+  },
+  {
+    "id": "rev-220",
+    "guestName": "आलोक कुमार गुप्ता",
+    "guestLocation": "साकची, जमशेदपुर, झारखण्ड",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "परिवार के साथ बहुत ही अच्छा समय बीता। सुंदरबन के गांव गोसाबा का भ्रमण और सर डैनियल हैमिल्टन का बंगला देखना इतिहास की सैर जैसा था। बेहतरीन आयोजन!",
+      "en": "परिवार के साथ बहुत ही अच्छा समय बीता। सुंदरबन के गांव गोसाबा का भ्रमण और सर डैनियल हैमिल्टन का बंगला देखना इतिहास की सैर जैसा था। बेहतरीन आयोजन!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-16T06:00:00.000Z"
+  },
+  {
+    "id": "rev-221",
+    "guestName": "মধুলিকা বোস",
+    "guestLocation": "হাকিমপাড়া, শিলিগুড়ি",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-15T02:00:00.000Z"
+  },
+  {
+    "id": "rev-222",
+    "guestName": "দীপক বেরা",
+    "guestLocation": "প্রধাননগর, শিলিগুড়ি",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-13T22:00:00.000Z"
+  },
+  {
+    "id": "rev-223",
+    "guestName": "চম্পা সরকার",
+    "guestLocation": "জলপাইগুড়ি শহর",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-12T18:00:00.000Z"
+  },
+  {
+    "id": "rev-224",
+    "guestName": "অলোকনাথ নন্দী",
+    "guestLocation": "কোচবিহার শহর",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-11T14:00:00.000Z"
+  },
+  {
+    "id": "rev-225",
+    "guestName": "Farhan Qureshi",
+    "guestLocation": "Civil Lines, Kanpur",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "Pleasant stay, good boat conditions, and honest tour operators. The local village walk in Gosaba was an eye-opener about island life and Hamilton's rural cooperative history.",
+      "en": "Pleasant stay, good boat conditions, and honest tour operators. The local village walk in Gosaba was an eye-opener about island life and Hamilton's rural cooperative history."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-10T10:00:00.000Z"
+  },
+  {
+    "id": "rev-226",
+    "guestName": "সুদীপ্ত হালদার",
+    "guestLocation": "ইন্দিরানগর, বেঙ্গালুরু",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-09T06:00:00.000Z"
+  },
+  {
+    "id": "rev-227",
+    "guestName": "তৃষা সেনগুপ্ত",
+    "guestLocation": "নিউটাউন, কলকাতা",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-08T02:00:00.000Z"
+  },
+  {
+    "id": "rev-228",
+    "guestName": "অমরেশ চক্রবর্তী",
+    "guestLocation": "গড়িয়াহাট, কলকাতা",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-06T22:00:00.000Z"
+  },
+  {
+    "id": "rev-229",
+    "guestName": "জয়শ্রী ঘোষ",
+    "guestLocation": "বেহালা, কলকাতা",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-05T18:00:00.000Z"
+  },
+  {
+    "id": "rev-230",
+    "guestName": "मनोज कुमार तिवारी",
+    "guestLocation": "सेक्टर 4, बोकारो स्टील सिटी, झारखण्ड",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "बोकारो से परिवार के साथ आए थे। नाव पर बच्चों के लिए दूध और सादा खाना भी बनाकर दिया। स्टाफ का सेवाभाव बहुत सराहनीय था। हर किसी को सिफारिश करूंगा।",
+      "en": "बोकारो से परिवार के साथ आए थे। नाव पर बच्चों के लिए दूध और सादा खाना भी बनाकर दिया। स्टाफ का सेवाभाव बहुत सराहनीय था। हर किसी को सिफारिश करूंगा।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-04T14:00:00.000Z"
+  },
+  {
+    "id": "rev-231",
+    "guestName": "বিপ্লব দাস",
+    "guestLocation": "যাদবপুর, কলকাতা",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-03T10:00:00.000Z"
+  },
+  {
+    "id": "rev-232",
+    "guestName": "শৌভিক সান্যাল",
+    "guestLocation": "এইচ এস আর লেআউট, বেঙ্গালুরু",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-02T06:00:00.000Z"
+  },
+  {
+    "id": "rev-233",
+    "guestName": "মমতা পাল",
+    "guestLocation": "দমদম, কলকাতা",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2026-01-01T02:00:00.000Z"
+  },
+  {
+    "id": "rev-234",
+    "guestName": "অচ্যুত মুখার্জী",
+    "guestLocation": "বালিগঞ্জ, কলকাতা",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-30T22:00:00.000Z"
+  },
+  {
+    "id": "rev-235",
+    "guestName": "Divya Nambiar",
+    "guestLocation": "Kakkanad, Kochi, Kerala",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "Being from Kerala, backwaters are familiar to me, but Sundarban's wild mangroves with ferocious tides and tidal mudflats are completely unique. Wonderful experience and warm hospitality.",
+      "en": "Being from Kerala, backwaters are familiar to me, but Sundarban's wild mangroves with ferocious tides and tidal mudflats are completely unique. Wonderful experience and warm hospitality."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-29T18:00:00.000Z"
+  },
+  {
+    "id": "rev-236",
+    "guestName": "রূপা দে",
+    "guestLocation": "টালিগঞ্জ, কলকাতা",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-28T14:00:00.000Z"
+  },
+  {
+    "id": "rev-237",
+    "guestName": "সজল ভৌমিক",
+    "guestLocation": "বারাসাত, উঃ ২৪ পরগনা",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 4,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-27T10:00:00.000Z"
+  },
+  {
+    "id": "rev-238",
+    "guestName": "সুবল বেরা",
+    "guestLocation": "ভাশি, নবি মুম্বাই",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-26T06:00:00.000Z"
+  },
+  {
+    "id": "rev-239",
+    "guestName": "রিতা দত্ত",
+    "guestLocation": "নৈহাটি, উঃ ২৪ পরগনা",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-25T02:00:00.000Z"
+  },
+  {
+    "id": "rev-240",
+    "guestName": "आनंद कुमार राय",
+    "guestLocation": "गोदौलिया, वाराणसी, उत्तर प्रदेश",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "काशी विश्वनाथ की नगरी बनारस से हम लोग सुंदरबन घूमने आए थे। गंगासागर और सुंदरबन का संगम बहुत पवित्र और भव्य लगा। नाव पर गरमा-गरम खाना और बंगाली मिठाइयां बहुत पसंद आईं।",
+      "en": "काशी विश्वनाथ की नगरी बनारस से हम लोग सुंदरबन घूमने आए थे। गंगासागर और सुंदरबन का संगम बहुत पवित्र और भव्य लगा। नाव पर गरमा-गरम खाना और बंगाली मिठाइयां बहुत पसंद आईं।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-23T22:00:00.000Z"
+  },
+  {
+    "id": "rev-241",
+    "guestName": "পার্থসারথি বন্দ্যোপাধ্যায়",
+    "guestLocation": "হাবড়া, উঃ ২৪ পরগনা",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-22T18:00:00.000Z"
+  },
+  {
+    "id": "rev-242",
+    "guestName": "কুহেলি বোস",
+    "guestLocation": "বারুইপুর, দঃ ২৪ পরগনা",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-21T14:00:00.000Z"
+  },
+  {
+    "id": "rev-243",
+    "guestName": "অভিষেক মণ্ডল",
+    "guestLocation": "ডায়মন্ড হারবার, দঃ ২৪ পরগনা",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-20T10:00:00.000Z"
+  },
+  {
+    "id": "rev-244",
+    "guestName": "প্রশান্ত নন্দী",
+    "guestLocation": "পোওয়াই, মুম্বাই",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-19T06:00:00.000Z"
+  },
+  {
+    "id": "rev-245",
+    "guestName": "Nitin Rastogi",
+    "guestLocation": "Aliganj, Lucknow",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "The entire team was courteous and attentive. We felt completely safe navigating the delta. The local guide kept us engaged with fascinating stories of royal Bengal tigers.",
+      "en": "The entire team was courteous and attentive. We felt completely safe navigating the delta. The local guide kept us engaged with fascinating stories of royal Bengal tigers."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-18T02:00:00.000Z"
+  },
+  {
+    "id": "rev-246",
+    "guestName": "শর্মিষ্ঠা সাহা",
+    "guestLocation": "সাঁতরাগাছি, হাওড়া",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-16T22:00:00.000Z"
+  },
+  {
+    "id": "rev-247",
+    "guestName": "অরূপ রায়",
+    "guestLocation": "সালকিয়া, হাওড়া",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-15T18:00:00.000Z"
+  },
+  {
+    "id": "rev-248",
+    "guestName": "কল্যাণ সেন",
+    "guestLocation": "বালি, হাওড়া",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-14T14:00:00.000Z"
+  },
+  {
+    "id": "rev-249",
+    "guestName": "মৃন্ময় ভট্টাচার্য",
+    "guestLocation": "শ্রীরামপুর, হুগলি",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-13T10:00:00.000Z"
+  },
+  {
+    "id": "rev-250",
+    "guestName": "विनोद शंकर त्रिपाठी",
+    "guestLocation": "सिगरा, वाराणसी, उत्तर प्रदेश",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "सुंदरबन के घने मैंग्रोव में 4 दिन बिताना किसी सपने जैसा था। नाव के कैप्टन ने बहुत सावधानी से खाड़ियों में बोट चलाई। बर्ड फोटोग्राफी के लिए बहुत अच्छा अनुभव रहा।",
+      "en": "सुंदरबन के घने मैंग्रोव में 4 दिन बिताना किसी सपने जैसा था। नाव के कैप्टन ने बहुत सावधानी से खाड़ियों में बोट चलाई। बर्ड फोटोग्राफी के लिए बहुत अच्छा अनुभव रहा।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-12T06:00:00.000Z"
+  },
+  {
+    "id": "rev-251",
+    "guestName": "সুনন্দা পোদ্দার",
+    "guestLocation": "থানে পশ্চিম, মহারাষ্ট্র",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-11T02:00:00.000Z"
+  },
+  {
+    "id": "rev-252",
+    "guestName": "দেবযানী ঘোষাল",
+    "guestLocation": "চুঁচুড়া, হুগলি",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-09T22:00:00.000Z"
+  },
+  {
+    "id": "rev-253",
+    "guestName": "শুক্লা চক্রবর্তী",
+    "guestLocation": "উত্তরপাড়া, হুগলি",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-08T18:00:00.000Z"
+  },
+  {
+    "id": "rev-254",
+    "guestName": "অনিমেষ সামন্ত",
+    "guestLocation": "বর্ধমান শহর, পূর্ব বর্ধমান",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 4,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-07T14:00:00.000Z"
+  },
+  {
+    "id": "rev-255",
+    "guestName": "Sunil Agrawal",
+    "guestLocation": "Camp, Pune",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "Flawlessly organized weekend trip. The boat was clean, food was cooked live with fresh ingredients, and sighting multiple deer and kingfishers made our family trip memorable.",
+      "en": "Flawlessly organized weekend trip. The boat was clean, food was cooked live with fresh ingredients, and sighting multiple deer and kingfishers made our family trip memorable."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-06T10:00:00.000Z"
+  },
+  {
+    "id": "rev-256",
+    "guestName": "বিভাস কর",
+    "guestLocation": "কালনা, পূর্ব বর্ধমান",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-05T06:00:00.000Z"
+  },
+  {
+    "id": "rev-257",
+    "guestName": "রণজয় মজুমদার",
+    "guestLocation": "হিঞ্জেওয়াড়ি, পুনে",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-04T02:00:00.000Z"
+  },
+  {
+    "id": "rev-258",
+    "guestName": "পল্লব বেরা",
+    "guestLocation": "আসানসোল কোর্ট রোড",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-02T22:00:00.000Z"
+  },
+  {
+    "id": "rev-259",
+    "guestName": "উমা রক্ষিত",
+    "guestLocation": "রানীগঞ্জ, পঃ বর্ধমান",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-12-01T18:00:00.000Z"
+  },
+  {
+    "id": "rev-260",
+    "guestName": "अवधेश कुमार श्रीवास्तव",
+    "guestLocation": "हजरतगंज, लखनऊ, उत्तर प्रदेश",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "लखनऊ से हम परिवार के साथ आए। पूरा टूर बहुत ही अनुशासित और समयबद्ध था। सुंदरबन में शांति और पक्षियों की चहचहाहट सुनकर मन प्रसन्न हो गया। शानदार ट्रिप!",
+      "en": "लखनऊ से हम परिवार के साथ आए। पूरा टूर बहुत ही अनुशासित और समयबद्ध था। सुंदरबन में शांति और पक्षियों की चहचहाहट सुनकर मन प्रसन्न हो गया। शानदार ट्रिप!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-30T14:00:00.000Z"
+  },
+  {
+    "id": "rev-261",
+    "guestName": "বিবেকানন্দ দত্ত",
+    "guestLocation": "খড়্গপুর, পঃ মেদিনীপুর",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-29T10:00:00.000Z"
+  },
+  {
+    "id": "rev-262",
+    "guestName": "স্মিতা সরকার",
+    "guestLocation": "মেদিনীপুর শহর",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-28T06:00:00.000Z"
+  },
+  {
+    "id": "rev-263",
+    "guestName": "জগন্নাথ হালদার",
+    "guestLocation": "ওয়াকাড়, পুনে",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-27T02:00:00.000Z"
+  },
+  {
+    "id": "rev-264",
+    "guestName": "রেখা সেনশর্মা",
+    "guestLocation": "হলদিয়া টাউনশিপ",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-25T22:00:00.000Z"
+  },
+  {
+    "id": "rev-265",
+    "guestName": "Ritu Verma",
+    "guestLocation": "Rohini Sector 9, Delhi",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "Great experience overall. Scenic sunset over river, good security, life vests for all passengers. Sajnekhali museum was very informative. Would definitely return for the 3-day safari.",
+      "en": "Great experience overall. Scenic sunset over river, good security, life vests for all passengers. Sajnekhali museum was very informative. Would definitely return for the 3-day safari."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-24T18:00:00.000Z"
+  },
+  {
+    "id": "rev-266",
+    "guestName": "অরিন্দম মুখার্জী",
+    "guestLocation": "কাঁথি, পূর্ব মেদিনীপুর",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-23T14:00:00.000Z"
+  },
+  {
+    "id": "rev-267",
+    "guestName": "অঙ্গনা বোস",
+    "guestLocation": "বাঁকুড়া শহর",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-22T10:00:00.000Z"
+  },
+  {
+    "id": "rev-268",
+    "guestName": "তাপস পাল",
+    "guestLocation": "বিষ্ণুপুর, বাঁকুড়া",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-21T06:00:00.000Z"
+  },
+  {
+    "id": "rev-269",
+    "guestName": "সৌম্যজিৎ দে",
+    "guestLocation": "মাধাপুর, হায়দ্রাবাদ",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-20T02:00:00.000Z"
+  },
+  {
+    "id": "rev-270",
+    "guestName": "सुरेंद्र प्रताप सिंह",
+    "guestLocation": "गोमती नगर, लखनऊ, उत्तर प्रदेश",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "बहुत ही आरामदायक नाव और स्वादिष्ट भोजन। दोबांकी केनोपी वॉक का नजारा देखने लायक था। स्टाफ का व्यवहार बहुत आदरपूर्ण था। लखनऊ के अपने दोस्तों को जरूर बताऊंगा।",
+      "en": "बहुत ही आरामदायक नाव और स्वादिष्ट भोजन। दोबांकी केनोपी वॉक का नजारा देखने लायक था। स्टाफ का व्यवहार बहुत आदरपूर्ण था। लखनऊ के अपने दोस्तों को जरूर बताऊंगा।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-18T22:00:00.000Z"
+  },
+  {
+    "id": "rev-271",
+    "guestName": "মহুয়া ভৌমিক",
+    "guestLocation": "কল্যাণী, নদীয়া",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-17T18:00:00.000Z"
+  },
+  {
+    "id": "rev-272",
+    "guestName": "প্রবাল সান্যাল",
+    "guestLocation": "কৃষ্ণনগর, নদীয়া",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-16T14:00:00.000Z"
+  },
+  {
+    "id": "rev-273",
+    "guestName": "লতিকা দাস",
+    "guestLocation": "রানাঘাট, নদীয়া",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-15T10:00:00.000Z"
+  },
+  {
+    "id": "rev-274",
+    "guestName": "শৈলেন্দ্র বন্দ্যোপাধ্যায়",
+    "guestLocation": "বহরমপুর, মুর্শিদাবাদ",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-14T06:00:00.000Z"
+  },
+  {
+    "id": "rev-275",
+    "guestName": "Siddhartha Roy",
+    "guestLocation": "Kasba, Kolkata",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "Took this day safari with my college batchmates. Smooth train connection to Canning and ready boat at Godkhali. Non-stop enjoyment, great food, and refreshing breeze on deck.",
+      "en": "Took this day safari with my college batchmates. Smooth train connection to Canning and ready boat at Godkhali. Non-stop enjoyment, great food, and refreshing breeze on deck."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-13T02:00:00.000Z"
+  },
+  {
+    "id": "rev-276",
+    "guestName": "হেমন্ত মণ্ডল",
+    "guestLocation": "শহীদ নগর, ভুবনেশ্বর, ওড়িশা",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-11T22:00:00.000Z"
+  },
+  {
+    "id": "rev-277",
+    "guestName": "বিদিশা নন্দী",
+    "guestLocation": "হাকিমপাড়া, শিলিগুড়ি",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-10T18:00:00.000Z"
+  },
+  {
+    "id": "rev-278",
+    "guestName": "মানবেন্দ্র রায়",
+    "guestLocation": "প্রধাননগর, শিলিগুড়ি",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-09T14:00:00.000Z"
+  },
+  {
+    "id": "rev-279",
+    "guestName": "রুমা বেরা",
+    "guestLocation": "জলপাইগুড়ি শহর",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-08T10:00:00.000Z"
+  },
+  {
+    "id": "rev-280",
+    "guestName": "कमलेश कुमार अग्रवाल",
+    "guestLocation": "सिविल लाइंस, प्रयागराज, उत्तर प्रदेश",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "प्रयागराज से हम 4 परिवारों का ग्रुप था। सुंदरबन के रॉयल बंगाल टाइगर रिजर्व का माहौल बहुत ही रोमांचकारी लगा। भोजन में स्वच्छता और स्वाद दोनों का पूरा ध्यान रखा गया था।",
+      "en": "प्रयागराज से हम 4 परिवारों का ग्रुप था। सुंदरबन के रॉयल बंगाल टाइगर रिजर्व का माहौल बहुत ही रोमांचकारी लगा। भोजन में स्वच्छता और स्वाद दोनों का पूरा ध्यान रखा गया था।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-07T06:00:00.000Z"
+  },
+  {
+    "id": "rev-281",
+    "guestName": "প্রতুল চক্রবর্তী",
+    "guestLocation": "কোচবিহার শহর",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-06T02:00:00.000Z"
+  },
+  {
+    "id": "rev-282",
+    "guestName": "বাসুদেব সাহা",
+    "guestLocation": "পল্টন বাজার, গুয়াহাটি, আসাম",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-04T22:00:00.000Z"
+  },
+  {
+    "id": "rev-283",
+    "guestName": "শর্বরী সেনগুপ্ত",
+    "guestLocation": "নিউটাউন, কলকাতা",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-03T18:00:00.000Z"
+  },
+  {
+    "id": "rev-284",
+    "guestName": "উৎপল দত্ত",
+    "guestLocation": "গড়িয়াহাট, কলকাতা",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-02T14:00:00.000Z"
+  },
+  {
+    "id": "rev-285",
+    "guestName": "Ashwin K.",
+    "guestLocation": "Electronic City, Bengaluru",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "Top marks for professional execution and transparent dealings. The package included everything from pickup to drop, all meals, forest permits, and guide fees. Zero hidden charges.",
+      "en": "Top marks for professional execution and transparent dealings. The package included everything from pickup to drop, all meals, forest permits, and guide fees. Zero hidden charges."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-11-01T10:00:00.000Z"
+  },
+  {
+    "id": "rev-286",
+    "guestName": "প্রতিমা ঘোষ",
+    "guestLocation": "বেহালা, কলকাতা",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-31T06:00:00.000Z"
+  },
+  {
+    "id": "rev-287",
+    "guestName": "অমল পোদ্দার",
+    "guestLocation": "যাদবপুর, কলকাতা",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-30T02:00:00.000Z"
+  },
+  {
+    "id": "rev-288",
+    "guestName": "অনুপ সামন্ত",
+    "guestLocation": "শিলচর, আসাম",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-28T22:00:00.000Z"
+  },
+  {
+    "id": "rev-289",
+    "guestName": "অনুরাধা কর",
+    "guestLocation": "দমদম, কলকাতা",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-27T18:00:00.000Z"
+  },
+  {
+    "id": "rev-290",
+    "guestName": "शशिकांत चौबे",
+    "guestLocation": "गोलघर, गोरखपुर, उत्तर प्रदेश",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "गोरखपुर से पूर्वांचल के लोग कोलकाता आकर सुंदरबन जरूर जाएं। नदी के बीच नाव पर रात गुजारने का रोमांच अलग ही होता है। बहुत ही किफायती और सुरक्षित पैकेज रहा।",
+      "en": "गोरखपुर से पूर्वांचल के लोग कोलकाता आकर सुंदरबन जरूर जाएं। नदी के बीच नाव पर रात गुजारने का रोमांच अलग ही होता है। बहुत ही किफायती और सुरक्षित पैकेज रहा।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-26T14:00:00.000Z"
+  },
+  {
+    "id": "rev-291",
+    "guestName": "প্রণয় মুখার্জী",
+    "guestLocation": "বালিগঞ্জ, কলকাতা",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 3,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-25T10:00:00.000Z"
+  },
+  {
+    "id": "rev-292",
+    "guestName": "সবিতা বোস",
+    "guestLocation": "টালিগঞ্জ, কলকাতা",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-24T06:00:00.000Z"
+  },
+  {
+    "id": "rev-293",
+    "guestName": "সন্দীপ সরকার",
+    "guestLocation": "বারাসাত, উঃ ২৪ পরগনা",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-23T02:00:00.000Z"
+  },
+  {
+    "id": "rev-294",
+    "guestName": "রাহুল হালদার",
+    "guestLocation": "হজরতগঞ্জ, লখনউ, ইউপি",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-21T22:00:00.000Z"
+  },
+  {
+    "id": "rev-295",
+    "guestName": "Pooja Trivedi",
+    "guestLocation": "Malabar Hill, Mumbai",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "Serene, mystical, and breathtakingly beautiful! Gliding through narrow mangrove channels with thick tree canopies was an unforgettable adventure. Thank you to the wonderful boat team.",
+      "en": "Serene, mystical, and breathtakingly beautiful! Gliding through narrow mangrove channels with thick tree canopies was an unforgettable adventure. Thank you to the wonderful boat team."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-20T18:00:00.000Z"
+  },
+  {
+    "id": "rev-296",
+    "guestName": "মিতুল দে",
+    "guestLocation": "নৈহাটি, উঃ ২৪ পরগনা",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। ঝড়খালি টাইগার রেসকিউ সেন্টার ও সুধন্যখালি ওয়াচ টাওয়ার থেকে অনেক বুনো শুয়োর আর হরিন দেখা গেল। পুরো ট্রিপে কোনো বাড়তি হিডেন চার্জ দাবি করেনি, ফুল ট্রান্সপারেন্ট সার্ভিস। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-19T14:00:00.000Z"
+  },
+  {
+    "id": "rev-297",
+    "guestName": "সুবোধ সেনশর্মা",
+    "guestLocation": "হাবড়া, উঃ ২৪ পরগনা",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। পীরখালি আর গাজিখালির খাঁড়ি দিয়ে যাওয়ার সময় রোদে কাদার চরে শুয়ে থাকা প্রায় ১২ ফুটের একটা কুমির খুব কাছ থেকে দেখলাম। বুক দুরুদুরু করছিল কিন্তু নিরাপত্তা খুব ভালো ছিল। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-18T10:00:00.000Z"
+  },
+  {
+    "id": "rev-298",
+    "guestName": "পারমিতা ভট্টাচার্য",
+    "guestLocation": "বারুইপুর, দঃ ২৪ পরগনা",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 4,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। বাজেট অনুযায়ী এরা যে সার্ভিস দেয় তা সত্যিই প্রশংসনীয়। লঞ্চের ওয়াশরুম সবসময় পরিষ্কার রাখা হয়েছিল যা ফ্যামিলি নিয়ে ভ্রমণের সময় সবচেয়ে জরুরি। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-17T06:00:00.000Z"
+  },
+  {
+    "id": "rev-299",
+    "guestName": "দীপশঙ্কর নন্দী",
+    "guestLocation": "ডায়মন্ড হারবার, দঃ ২৪ পরগনা",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। সন্ধ্যায় স্থানীয় আদিবাসী মেয়েদের ঝুমুর নাচের আয়োজনটা খুব প্রাণবন্ত ছিল। বোটের ডেকে বসে নদীর হাওয়া খেতে খেতে ট্র্যাডিশনাল নাচ দেখার অনুভূতি অসাধারণ। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-16T02:00:00.000Z"
+  },
+  {
+    "id": "rev-300",
+    "guestName": "सतीश कुमार जैन",
+    "guestLocation": "बड़ाबाजार, कोलकाता (मूल: राजस्थान/बिहार)",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "हम कोलकाता में ही रहते हैं लेकिन पहली बार सुंदरबन गए। हमारे लिए पूरी तरह से शुद्ध जैन भोजन (बिना प्याज-लहसुन) का अलग से इंतजाम किया गया। बहुत ही संतुष्टि मिली।",
+      "en": "हम कोलकाता में ही रहते हैं लेकिन पहली बार सुंदरबन गए। हमारे लिए पूरी तरह से शुद्ध जैन भोजन (बिना प्याज-लहसुन) का अलग से इंतजाम किया गया। बहुत ही संतुष्टि मिली।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-14T22:00:00.000Z"
+  },
+  {
+    "id": "rev-301",
+    "guestName": "অসীম বেরা",
+    "guestLocation": "কদমতলা, পাটনা, বিহার",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। সপরিবারে ২ রাত ৩ দিনের ট্যুরটা আজীবন মনে রাখার মতো। লঞ্চের পরিচ্ছন্নতা আর ইলিশ-চিংড়ির রান্না ভোলার নয়। সজনেখালির ওয়াচ টাওয়ার থেকে বাঘ না দেখলেও অনেক হরিণ আর বিরাট খাঁড়ির কুমির দেখেছি। গাইড প্রসেনজিৎবাবুর ব্যবহার খুব অমায়িক। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-13T18:00:00.000Z"
+  },
+  {
+    "id": "rev-302",
+    "guestName": "সুপ্রিয়া ঘোষাল",
+    "guestLocation": "সাঁতরাগাছি, হাওড়া",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। ক্যানিং থেকে পিকআপ থেকে শুরু করে শেষ পর্যন্ত সবকিছু নিখুঁত ছিল। লঞ্চে রান্না করা গরম ভাত, মুগের ডাল, ঝুরি আলুভাজা আর ভেটকি পাতুরি অপূর্ব! খাঁড়ির ভেতর দিয়ে শান্ত যাত্রা মন শান্ত করে দেয়। সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-12T14:00:00.000Z"
+  },
+  {
+    "id": "rev-303",
+    "guestName": "নবেন্দু রক্ষিত",
+    "guestLocation": "সালকিয়া, হাওড়া",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। বাবার বয়স ৬৮ বছর, বোটে ওঠার সিঁড়ি আর কেবিনের বিছানা নিয়ে একটু চিন্তায় ছিলাম। কিন্তু স্টাফরা যেভাবে প্রতি পদে হাত ধরে সাহায্য করলেন, আমরা সত্যিই কৃতজ্ঞ। সুন্দরবন ট্যুর এদের সাথেই করা উচিত। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-11T10:00:00.000Z"
+  },
+  {
+    "id": "rev-304",
+    "guestName": "বর্ণালী পাল",
+    "guestLocation": "বালি, হাওড়া",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। আমরা ৭ জন বন্ধু মিলে উইকেন্ড স্পেশাল প্যাকেজ নিয়েছিলাম। দোবাঁকি ক্যানোপি ওয়াকে হাঁটার সময় রোমাঞ্চ লাগছিল। বিকেলে বোটে গরম চা আর পেঁয়াজি খেতে খেতে সূর্যাস্ত দেখা এক অন্যরকম অনুভূতি। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-10T06:00:00.000Z"
+  },
+  {
+    "id": "rev-305",
+    "guestName": "Manish Agarwal",
+    "guestLocation": "Ranchi Main Road, Jharkhand",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "Direct train to Howrah, and the tour pickup picked us up promptly. Very comfortable boat stay and warm hospitality. Spotted wild boars and massive crocodile basking on mud.",
+      "en": "Direct train to Howrah, and the tour pickup picked us up promptly. Very comfortable boat stay and warm hospitality. Spotted wild boars and massive crocodile basking on mud."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-09T02:00:00.000Z"
+  },
+  {
+    "id": "rev-306",
+    "guestName": "তারকনাথ চক্রবর্তী",
+    "guestLocation": "শ্রীরামপুর, হুগলি",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "মে ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। সুন্দরবনের ম্যানগ্রোভ জঙ্গল আর সরু খাঁড়িগুলোতে যখন বোট নিঃশব্দে চলছিল, সে এক অদ্ভুত শান্তি। সুধন্যখালির মিষ্টি জলের পুকুরে দুটো বড় হরিণ জল খাচ্ছিল। ক্যামেরা অন করে ছবি তুলতে পেরেছি। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-07T22:00:00.000Z"
+  },
+  {
+    "id": "rev-307",
+    "guestName": "দিলীপ দাস",
+    "guestLocation": "বোরিং রোড, পাটনা, বিহার",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "এপ্রিল ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। খাবারের মান এককথায় অসাধারণ। সকালে গরম লুচি আর ছোলার ডাল, দুপুরে টাটকা গলদা চিংড়ির মালাইকারি আর রাতে দেশি মুরগির ঝোল। রান্নার ঠাকুরকে আলাদা করে ধন্যবাদ জানাই। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-06T18:00:00.000Z"
+  },
+  {
+    "id": "rev-308",
+    "guestName": "শর্মিলা মজুমদার",
+    "guestLocation": "চুঁচুড়া, হুগলি",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "মার্চ ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "প্রথমবার সুন্দরবনে এলাম, সমস্ত ব্যবস্থা খুব সুশৃঙ্খল ছিল। অফিসের কলিগরা মিলে ১ দিনের ডে সাফারি করেছিলাম। সময় খুব কম ছিল কিন্তু সজনেখালি ও সুধন্যখালি সুন্দরভাবে ঘুরিয়ে দেখাল। বাসের ড্রাইভার থেকে বোটের সারেং সবাই খুব সময়নিষ্ঠ। প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-05T14:00:00.000Z"
+  },
+  {
+    "id": "rev-309",
+    "guestName": "সোমনাথ সান্যাল",
+    "guestLocation": "উত্তরপাড়া, হুগলি",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "ফেব্রুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "বাচ্চা ও বয়স্কদের নিয়ে গিয়েছিলাম, কোনো অসুবিধে হয়নি। গভীর অরণ্যের ৩ রাত ৪ দিনের প্যাকেজে গিয়েছিলাম। বুড়িরডাবড়ি আর পঞ্চমুখানি মোহনার দৃশ্য চোখে লেগে আছে। খাঁড়ির কাদায় বাঘের একদম টাটকা পায়ের ছাপ দেখতে পেয়েছি! ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-04T10:00:00.000Z"
+  },
+  {
+    "id": "rev-310",
+    "guestName": "पंकज कुमार झा",
+    "guestLocation": "लिलुआ, हावड़ा (मूल: दरभंगा, बिहार)",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "हावड़ा से पास होने के कारण वीकेंड में परिवार के साथ गए थे। नाव के स्टाफ बहुत अच्छे और मददगार थे। बच्चों ने खूब मजे किए और मगरमच्छ देखकर हैरान रह गए।",
+      "en": "हावड़ा से पास होने के कारण वीकेंड में परिवार के साथ गए थे। नाव के स्टाफ बहुत अच्छे और मददगार थे। बच्चों ने खूब मजे किए और मगरमच्छ देखकर हैरान रह गए।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-03T06:00:00.000Z"
+  },
+  {
+    "id": "rev-311",
+    "guestName": "সুবর্ণা বোস",
+    "guestLocation": "বর্ধমান শহর, পূর্ব বর্ধমান",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জানুয়ারি ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।",
+      "en": "খাবার, নিরাপত্তা আর আতিথেয়তা—সবকিছুতেই দশে দশ। সবচেয়ে ভালো লেগেছে এদের সততা। যা যা মেনুতে আর আইটিনারিতে বলেছিল, তার চেয়েও বেশি যত্ন পেয়েছে আমার পরিবার। বোটে মিনারেল ওয়াটার আর ফার্স্ট এইডের ব্যবস্থা খুব ভালো ছিল। ভবিষ্যতে আবার সুন্দরবন এলে এদের সাথেই আসব।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-10-02T02:00:00.000Z"
+  },
+  {
+    "id": "rev-312",
+    "guestName": "অশোক ভৌমিক",
+    "guestLocation": "কালনা, পূর্ব বর্ধমান",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।",
+      "en": "সজনেখালি আর দোবাঁকি ক্যাম্পের ভ্রমণটা চিরকাল মনে থাকবে। বাচ্চাদের নিয়ে প্রথমবার সুন্দরবন এলাম। বোটে লাইফ জ্যাকেটের যথাযথ ব্যবস্থা থাকায় নিশ্চিন্তে ভ্রমণ করতে পেরেছি। মাঝনদীতে ডলফিন লাফাতে দেখে মেয়ের আনন্দ আর ধরে না! সবাইকে নির্দ্বিধায় এই প্যাকেজ নেওয়ার জন্য রিকমেন্ড করছি।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-09-30T22:00:00.000Z"
+  },
+  {
+    "id": "rev-313",
+    "guestName": "শুভাশিস দত্ত",
+    "guestLocation": "মোরাবাদী, রাঁচি, ঝাড়খণ্ড",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "নভেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।",
+      "en": "আমাদের সুন্দরবন সফর ছিল অত্যন্ত আনন্দদায়ক। কলকাতা থেকে ভোরে রওনা দিয়েছিলাম। সায়েন্স সিটিতে পিকআপ একদম রাইট টাইমে হয়েছে। সুন্দরবনের ভেতরে মোবাইল নেটওয়ার্ক কম থাকে সেটা আগেই জানিয়ে দিয়েছিল, ফলে কোনো বিভ্রান্তি হয়নি। সুন্দরবনের প্রকৃত রোমাঞ্চ পেতে চাইলে এদের টিম সেরা।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-09-29T18:00:00.000Z"
+  },
+  {
+    "id": "rev-314",
+    "guestName": "মধুরা রায়",
+    "guestLocation": "আসানসোল কোর্ট রোড",
+    "packageTaken": "ক্যানিং থেকে বাজেট সুন্দরবন ক্রুজ",
+    "travelDate": "অক্টোবর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!",
+      "en": "গত সপ্তাহে আমরা ক্যানিং থেকে বোটে উঠেছিলাম। গোসাবার হ্যামিল্টন সাহেবের বাংলো ও বেকন বাংলো ঘুরে ইতিহাস জানাটা বাড়তি পাওনা ছিল। গাইড দাদা স্থানীয় সুন্দরবনের বাঘ ও বনবিবির লোকগাথা খুব সুন্দর করে শুনিয়েছেন। অত্যন্ত সৎ ও নির্ভরযোগ্য ট্রাভেল টিম, অনেক ধন্যবাদ!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-09-28T14:00:00.000Z"
+  },
+  {
+    "id": "rev-315",
+    "guestName": "Esha Bhattacharya",
+    "guestLocation": "Jodhpur Park, Kolkata",
+    "packageTaken": "সুন্দরবন উইকেন্ড স্পেশাল ফ্যামিলি প্যাকেজ",
+    "travelDate": "ডিসেম্বর ২০২৫",
+    "rating": 5,
+    "comment": {
+      "bn": "Our family had a fantastic time. The launch staff catered to all our requests with smiling faces. Freshly made sweets and hot luchi in the morning breeze was unforgettable.",
+      "en": "Our family had a fantastic time. The launch staff catered to all our requests with smiling faces. Freshly made sweets and hot luchi in the morning breeze was unforgettable."
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-09-27T10:00:00.000Z"
+  },
+  {
+    "id": "rev-316",
+    "guestName": "কিরীটী মণ্ডল",
+    "guestLocation": "রানীগঞ্জ, পঃ বর্ধমান",
+    "packageTaken": "১ দিনের সুন্দরবন ডে সাফারি (কলকাতা/ক্যানিং থেকে)",
+    "travelDate": "সেপ্টেম্বর ২০২৬",
+    "rating": 4,
+    "comment": {
+      "bn": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।",
+      "en": "অসাধারণ অভিজ্ঞতা! পুরো টিম খুব আন্তরিক ও যত্নশীল। লঞ্চের কেবিনগুলো খুব খোলামেলা আর বাতাস চলাচলের ব্যবস্থা ভালো। রাতে নদীতে বোট নোঙর করে যখন চারপাশ শুনশান ছিল, শুধু ঝিঁঝিঁ পোকার ডাক, সেই রাতটা কোনোদিন ভুলব না। পয়সা উসুল ট্রিপ, অসাধারণ স্মৃতি নিয়ে ফিরলাম।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-09-26T06:00:00.000Z"
+  },
+  {
+    "id": "rev-317",
+    "guestName": "সঞ্চিতা মুখার্জী",
+    "guestLocation": "খড়্গপুর, পঃ মেদিনীপুর",
+    "packageTaken": "১ রাত ২ দিন ক্লাসিক সুন্দরবন ভ্রমণ",
+    "travelDate": "আগস্ট ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।",
+      "en": "পরিবার নিয়ে এমন নিখুঁত ও নিরাপদ সুন্দরবন সফর আগে ভাবিনি। খাবারের কোয়ালিটি খুব ফ্রেশ। লোকাল বাজার থেকে কেনা টাটকা মাছের স্বাদই আলাদা। আর সুন্দরবনের খাঁটি মধুর স্পেশাল লাল চা প্রত্যেক বিকেলে মন ভালো করে দিত। গাইড ও বোট স্টাফদের ভালোবাসা কোনোদিন ভুলব না।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-09-25T02:00:00.000Z"
+  },
+  {
+    "id": "rev-318",
+    "guestName": "রথীন্দ্রনাথ বেরা",
+    "guestLocation": "মেদিনীপুর শহর",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুলাই ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 প্রকৃতির কোলে কাটানো সেরা দুটো দিন!",
+      "en": "বন্ধুদের সাথে সুন্দরবনের ২ রাত ৩ দিনের জার্নিটা স্মরণীয় হয়ে থাকবে। ৩ রাত ৪ দিনের পাখি দেখার ট্রিপে প্রচুর বিরল মাছরাঙা (Kingfisher) আর ব্রাউন-উইংড কিংফিশার ক্যামেরাবন্দি করতে পেরেছি। বোটে নয়েজ কম হওয়ায় ওয়াইল্ডলাইফ ফটোগ্রাফির জন্য সেরা。 প্রকৃতির কোলে কাটানো সেরা দুটো দিন!"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-09-23T22:00:00.000Z"
+  },
+  {
+    "id": "rev-319",
+    "guestName": "রমেন সাহা",
+    "guestLocation": "বিস্টুপুর, জামশেদপুর, ঝাড়খণ্ড",
+    "packageTaken": "৩ রাত ৪ দিন গভীর অরণ্য ও পাখি দর্শন সাফারি",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।",
+      "en": "সুন্দরবনের ম্যানগ্রোভ বনের নিস্তব্ধতা আর প্রাকৃতিক সৌন্দর্য মুগ্ধ করেছে। আমাদের ১০ জনের ফ্যামিলি ট্রিপ ছিল। বয়স্কদের জন্য আলাদা ডায়েটের খিচুড়ি ও পেঁপে দিয়ে পাতলা ঝোল বানিয়ে দিয়েছিল। এই আন্তরিকতা আজকাল কোথাও পাওয়া যায় না। ফ্যামিলি ট্যুরের জন্য একদম আদর্শ ও নিরাপদ।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-09-22T18:00:00.000Z"
+  },
+  {
+    "id": "rev-320",
+    "guestName": "विशाल कुमार बर्नवाल",
+    "guestLocation": "जी टी रोड, आसनसोल (मूल: झारखंड)",
+    "packageTaken": "২ রাত ৩ দিন প্রিমিয়াম সুন্দরবন প্যাকেজ",
+    "travelDate": "জুন ২০২৬",
+    "rating": 5,
+    "comment": {
+      "bn": "आसनसोल से सीधे ट्रेन पकड़कर पहुंचे। सुंदरबन की हरियाली और नदी का बहाव मन मोह लेता है। गाइड भैया ने एक-एक जगह बहुत विस्तार से दिखाई। बहुत बढ़िया व्यवस्था।",
+      "en": "आसनसोल से सीधे ट्रेन पकड़कर पहुंचे। सुंदरबन की हरियाली और नदी का बहाव मन मोह लेता है। गाइड भैया ने एक-एक जगह बहुत विस्तार से दिखाई। बहुत बढ़िया व्यवस्था।"
+    },
+    "isApproved": true,
+    "isVerifiedGuest": true,
+    "createdAt": "2025-09-21T14:00:00.000Z"
   }
 ];
-
-// Generate 185 unique high-quality reviews
-export const INITIAL_EXTENDED_REVIEWS: Review[] = GUEST_NAMES.slice(0, 185).map((name, index) => {
-  const template = TEMPLATES[index % TEMPLATES.length];
-  const location = LOCATIONS[index % LOCATIONS.length];
-  const pkg = PACKAGES[index % PACKAGES.length];
-  const date = DATES[index % DATES.length];
-  
-  // Stagger timestamps across the past months
-  const daysAgo = (index * 2) + 5;
-  const createdDate = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000).toISOString();
-
-  return {
-    id: `rev-${index + 1}`,
-    guestName: name,
-    guestLocation: location,
-    packageTaken: pkg,
-    travelDate: date,
-    rating: template.rating,
-    comment: {
-      bn: template.bn,
-      en: template.en,
-    },
-    isApproved: true,
-    isVerifiedGuest: true,
-    createdAt: createdDate,
-  };
-});

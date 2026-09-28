@@ -167,7 +167,7 @@ export const QuickTrustStrip: React.FC<QuickTrustStripProps> = ({ onNavigate }) 
                     <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
                   </div>
                   <span className="text-[10px] text-slate-500 font-medium">
-                    {isBengali ? '(১৮৫+ মতামত)' : '(185+ reviews)'}
+                    {isBengali ? `(${approvedReviews.length}+ মতামত)` : `(${approvedReviews.length}+ reviews)`}
                   </span>
                 </div>
               </div>

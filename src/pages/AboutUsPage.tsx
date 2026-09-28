@@ -16,7 +16,9 @@ import {
   Eye,
   Download,
   Printer,
-  X
+  X,
+  Lock,
+  Shield
 } from 'lucide-react';
 
 interface AboutUsPageProps {
@@ -26,15 +28,12 @@ interface AboutUsPageProps {
 export const AboutUsPage: React.FC<AboutUsPageProps> = () => {
   const { language, isBengali } = useLanguage();
   const [showDriveModal, setShowDriveModal] = React.useState(false);
+  const [activePolicyTab, setActivePolicyTab] = React.useState<'all' | 'terms' | 'privacy'>('all');
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
       {/* 1. Main Header */}
-      <div className="text-center max-w-4xl mx-auto space-y-4">
-        <div className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#064E3B] uppercase tracking-wider bg-[#E6F4EA] px-4 py-2 rounded-full border border-emerald-200">
-          <Award className="w-4 h-4 text-[#F4B942]" />
-          <span>{isBengali ? 'সুন্দরবন ভ্রমণ — প্রকৃতির আরও কাছে' : 'Sundarban Vromon — Closer to Nature'}</span>
-        </div>
+      <div className="text-center max-w-4xl mx-auto space-y-3">
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-heading text-[#064E3B] leading-tight">
           {isBengali ? 'আমাদের পরিচয় ও অঙ্গীকার' : 'Our Identity & Commitments'}
         </h1>
@@ -80,7 +79,7 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = () => {
                 className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#064E3B] bg-[#E6F4EA] hover:bg-emerald-100 border border-emerald-300 px-4 py-2 rounded-xl transition-all shadow-xs group"
               >
                 <FileText className="w-4 h-4 text-[#064E3B] group-hover:scale-110 transition-transform" />
-                <span>{isBengali ? 'শর্তাবলী ও বাতিলকরণ নীতি (ড্রাইভ কপি দেখুন)' : 'Terms & Cancellation Policy (View Drive Copy)'}</span>
+                <span>{isBengali ? 'শর্তাবলী ও গোপনীয়তা নীতি (ড্রাইভ কপি দেখুন)' : 'Terms & Privacy Policy (View Drive Copy)'}</span>
               </a>
             </div>
           </div>
@@ -257,21 +256,62 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = () => {
         </div>
       </div>
 
-      {/* 7. শর্তাবলী ও বাতিলকরণ নীতি (Terms & Cancellation Policy) */}
+      {/* 7. শর্তাবলী ও গোপনীয়তা নীতি (Terms, Cancellation & Privacy Policy) */}
       <div id="terms-cancellation-policy" className="bg-[#FAF8F5] rounded-3xl p-6 sm:p-10 border border-stone-200 shadow-xs space-y-8 scroll-mt-24">
         <div className="text-center max-w-3xl mx-auto space-y-2">
           <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#064E3B] uppercase tracking-wider bg-[#E6F4EA] px-3.5 py-1.5 rounded-full border border-emerald-200">
             <FileText className="w-3.5 h-3.5 text-[#064E3B]" />
-            <span>{isBengali ? 'বুকিং নীতি ও শর্তাবলী' : 'Booking Terms & Conditions'}</span>
+            <span>{isBengali ? 'অফিসিয়াল নীতি ও নির্দেশিকা' : 'Official Policies & Guidelines'}</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold font-heading text-slate-900">
-            {isBengali ? 'শর্তাবলী ও বাতিলকরণ নীতি' : 'Terms, Cancellation & Refund Policy'}
+            {isBengali ? 'শর্তাবলী ও গোপনীয়তা নীতি' : 'Terms & Conditions and Privacy Policy'}
           </h2>
           <p className="text-xs sm:text-sm text-slate-600">
             {isBengali
-              ? 'সুন্দরবন ভ্রমণের প্রতিটি সফর সুশৃঙ্খল, নিরাপদ ও স্বচ্ছ রাখতে আমাদের নির্ধারিত নিয়মাবলী ও নীতিমালা।'
-              : 'Our established guidelines to ensure every Sundarban expedition is disciplined, safe, and transparent.'}
+              ? 'সুন্দরবন ভ্রমণের প্রতিটি সফর সুশৃঙ্খল, নিরাপদ ও স্বচ্ছ রাখতে আমাদের নির্ধারিত শর্তাবলী এবং অতিথিদের ব্যক্তিগত তথ্য সুরক্ষার গোপনীয়তা নীতি।'
+              : 'Our established terms of service, cancellation rules, and comprehensive privacy policy for guest data protection.'}
           </p>
+        </div>
+
+        {/* Policy Tab Switcher */}
+        <div className="flex items-center justify-center">
+          <div className="inline-flex items-center p-1.5 bg-stone-200/80 rounded-2xl gap-1 text-xs font-bold">
+            <button
+              type="button"
+              onClick={() => setActivePolicyTab('all')}
+              className={`px-4 py-2 rounded-xl transition-all cursor-pointer ${
+                activePolicyTab === 'all'
+                  ? 'bg-[#064E3B] text-white shadow-xs'
+                  : 'text-slate-700 hover:text-slate-900 hover:bg-stone-300/60'
+              }`}
+            >
+              {isBengali ? 'সব নীতি একসাথে' : 'All Policies'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setActivePolicyTab('terms')}
+              className={`px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+                activePolicyTab === 'terms'
+                  ? 'bg-[#064E3B] text-white shadow-xs'
+                  : 'text-slate-700 hover:text-slate-900 hover:bg-stone-300/60'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>{isBengali ? 'শর্তাবলী ও বুকিং নীতি' : 'Terms & Conditions'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActivePolicyTab('privacy')}
+              className={`px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+                activePolicyTab === 'privacy'
+                  ? 'bg-[#064E3B] text-white shadow-xs'
+                  : 'text-slate-700 hover:text-slate-900 hover:bg-stone-300/60'
+              }`}
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span>{isBengali ? 'গোপনীয়তা নীতি' : 'Privacy Policy'}</span>
+            </button>
+          </div>
         </div>
 
         {/* Google Drive Document Access Card */}
@@ -298,12 +338,12 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = () => {
                 </span>
               </div>
               <h3 className="text-base sm:text-lg font-bold font-heading text-white">
-                {isBengali ? 'সুন্দরবন ভ্রমণ — শর্তাবলী ও বাতিলকরণ নীতি ড্রাইভ' : 'Sundarban Vromon — Terms & Cancellation Policy Drive'}
+                {isBengali ? 'সুন্দরবন ভ্রমণ — শর্তাবলী, রিফান্ড ও গোপনীয়তা ড্রাইভ কপি' : 'Sundarban Vromon — Terms, Refund & Privacy Policy Drive'}
               </h3>
               <p className="text-xs sm:text-sm text-emerald-100/90 leading-relaxed max-w-2xl">
                 {isBengali
-                  ? 'আমাদের পরিচয় ও স্বত্বাধিকারী শ্রীকৃষ্ণ বার কর্তৃক অনুমোদিত সম্পূর্ণ শর্তাবলী, বাতিল ও রিফান্ড নীতি এবং বন দপ্তর নির্দেশিকা সরাসরি গুগল ড্রাইভ ফাইলে দেখুন বা প্রিন্ট ও সেভ করুন।'
-                  : 'Official document authorized by founder Srikrishna Bar containing full booking terms, refund schedules, and forest safety protocols.'}
+                  ? 'আমাদের পরিচয় ও স্বত্বাধিকারী শ্রীকৃষ্ণ বার কর্তৃক অনুমোদিত সম্পূর্ণ শর্তাবলী, বাতিল ও রিফান্ড নীতি, গোপনীয়তা নীতি এবং বন দপ্তর নির্দেশিকা সরাসরি গুগল ড্রাইভ ফাইলে দেখুন বা প্রিন্ট ও সেভ করুন।'
+                  : 'Official document authorized by founder Srikrishna Bar containing full booking terms, refund schedules, privacy protocols, and forest safety regulations.'}
               </p>
             </div>
           </div>
@@ -319,143 +359,269 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Card 1: বুকিং ও পেমেন্ট */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-            <div className="flex items-center gap-2.5 text-[#064E3B] font-bold font-heading text-base sm:text-lg">
-              <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center justify-center border border-emerald-200">১</span>
-              <h3>{isBengali ? 'বুকিং ও পেমেন্ট নিয়মাবলী' : 'Booking & Payment Terms'}</h3>
+        {/* SECTION 1: শর্তাবলী ও বুকিং নীতি (Terms & Conditions) */}
+        {(activePolicyTab === 'all' || activePolicyTab === 'terms') && (
+          <div className="space-y-4 animate-in fade-in duration-300">
+            <div className="flex items-center gap-2 text-[#064E3B] font-bold text-lg sm:text-xl font-heading border-b border-stone-300 pb-2">
+              <FileText className="w-5 h-5 text-[#064E3B]" />
+              <h3>{isBengali ? '১. শর্তাবলী ও বাতিলকরণ নীতি (Terms of Service & Cancellation)' : '1. Terms of Service & Cancellation Policy'}</h3>
             </div>
-            <ul className="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
-                <span>
-                  {isBengali
-                    ? 'বুকিং নিশ্চিত করতে মোট খরচের ২৫% অগ্রিম ডিপোজিট প্রদান করতে হবে।'
-                    : 'A 25% advance deposit of the total package cost is required to confirm the booking.'}
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
-                <span>
-                  {isBengali
-                    ? 'অবশিষ্ট ৭৫% অর্থ যাত্রা শুরুর দিন গদখালি ফেরি ঘাটে পৌঁছানোর পর নগদ বা ইউপিআই (UPI) মাধ্যমে পরিশোধযোগ্য।'
-                    : 'The remaining 75% balance is payable upon arriving at Godkhali Ferry Ghat via cash or UPI.'}
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
-                <span>
-                  {isBengali
-                    ? 'পেমেন্ট সম্পন্ন হলে তাৎক্ষণিক ই-রসিদ ও বুকিং কনফার্মেশন স্লিপ প্রদান করা হয়।'
-                    : 'Instant digital invoice and booking confirmation slip are provided upon advance payment.'}
-                </span>
-              </li>
-            </ul>
-          </div>
 
-          {/* Card 2: বাতিল ও রিফান্ড */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-            <div className="flex items-center gap-2.5 text-[#064E3B] font-bold font-heading text-base sm:text-lg">
-              <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center justify-center border border-emerald-200">২</span>
-              <h3>{isBengali ? 'বাতিল ও রিফান্ড নীতি' : 'Cancellation & Refund Policy'}</h3>
-            </div>
-            <ul className="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
-                <span>
-                  {isBengali
-                    ? 'ভ্রমণের ৭ দিন বা তার বেশি পূর্বে বাতিলের ক্ষেত্রে: অগ্রিম অর্থের ৮০% ফেরতযোগ্য।'
-                    : 'Cancellation 7 days or more prior to travel date: 80% of advance deposit is refundable.'}
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
-                <span>
-                  {isBengali
-                    ? 'ভ্রমণের ৩ থেকে ৬ দিন পূর্বে বাতিলের ক্ষেত্রে: অগ্রিম অর্থের ৫০% ফেরতযোগ্য।'
-                    : 'Cancellation 3 to 6 days prior to travel date: 50% of advance deposit is refundable.'}
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
-                <span>
-                  {isBengali
-                    ? 'ভ্রমণের ৪৮ ঘণ্টার মধ্যে বাতিলের ক্ষেত্রে: বনদপ্তরের বোট পারমিট ও হোটেল বুকিং প্রিপেমেন্টের কারণে কোনো অর্থ ফেরতযোগ্য নয়।'
-                    : 'Cancellation within 48 hours of journey: Advance is non-refundable due to non-refundable forest permits and resort lock-ins.'}
-                </span>
-              </li>
-            </ul>
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Card 1: বুকিং ও পেমেন্ট */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <div className="flex items-center gap-2.5 text-[#064E3B] font-bold font-heading text-base sm:text-lg">
+                  <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center justify-center border border-emerald-200">১</span>
+                  <h4>{isBengali ? 'বুকিং ও পেমেন্ট নিয়মাবলী' : 'Booking & Payment Terms'}</h4>
+                </div>
+                <ul className="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'বুকিং নিশ্চিত করতে মোট খরচের ২৫% অগ্রিম ডিপোজিট প্রদান করতে হবে।'
+                        : 'A 25% advance deposit of the total package cost is required to confirm the booking.'}
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'অবশিষ্ট ৭৫% অর্থ যাত্রা শুরুর দিন গদখালি ফেরি ঘাটে পৌঁছানোর পর নগদ বা ইউপিআই (UPI) মাধ্যমে পরিশোধযোগ্য।'
+                        : 'The remaining 75% balance is payable upon arriving at Godkhali Ferry Ghat via cash or UPI.'}
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'পেমেন্ট সম্পন্ন হলে তাৎক্ষণিক ডিজিটাল ই-রসিদ ও বুকিং কনফার্মেশন স্লিপ প্রদান করা হয়।'
+                        : 'Instant digital invoice and booking confirmation slip are provided upon advance payment.'}
+                    </span>
+                  </li>
+                </ul>
+              </div>
 
-          {/* Card 3: বনদপ্তর ও আবহাওয়া সংক্রান্ত বিধিনিষেধ */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-            <div className="flex items-center gap-2.5 text-[#064E3B] font-bold font-heading text-base sm:text-lg">
-              <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center justify-center border border-emerald-200">৩</span>
-              <h3>{isBengali ? 'আবহাওয়া ও বনদপ্তরের বিধিমালা' : 'Weather & Forest Regulations'}</h3>
-            </div>
-            <ul className="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
-                <span>
-                  {isBengali
-                    ? 'প্রাকৃতিক দুর্যোগ, সাইক্লোন বা বন বিভাগের জরুরি নির্দেশে জলপথ বন্ধ থাকলে নিরাপত্তা বিবেচনায় রুট পুনর্নির্ধারণ করা হবে।'
-                    : 'In cases of cyclones or sudden Forest Dept waterway closures, routes will be rescheduled prioritizing safety.'}
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
-                <span>
-                  {isBengali
-                    ? 'সুন্দরবন একটি উন্মুক্ত প্রাকৃতিক সংরক্ষিত বনাঞ্চল; বাঘ বা নির্দিষ্ট বন্যপ্রাণী দর্শনের কোনো অবাস্তব গ্যারান্টি দেওয়া হয় না।'
-                    : 'Sundarbans is an untamed natural reserve; wildlife sightings depend entirely on nature, tides, and luck without false guarantees.'}
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
-                <span>
-                  {isBengali
-                    ? 'বোট সাফারিতে লাইফ জ্যাকেট পরিধান ও প্লাস্টিক বর্জন বাধ্যতামূলক।'
-                    : 'Wearing life jackets on boat safari and strictly zero single-use plastics are mandatory.'}
-                </span>
-              </li>
-            </ul>
-          </div>
+              {/* Card 2: বাতিল ও রিফান্ড */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <div className="flex items-center gap-2.5 text-[#064E3B] font-bold font-heading text-base sm:text-lg">
+                  <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center justify-center border border-emerald-200">২</span>
+                  <h4>{isBengali ? 'বাতিল ও রিফান্ড নীতি' : 'Cancellation & Refund Policy'}</h4>
+                </div>
+                <ul className="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'ভ্রমণের ৭ দিন বা তার বেশি পূর্বে বাতিলের ক্ষেত্রে: অগ্রিম অর্থের ৮০% ফেরতযোগ্য।'
+                        : 'Cancellation 7 days or more prior to travel date: 80% of advance deposit is refundable.'}
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'ভ্রমণের ৩ থেকে ৬ দিন পূর্বে বাতিলের ক্ষেত্রে: অগ্রিম অর্থের ৫০% ফেরতযোগ্য।'
+                        : 'Cancellation 3 to 6 days prior to travel date: 50% of advance deposit is refundable.'}
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'ভ্রমণের ৪৮ ঘণ্টার মধ্যে বাতিলের ক্ষেত্রে: বনদপ্তরের বোট পারমিট ও হোটেল বুকিং প্রিপেমেন্টের কারণে কোনো অর্থ ফেরতযোগ্য নয়।'
+                        : 'Cancellation within 48 hours of journey: Advance is non-refundable due to non-refundable forest permits and resort lock-ins.'}
+                    </span>
+                  </li>
+                </ul>
+              </div>
 
-          {/* Card 4: পরিচয়পত্র ও আইনি তথ্যাদি */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-            <div className="flex items-center gap-2.5 text-[#064E3B] font-bold font-heading text-base sm:text-lg">
-              <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center justify-center border border-emerald-200">৪</span>
-              <h3>{isBengali ? 'পরিচয়পত্র ও সরকারি পারমিট নীতি' : 'ID Proof & Government Permits'}</h3>
+              {/* Card 3: বনদপ্তর ও আবহাওয়া সংক্রান্ত বিধিনিষেধ */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <div className="flex items-center gap-2.5 text-[#064E3B] font-bold font-heading text-base sm:text-lg">
+                  <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center justify-center border border-emerald-200">৩</span>
+                  <h4>{isBengali ? 'আবহাওয়া ও বনদপ্তরের বিধিমালা' : 'Weather & Forest Regulations'}</h4>
+                </div>
+                <ul className="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'প্রাকৃতিক দুর্যোগ, সাইক্লোন বা বন বিভাগের জরুরি নির্দেশে জলপথ বন্ধ থাকলে নিরাপত্তা বিবেচনায় রুট পুনর্নির্ধারণ করা হবে।'
+                        : 'In cases of cyclones or sudden Forest Dept waterway closures, routes will be rescheduled prioritizing safety.'}
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'সুন্দরবন একটি উন্মুক্ত প্রাকৃতিক সংরক্ষিত বনাঞ্চল; বাঘ বা নির্দিষ্ট বন্যপ্রাণী দর্শনের কোনো অবাস্তব গ্যারান্টি দেওয়া হয় না।'
+                        : 'Sundarbans is an untamed natural reserve; wildlife sightings depend entirely on nature, tides, and luck without false guarantees.'}
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'বোট সাফারিতে লাইফ জ্যাকেট পরিধান ও একবার ব্যবহার্য প্লাস্টিক বর্জন বাধ্যতামূলক।'
+                        : 'Wearing life jackets on boat safari and strictly zero single-use plastics are mandatory.'}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Card 4: পরিচয়পত্র ও আইনি তথ্যাদি */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <div className="flex items-center gap-2.5 text-[#064E3B] font-bold font-heading text-base sm:text-lg">
+                  <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center justify-center border border-emerald-200">৪</span>
+                  <h4>{isBengali ? 'পরিচয়পত্র ও আচরণ বিধিমালা' : 'ID Proof & Code of Conduct'}</h4>
+                </div>
+                <ul className="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'প্রত্যেক প্রাপ্তবয়স্ক যাত্রীকে সরকারি ফটো আইডি কার্ড (আধার/ভোটার/পাসপোর্ট/ড্রাইভিং লাইসেন্স) সঙ্গে রাখা বাধ্যতামূলক।'
+                        : 'Every traveler must carry a valid government photo ID (Aadhaar / Voter ID / Passport / Driving License).'}
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'বোটে ও জঙ্গলে উচ্চশব্দে লাউডস্পিকার বাজানো, নদীতে সাঁতার কাটা বা নদীতে আবর্জনা ফেলা কঠোরভাবে নিষিদ্ধ।'
+                        : 'Loudspeakers inside reserve forest, swimming in tidal waters, or littering rivers are strictly prohibited.'}
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'বিদেশি পর্যটকদের ক্ষেত্রে আসল পাসপোর্ট ও বৈধ ভারতীয় ভিসা নিয়ে বন বিভাগের ছাড়পত্র গ্রহণ করা আবশ্যক।'
+                        : 'Foreign nationals require an original valid Passport with a current Indian Visa for forest clearance.'}
+                    </span>
+                  </li>
+                </ul>
+              </div>
             </div>
-            <ul className="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
-                <span>
-                  {isBengali
-                    ? 'প্রত্যেক যাত্রীকে সরকারি ফটো আইডি কার্ড (আধার/ভোটার/পাসপোর্ট) সঙ্গে রাখা বাধ্যতামূলক।'
-                    : 'Every traveler must carry a valid government photo ID (Aadhaar / Voter ID / Passport / Driving License).'}
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
-                <span>
-                  {isBengali
-                    ? 'অতিথিদের পরিচয়পত্র শুধুমাত্র পশ্চিমবঙ্গ বন বিভাগের অফিসিয়াল এন্ট্রি পারমিটের জন্য ব্যবহৃত হয়।'
-                    : 'Guest identification is solely used for issuing official West Bengal Forest Department entry permits.'}
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
-                <span>
-                  {isBengali
-                    ? 'বিদেশি পর্যটকদের ক্ষেত্রে আসল পাসপোর্ট ও বৈধ ভারতীয় ভিসা প্রয়োজন।'
-                    : 'Foreign nationals require an original valid Passport with a current Indian Visa for forest clearance.'}
-                </span>
-              </li>
-            </ul>
           </div>
-        </div>
+        )}
+
+        {/* SECTION 2: গোপনীয়তা নীতি ও তথ্য সুরক্ষা (Privacy Policy & Data Security) */}
+        {(activePolicyTab === 'all' || activePolicyTab === 'privacy') && (
+          <div className="space-y-4 animate-in fade-in duration-300 pt-2">
+            <div className="flex items-center gap-2 text-[#064E3B] font-bold text-lg sm:text-xl font-heading border-b border-stone-300 pb-2">
+              <Lock className="w-5 h-5 text-[#064E3B]" />
+              <h3>{isBengali ? '২. গোপনীয়তা নীতি ও তথ্য সুরক্ষা (Privacy Policy & Data Protection)' : '2. Privacy Policy & Data Security'}</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Privacy Card 1: সংগৃহীত তথ্য */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <div className="flex items-center gap-2.5 text-[#064E3B] font-bold font-heading text-base sm:text-lg">
+                  <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center justify-center border border-emerald-200">ক</span>
+                  <h4>{isBengali ? 'ব্যক্তিগত তথ্য সংগ্রহ' : 'Collection of Guest Data'}</h4>
+                </div>
+                <ul className="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'আমরা শুধুমাত্র বুকিং সমন্বয়ের জন্য অতিথির নাম, মোবাইল নম্বর, হোয়াটসঅ্যাপ নম্বর ও ইমেইল ঠিকানা গ্রহণ করি।'
+                        : 'We only collect essential booking contact details including traveler name, phone number, WhatsApp, and email.'}
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'পশ্চিমবঙ্গ বন বিভাগের অফিসিয়াল পারমিট ও হোটেল রেজিস্ট্রেশনের জন্য সরকারি পরিচয়পত্র (আধার/ভোটার/পাসপোর্ট/ড্রাইভিং লাইসেন্স) সংগ্রহ করা হয়।'
+                        : 'Government ID proofs are requested exclusively to obtain mandatory West Bengal Forest Department permits and hotel registration.'}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Privacy Card 2: তথ্যের ব্যবহার ও উদ্দেশ্য */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <div className="flex items-center gap-2.5 text-[#064E3B] font-bold font-heading text-base sm:text-lg">
+                  <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center justify-center border border-emerald-200">খ</span>
+                  <h4>{isBengali ? 'তথ্যের ব্যবহার ও উদ্দেশ্য' : 'Usage & Purpose of Information'}</h4>
+                </div>
+                <ul className="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'সংগৃহীত তথ্য শুধুমাত্র সফরের আয়োজন, সাফারি বোট ও রিসোর্ট কনফার্মেশন এবং জরুরি ভ্রমণ আপডেট প্রেরণে ব্যবহৃত হয়।'
+                        : 'Information is utilized solely for safari coordination, boat and resort confirmations, and sending travel vouchers.'}
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'আমরা কোনো স্প্যাম বার্তা, অবাঞ্ছিত প্রমোশনাল কল বা অননুমোদিত বিজ্ঞাপনী মেসেজ প্রেরণ করি না।'
+                        : 'We strictly maintain zero spam policies and never send unsolicited promotional calls or third-party marketing.'}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Privacy Card 3: তৃতীয় পক্ষের সাথে শেয়ার নিষেধ */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <div className="flex items-center gap-2.5 text-[#064E3B] font-bold font-heading text-base sm:text-lg">
+                  <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center justify-center border border-emerald-200">গ</span>
+                  <h4>{isBengali ? 'তৃতীয় পক্ষের সাথে শেয়ার নিষেধ (100% Confidential)' : 'Strict Zero Third-Party Sharing'}</h4>
+                </div>
+                <ul className="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'অতিথিদের ব্যক্তিগত বা আর্থিক তথ্য কোনো তৃতীয় পক্ষ, বিজ্ঞাপনী প্ল্যাটফর্ম বা বাণিজ্যিক এজেন্সির কাছে বিক্রি বা হস্তান্তর করা সম্পূর্ণ নিষিদ্ধ।'
+                        : 'Selling, renting, or leasing guest contact details or payment info to third-party advertisers or agencies is strictly prohibited.'}
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'অনলাইন বা অফলাইন সমস্ত পেমেন্ট সরাসরি অনুমোদিত ব্যাংকিং চ্যানেল ও সিকিউর ইউপিআই গেটওয়েতে পরিচালিত হয়।'
+                        : 'All payments are processed directly through verified banking channels and encrypted UPI gateways.'}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Privacy Card 4: তথ্য মুছে ফেলা ও নিয়ন্ত্রণ */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <div className="flex items-center gap-2.5 text-[#064E3B] font-bold font-heading text-base sm:text-lg">
+                  <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center justify-center border border-emerald-200">ঘ</span>
+                  <h4>{isBengali ? 'তথ্য সুরক্ষা ও ডিলিট করার অধিকার' : 'Data Retention & Guest Rights'}</h4>
+                </div>
+                <ul className="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'সফর সমাপ্তির পর যেকোনো অতিথি আমাদের সাথে যোগাযোগ করে তাদের সংরক্ষিত নথি ও তথ্য সিস্টেম থেকে মুছে ফেলার অনুরোধ করতে পারেন।'
+                        : 'Upon tour completion, guests can contact us anytime to request permanent deletion of their stored contact information.'}
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#064E3B] shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'সরকারি পারমিট রেকর্ড ছাড়া অন্য কোনো ব্যক্তিগত তথ্য অপ্রয়োজনীয়ভাবে দীর্ঘমেয়াদে সংরক্ষণ করা হয় না।'
+                        : 'Aside from mandatory statutory forest audit records, personal identity data is purged systematically.'}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Founder Sign-off / Policy declaration */}
         <div className="p-4 sm:p-5 rounded-2xl bg-white border border-emerald-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs sm:text-sm text-slate-700">

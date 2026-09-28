@@ -104,13 +104,17 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const [reviews, setReviews] = useState<Review[]>(() => {
     try {
+      const CURRENT_REVIEWS_VERSION = 'v3_80bn_10en_10hi_320_reviews';
+      const storedVersion = localStorage.getItem('sv_reviews_version');
       const stored = localStorage.getItem('sv_reviews');
-      if (stored) {
+      if (stored && storedVersion === CURRENT_REVIEWS_VERSION) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length >= 50) {
+        if (Array.isArray(parsed) && parsed.length >= 300) {
           return parsed;
         }
       }
+      localStorage.setItem('sv_reviews_version', CURRENT_REVIEWS_VERSION);
+      localStorage.setItem('sv_reviews', JSON.stringify(INITIAL_EXTENDED_REVIEWS));
     } catch (e) {
       console.error(e);
     }

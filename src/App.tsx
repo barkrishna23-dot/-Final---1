@@ -79,6 +79,10 @@ const AppContent: React.FC = () => {
       setCurrentRoute('blog');
       return;
     }
+    if (route === 'privacy' || route === 'terms') {
+      setCurrentRoute('terms-privacy');
+      return;
+    }
     setCurrentRoute(route);
   };
 
@@ -223,7 +227,7 @@ const AppContent: React.FC = () => {
 
         {currentRoute === 'contact' && <ContactPage />}
 
-        {currentRoute === 'terms-privacy' && <TermsPrivacyPage />}
+        {(currentRoute === 'terms-privacy' || currentRoute === 'privacy' || currentRoute === 'terms') && <TermsPrivacyPage />}
       </main>
 
       {/* 4. Comprehensive Footer Lockup */}
