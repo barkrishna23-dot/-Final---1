@@ -7,6 +7,132 @@ import { BRAND_INFO } from '../../data/brandInfo';
 import { getAvailableDates, checkDateAvailability, AvailableSafariDate } from '../../data/bookingAvailability';
 import { BookingPaymentModal } from './BookingPaymentModal';
 
+export const ID_VALIDATION_CONFIG: Record<
+  'aadhaar' | 'voter' | 'passport' | 'driving_license',
+  {
+    nameBn: string;
+    nameEn: string;
+    targetDigitsOrCharsBn: string;
+    targetDigitsOrCharsEn: string;
+    maxInputChars: number;
+    placeholderBn: string;
+    placeholderEn: string;
+    format: (val: string) => string;
+    getCleanLength: (val: string) => number;
+    isValid: (val: string) => boolean;
+    getHintBn: (cleanLen: number) => string;
+    getHintEn: (cleanLen: number) => string;
+  }
+> = {
+  aadhaar: {
+    nameBn: 'আধার কার্ড',
+    nameEn: 'Aadhaar Card',
+    targetDigitsOrCharsBn: '১২ সংখ্যা',
+    targetDigitsOrCharsEn: '12 digits',
+    maxInputChars: 14, // 12 digits + 2 spaces (1234 5678 9012)
+    placeholderBn: 'যেমন: 1234 5678 9012 (১২ সংখ্যা)',
+    placeholderEn: 'e.g. 1234 5678 9012 (12 digits)',
+    format: (val: string) => {
+      // Keep only digits, strictly max 12 digits
+      const digits = val.replace(/\D/g, '').slice(0, 12);
+      const parts: string[] = [];
+      if (digits.length > 0) parts.push(digits.slice(0, 4));
+      if (digits.length > 4) parts.push(digits.slice(4, 8));
+      if (digits.length > 8) parts.push(digits.slice(8, 12));
+      return parts.join(' ');
+    },
+    getCleanLength: (val: string) => val.replace(/\D/g, '').length,
+    isValid: (val: string) => val.replace(/\D/g, '').length === 12,
+    getHintBn: (cleanLen: number) =>
+      cleanLen === 12
+        ? '✓ আধার কার্ডের ১২ সংখ্যা সম্পূর্ণ ও সঠিক।'
+        : cleanLen > 0
+        ? `⚠️ আধার কার্ডে ঠিক ১২টি সংখ্যা হতে হবে (এখনও ${12 - cleanLen}টি সংখ্যা বাকি) — ১২টির বেশি নেওয়া হবে না।`
+        : 'আধার কার্ডের ১২ সংখ্যার নম্বর লিখুন (১২ সংখ্যার বেশি নেবে না)',
+    getHintEn: (cleanLen: number) =>
+      cleanLen === 12
+        ? '✓ Valid 12-digit Aadhaar verified.'
+        : cleanLen > 0
+        ? `⚠️ Aadhaar must be exactly 12 digits (${12 - cleanLen} remaining) — cannot enter more.`
+        : 'Enter 12 digits Aadhaar number (cannot enter more)',
+  },
+  voter: {
+    nameBn: 'ভোটার কার্ড',
+    nameEn: 'Voter ID Card',
+    targetDigitsOrCharsBn: '১০ অক্ষর',
+    targetDigitsOrCharsEn: '10 chars',
+    maxInputChars: 10,
+    placeholderBn: 'যেমন: WBF1234567 (১০ অক্ষর)',
+    placeholderEn: 'e.g. WBF1234567 (10 chars)',
+    format: (val: string) => val.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 10),
+    getCleanLength: (val: string) => val.replace(/[^a-zA-Z0-9]/g, '').length,
+    isValid: (val: string) => val.replace(/[^a-zA-Z0-9]/g, '').length === 10,
+    getHintBn: (cleanLen: number) =>
+      cleanLen === 10
+        ? '✓ ভোটার কার্ডের (EPIC) ১০ অক্ষর সম্পূর্ণ ও সঠিক।'
+        : cleanLen > 0
+        ? `⚠️ ভোটার কার্ডে ঠিক ১০টি অক্ষর হতে হবে (এখনও ${10 - cleanLen}টি অক্ষর বাকি) — ১০টির বেশি নেওয়া হবে না।`
+        : 'ভোটার কার্ডের (EPIC) ১০ অক্ষরের কোড লিখুন (১০ অক্ষরের বেশি নেবে না)',
+    getHintEn: (cleanLen: number) =>
+      cleanLen === 10
+        ? '✓ Valid 10-char Voter ID verified.'
+        : cleanLen > 0
+        ? `⚠️ Voter ID must be exactly 10 characters (${10 - cleanLen} remaining) — cannot enter more.`
+        : 'Enter 10 chars Voter ID (cannot enter more)',
+  },
+  passport: {
+    nameBn: 'পাসপোর্ট',
+    nameEn: 'Passport',
+    targetDigitsOrCharsBn: '৮ অক্ষর',
+    targetDigitsOrCharsEn: '8 chars',
+    maxInputChars: 8,
+    placeholderBn: 'যেমন: Z1234567 (৮ অক্ষর)',
+    placeholderEn: 'e.g. Z1234567 (8 chars)',
+    format: (val: string) => val.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 8),
+    getCleanLength: (val: string) => val.replace(/[^a-zA-Z0-9]/g, '').length,
+    isValid: (val: string) => val.replace(/[^a-zA-Z0-9]/g, '').length === 8,
+    getHintBn: (cleanLen: number) =>
+      cleanLen === 8
+        ? '✓ পাসপোর্ট নম্বরের ৮ অক্ষর সম্পূর্ণ ও সঠিক।'
+        : cleanLen > 0
+        ? `⚠️ পাসপোর্ট নম্বর ঠিক ৮ অক্ষরের হতে হবে (এখনও ${8 - cleanLen}টি অক্ষর বাকি) — ৮টির বেশি নেওয়া হবে না।`
+        : 'পাসপোর্ট নম্বর ঠিক ৮ অক্ষরের লিখুন (৮ অক্ষরের বেশি নেবে না)',
+    getHintEn: (cleanLen: number) =>
+      cleanLen === 8
+        ? '✓ Valid 8-char Passport verified.'
+        : cleanLen > 0
+        ? `⚠️ Passport must be exactly 8 characters (${8 - cleanLen} remaining) — cannot enter more.`
+        : 'Enter 8 chars Passport number (cannot enter more)',
+  },
+  driving_license: {
+    nameBn: 'ড্রাইভিং লাইসেন্স',
+    nameEn: 'Driving License',
+    targetDigitsOrCharsBn: '১৫-১৬ অক্ষর',
+    targetDigitsOrCharsEn: '15-16 chars',
+    maxInputChars: 16,
+    placeholderBn: 'যেমন: WB01 20210001234 (১৫-১৬ অক্ষর)',
+    placeholderEn: 'e.g. WB01 20210001234 (15-16 chars)',
+    format: (val: string) => val.replace(/[^a-zA-Z0-9\s]/g, '').toUpperCase().slice(0, 16),
+    getCleanLength: (val: string) => val.replace(/\s/g, '').length,
+    isValid: (val: string) => {
+      const len = val.replace(/\s/g, '').length;
+      return len >= 15 && len <= 16;
+    },
+    getHintBn: (cleanLen: number) =>
+      cleanLen >= 15 && cleanLen <= 16
+        ? '✓ ড্রাইভিং লাইসেন্স নম্বর সম্পূর্ণ ও সঠিক।'
+        : cleanLen > 0
+        ? `⚠️ ড্রাইভিং লাইসেন্স ১৫ থেকে ১৬ অক্ষরের হতে হবে (বর্তমানে ${cleanLen} অক্ষর) — ১৬টির বেশি নেওয়া হবে না।`
+        : 'ড্রাইভিং লাইসেন্স ১৫-১৬ অক্ষরের লিখুন (১৬ অক্ষরের বেশি নেবে না)',
+    getHintEn: (cleanLen: number) =>
+      cleanLen >= 15 && cleanLen <= 16
+        ? '✓ Valid 15-16 char Driving License verified.'
+        : cleanLen > 0
+        ? `⚠️ License must be 15-16 characters (currently ${cleanLen}) — cannot enter more.`
+        : 'Enter 15-16 chars Driving License (cannot enter more)',
+  },
+};
+
 interface BookingFormProps {
   initialPackageSlug?: string;
   onSuccess?: (enquiryId: string) => void;
@@ -83,6 +209,13 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
   const isDateSelected = !!formData.preferredDate;
   const isDateAvailable = isDateSelected && dateCheck.isAvailable;
   const isDateUnavailable = isDateSelected && !dateCheck.isAvailable;
+
+  // ID Document validation and dynamic state
+  const activeIdConfig = ID_VALIDATION_CONFIG[formData.idType] || ID_VALIDATION_CONFIG.aadhaar;
+  const cleanIdLength = activeIdConfig.getCleanLength(formData.idNumber);
+  const isIdEmpty = cleanIdLength === 0;
+  const isIdValid = activeIdConfig.isValid(formData.idNumber);
+  const isIdInvalid = !isIdEmpty && !isIdValid;
 
   // Dynamic Price Estimate Math - strictly matches package rate
   const getPricingEstimate = () => {
@@ -246,6 +379,17 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
           : 'Selected date is not available (Not Available 🔴). Please choose one of the available December safari dates shown below.'
       );
       return;
+    }
+
+    if (formData.idNumber.trim()) {
+      if (!activeIdConfig.isValid(formData.idNumber)) {
+        setErrorMessage(
+          isBengali
+            ? `আপনার ${activeIdConfig.nameBn} নম্বর অসম্পূর্ণ বা ভুল (রেড মার্ক 🔴)। ${activeIdConfig.getHintBn(cleanIdLength)}`
+            : `Your ${activeIdConfig.nameEn} number is incomplete or invalid. ${activeIdConfig.getHintEn(cleanIdLength)}`
+        );
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -570,19 +714,32 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
                     { id: 'driving_license', labelBn: 'ড্রাইভিং লাইসেন্স', labelEn: 'Driving License' },
                   ].map(doc => {
                     const isSelected = formData.idType === doc.id;
+                    const docConfig = ID_VALIDATION_CONFIG[doc.id as keyof typeof ID_VALIDATION_CONFIG];
                     return (
                       <button
                         key={doc.id}
                         type="button"
-                        onClick={() => setFormData(prev => ({ ...prev, idType: doc.id as any }))}
-                        className={`py-2 px-2.5 rounded-lg text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer ${
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            idType: doc.id as any,
+                            idNumber: '', // Reset number when switching ID type
+                          }));
+                          setErrorMessage('');
+                        }}
+                        className={`py-2 px-2 rounded-lg text-xs font-bold transition-all text-center flex flex-col items-center justify-center gap-0.5 cursor-pointer ${
                           isSelected
                             ? 'bg-[#064E3B] text-white shadow-xs'
                             : 'text-slate-700 hover:bg-slate-100'
                         }`}
                       >
-                        {isSelected && <span className="text-[10px]">✓</span>}
-                        <span>{isBengali ? doc.labelBn : doc.labelEn}</span>
+                        <div className="flex items-center gap-1">
+                          {isSelected && <span className="text-[10px]">✓</span>}
+                          <span>{isBengali ? doc.labelBn : doc.labelEn}</span>
+                        </div>
+                        <span className={`text-[10px] font-medium ${isSelected ? 'text-emerald-200' : 'text-slate-500'}`}>
+                          ({isBengali ? docConfig.targetDigitsOrCharsBn : docConfig.targetDigitsOrCharsEn})
+                        </span>
                       </button>
                     );
                   })}
@@ -592,33 +749,105 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
               {/* ID Number Input Field Beside It */}
               <div className="md:col-span-6 flex flex-col justify-between">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                    {formData.idType === 'aadhaar' && (isBengali ? 'আধার কার্ড নম্বর লিখুন' : 'Enter Aadhaar Card Number')}
-                    {formData.idType === 'voter' && (isBengali ? 'ভোটার কার্ড নম্বর (EPIC No.) লিখুন' : 'Enter Voter Card Number (EPIC No.)')}
-                    {formData.idType === 'passport' && (isBengali ? 'পাসপোর্ট নম্বর লিখুন' : 'Enter Passport Number')}
-                    {formData.idType === 'driving_license' && (isBengali ? 'ড্রাইভিং লাইসেন্স নম্বর লিখুন' : 'Enter Driving License Number')}
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.idNumber}
-                    onChange={e => setFormData({ ...formData, idNumber: e.target.value })}
-                    placeholder={
-                      formData.idType === 'aadhaar'
-                        ? (isBengali ? 'যেমন: 1234 5678 9012' : 'e.g. 1234 5678 9012')
-                        : formData.idType === 'voter'
-                        ? (isBengali ? 'যেমন: WBF1234567' : 'e.g. WBF1234567')
-                        : formData.idType === 'passport'
-                        ? (isBengali ? 'যেমন: Z1234567' : 'e.g. Z1234567')
-                        : (isBengali ? 'যেমন: WB01 20210001234' : 'e.g. WB01 20210001234')
-                    }
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-2 focus:ring-emerald-100 text-sm font-medium bg-white"
-                  />
+                  <div className="flex items-center justify-between mb-1.5 flex-wrap gap-1">
+                    <label className="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
+                      <span>
+                        {formData.idType === 'aadhaar' && (isBengali ? 'আধার কার্ড নম্বর *' : 'Aadhaar Card Number *')}
+                        {formData.idType === 'voter' && (isBengali ? 'ভোটার কার্ড নম্বর (EPIC No.) *' : 'Voter Card Number (EPIC No.) *')}
+                        {formData.idType === 'passport' && (isBengali ? 'পাসপোর্ট নম্বর *' : 'Passport Number *')}
+                        {formData.idType === 'driving_license' && (isBengali ? 'ড্রাইভিং লাইসেন্স নম্বর *' : 'Driving License Number *')}
+                      </span>
+                      <span className="text-[11px] font-normal text-slate-500">
+                        ({isBengali ? activeIdConfig.targetDigitsOrCharsBn : activeIdConfig.targetDigitsOrCharsEn})
+                      </span>
+                    </label>
+
+                    {/* Live Character Count & Status Badge */}
+                    <div className="flex items-center gap-1">
+                      {isIdInvalid && (
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-300 animate-pulse">
+                          {isBengali ? 'রেড মার্ক 🔴' : 'Invalid 🔴'}
+                        </span>
+                      )}
+                      {isIdValid && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-2xs">
+                          {isBengali ? 'সঠিক 🟢' : 'Verified 🟢'}
+                        </span>
+                      )}
+                      <span
+                        className={`text-[11px] font-mono font-bold px-2 py-0.5 rounded-full border ${
+                          isIdInvalid
+                            ? 'bg-red-50 text-red-700 border-red-300'
+                            : isIdValid
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                            : 'bg-slate-100 text-slate-600 border-slate-200'
+                        }`}
+                      >
+                        {formData.idType === 'driving_license'
+                          ? `${cleanIdLength}/16`
+                          : `${cleanIdLength}/${activeIdConfig.maxInputChars === 14 ? 12 : activeIdConfig.maxInputChars}`}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={formData.idNumber}
+                      maxLength={activeIdConfig.maxInputChars}
+                      onChange={e => {
+                        const formatted = activeIdConfig.format(e.target.value);
+                        setFormData(prev => ({ ...prev, idNumber: formatted }));
+                        if (errorMessage) setErrorMessage('');
+                      }}
+                      placeholder={isBengali ? activeIdConfig.placeholderBn : activeIdConfig.placeholderEn}
+                      className={`w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                        isIdInvalid
+                          ? 'border-2 border-red-500 bg-red-50/70 text-red-950 font-bold ring-2 ring-red-200 focus:border-red-600 focus:ring-red-200 shadow-xs pr-20'
+                          : isIdValid
+                          ? 'border-2 border-emerald-500 bg-emerald-50/40 text-emerald-950 font-semibold ring-2 ring-emerald-100 focus:border-emerald-600 pr-20'
+                          : 'border border-slate-300 focus:border-[#064E3B] focus:ring-2 focus:ring-emerald-100 bg-white text-slate-800'
+                      }`}
+                    />
+                    <div className="absolute right-3 top-2.5 flex items-center pointer-events-none">
+                      {isIdInvalid && (
+                        <span className="flex items-center gap-1 text-[11px] font-bold text-red-600 bg-red-100/90 px-2 py-0.5 rounded-md border border-red-300">
+                          <AlertCircle className="w-3.5 h-3.5 text-red-600" />
+                          <span>{isBengali ? 'ভুল' : 'Invalid'}</span>
+                        </span>
+                      )}
+                      {isIdValid && (
+                        <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-100/90 px-2 py-0.5 rounded-md border border-emerald-300">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>{isBengali ? 'সঠিক' : 'Valid'}</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Dynamic Alert and Feedback Message under Input */}
+                  {isIdInvalid && (
+                    <div className="mt-1.5 p-2 rounded-xl bg-red-50 border-2 border-red-300 text-red-900 text-xs font-semibold flex items-center gap-2 shadow-xs animate-in fade-in duration-200">
+                      <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                      <span>{isBengali ? activeIdConfig.getHintBn(cleanIdLength) : activeIdConfig.getHintEn(cleanIdLength)}</span>
+                    </div>
+                  )}
+
+                  {isIdValid && (
+                    <div className="mt-1.5 p-2 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs font-semibold flex items-center gap-2 shadow-xs animate-in fade-in duration-200">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>{isBengali ? activeIdConfig.getHintBn(cleanIdLength) : activeIdConfig.getHintEn(cleanIdLength)}</span>
+                    </div>
+                  )}
                 </div>
-                <p className="mt-1.5 text-[11px] text-slate-500">
-                  {isBengali
-                    ? '🔒 সুন্দরবন ব্যাঘ্র প্রকল্প ও সজনেখালি বন দপ্তরের গেট পারমিট সুরক্ষার জন্য ব্যবহৃত হবে।'
-                    : '🔒 Securely collected for Sundarban Tiger Reserve and Forest Department checkpoint clearances.'}
-                </p>
+
+                {isIdEmpty && (
+                  <p className="mt-1.5 text-[11px] text-slate-500">
+                    {isBengali
+                      ? `🔒 সুন্দরবন ব্যাঘ্র প্রকল্প ও সজনেখালি বন দপ্তরের গেট পারমিটের জন্য ${activeIdConfig.nameBn} নম্বর (${activeIdConfig.targetDigitsOrCharsBn}) প্রয়োজন।`
+                      : `🔒 Securely collected for Sundarban Tiger Reserve checkpoint clearances (${activeIdConfig.targetDigitsOrCharsEn} required).`}
+                  </p>
+                )}
               </div>
             </div>
           </div>

@@ -86,8 +86,8 @@ export const BookingPaymentModal: React.FC<BookingPaymentModalProps> = ({
   }, [isOpen]);
 
   // UPI Payment Link & String
-  const upiId = BRAND_INFO.upiId || '9002413094@ybl';
-  const payeeName = BRAND_INFO.upiPayeeName || 'Sundarban Vromon';
+  const upiId = BRAND_INFO.upiId || 'srikrishnabar2000-1@oksbi';
+  const payeeName = BRAND_INFO.upiPayeeName || 'SRIKRISHNA BAR';
   const upiNote = `Booking-${bookingDetails.enquiryId || 'Token'}`;
   const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${payableAmount}&cu=INR&tn=${encodeURIComponent(upiNote)}`;
   const phonePeIntentUrl = `phonepe://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${payableAmount}&cu=INR&tn=${encodeURIComponent(upiNote)}`;
@@ -481,15 +481,22 @@ export const BookingPaymentModal: React.FC<BookingPaymentModalProps> = ({
                     </div>
 
                     {/* Copy UPI ID Alternative */}
-                    <div className="flex items-center justify-between p-2.5 bg-white rounded-xl border border-slate-200 text-xs">
+                    <div className="flex items-center justify-between p-3 bg-white rounded-xl border border-emerald-300 shadow-2xs text-xs">
                       <div className="text-left truncate">
-                        <span className="text-[10px] text-slate-400 block">{isBengali ? 'অফিসিয়াল ইউপিআই আইডি:' : 'Official UPI ID:'}</span>
-                        <span className="font-mono font-bold text-slate-800">{upiId}</span>
+                        <span className="text-[10px] text-slate-500 font-semibold block">{isBengali ? 'অফিসিয়াল ইউপিআই আইডি (পেমেন্ট করার জন্য):' : 'Official Payment UPI ID:'}</span>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span className="font-mono font-bold text-emerald-950 text-sm tracking-wide bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                            {upiId}
+                          </span>
+                          <span className="text-[10px] font-semibold text-emerald-800">
+                            ({payeeName})
+                          </span>
+                        </div>
                       </div>
                       <button
                         type="button"
                         onClick={handleCopyUpi}
-                        className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition-colors flex items-center gap-1 shrink-0 cursor-pointer"
+                        className="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold rounded-lg transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer shadow-2xs"
                       >
                         {copiedUpi ? (
                           <>
@@ -498,8 +505,8 @@ export const BookingPaymentModal: React.FC<BookingPaymentModalProps> = ({
                           </>
                         ) : (
                           <>
-                            <Copy className="w-3.5 h-3.5" />
-                            <span>{isBengali ? 'কপি' : 'Copy'}</span>
+                            <Copy className="w-3.5 h-3.5 text-emerald-700" />
+                            <span>{isBengali ? 'কপি করুন' : 'Copy ID'}</span>
                           </>
                         )}
                       </button>
@@ -587,6 +594,38 @@ export const BookingPaymentModal: React.FC<BookingPaymentModalProps> = ({
                       <Smartphone className="w-4 h-4 text-emerald-700" />
                       <span>{isBengali ? 'অন্যান্য যেকোনো UPI অ্যাপ দিয়ে পে করুন' : 'Pay with any other UPI App'}</span>
                     </a>
+
+                    {/* Official UPI ID for Mobile */}
+                    <div className="flex items-center justify-between p-3 bg-white rounded-xl border border-emerald-300 shadow-2xs text-xs">
+                      <div className="text-left truncate">
+                        <span className="text-[10px] text-slate-500 font-semibold block">{isBengali ? 'অফিসিয়াল ইউপিআই আইডি (পেমেন্ট করার জন্য):' : 'Official Payment UPI ID:'}</span>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span className="font-mono font-bold text-emerald-950 text-xs sm:text-sm tracking-wide bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                            {upiId}
+                          </span>
+                          <span className="text-[10px] font-semibold text-emerald-800">
+                            ({payeeName})
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleCopyUpi}
+                        className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold rounded-lg transition-colors flex items-center gap-1 shrink-0 cursor-pointer shadow-2xs"
+                      >
+                        {copiedUpi ? (
+                          <>
+                            <Check className="w-3.5 h-3.5 text-emerald-600" />
+                            <span className="text-emerald-700">{isBengali ? 'কপি হয়েছে' : 'Copied'}</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3.5 h-3.5 text-emerald-700" />
+                            <span>{isBengali ? 'কপি' : 'Copy'}</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
 
                     {/* Card Switch CTA prompt as user requested */}
                     <div className="p-3 bg-amber-50/80 rounded-xl border border-amber-200 flex items-center justify-between text-xs text-amber-900">

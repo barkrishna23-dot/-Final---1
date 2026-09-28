@@ -6,7 +6,7 @@ import { ItineraryTimeline } from '../components/packages/ItineraryTimeline';
 import { SourceVerificationBadge } from '../components/common/SourceVerificationBadge';
 import { WildlifeHonestyPanel } from '../components/common/WildlifeHonestyPanel';
 import { BookingForm } from '../components/booking/BookingForm';
-import { Clock, MapPin, Bookmark, BookmarkCheck, ArrowLeft, ShieldCheck, Check, Sparkles, MessageCircle, Phone } from 'lucide-react';
+import { Clock, MapPin, Bookmark, BookmarkCheck, ArrowLeft, ShieldCheck, Check, Sparkles, MessageCircle, Phone, ChevronDown } from 'lucide-react';
 import { BRAND_INFO } from '../data/brandInfo';
 
 interface PackageDetailPageProps {
@@ -23,6 +23,7 @@ export const PackageDetailPage: React.FC<PackageDetailPageProps> = ({
   const { language, isBengali } = useLanguage();
   const { isPackageSaved, toggleSavePackage } = useSavedTrip();
   const saved = isPackageSaved(pkg.slug);
+  const [isFormOpen, setIsFormOpen] = React.useState(false);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
@@ -86,10 +87,13 @@ export const PackageDetailPage: React.FC<PackageDetailPageProps> = ({
 
               <button
                 onClick={() => {
-                  const bookingEl = document.getElementById('package-booking-section');
-                  if (bookingEl) bookingEl.scrollIntoView({ behavior: 'smooth' });
+                  setIsFormOpen(true);
+                  setTimeout(() => {
+                    const bookingEl = document.getElementById('package-booking-section');
+                    if (bookingEl) bookingEl.scrollIntoView({ behavior: 'smooth' });
+                  }, 80);
                 }}
-                className="px-6 py-3 rounded-full bg-[#F4B942] hover:bg-[#ffcb59] text-[#064E3B] font-bold text-sm shadow-xl transition-all"
+                className="px-6 py-3 rounded-full bg-[#F4B942] hover:bg-[#ffcb59] text-[#064E3B] font-bold text-sm shadow-xl transition-all cursor-pointer"
               >
                 {isBengali ? 'বুকিং আবেদন করুন' : 'Book / Request Quote'}
               </button>
@@ -135,18 +139,42 @@ export const PackageDetailPage: React.FC<PackageDetailPageProps> = ({
       <WildlifeHonestyPanel />
 
       {/* Direct Booking Form Embedded Section */}
-      <section id="package-booking-section" className="space-y-4 pt-6">
-        <div className="text-center max-w-2xl mx-auto space-y-2">
-          <h3 className="text-2xl sm:text-3xl font-bold font-heading text-[#064E3B]">
-            {isBengali ? 'এই প্যাকেজটি সরাসরি বুক করুন' : 'Confirm Your Dates for this Package'}
-          </h3>
-          <p className="text-xs sm:text-sm text-slate-500">
-            {isBengali
-              ? 'নিচের ফর্মটি পূরণ করুন বা হোয়াটসঅ্যাপে আমাদের সাথে কথা বলুন।'
-              : 'Complete the form below or chat on WhatsApp for fast confirmation.'}
-          </p>
+      <section id="package-booking-section" className="space-y-4 pt-6 scroll-mt-6">
+        <div className="max-w-2xl mx-auto">
+          <button
+            type="button"
+            onClick={() => setIsFormOpen(prev => !prev)}
+            className="w-full text-center p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-emerald-50 via-white to-teal-50 hover:from-emerald-100/80 hover:to-teal-100/80 border-2 border-emerald-600/30 hover:border-emerald-600 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col items-center justify-center space-y-2"
+            aria-expanded={isFormOpen}
+          >
+            <div className="flex items-center justify-center gap-2.5">
+              <span className="p-2 rounded-xl bg-[#064E3B] text-[#F4B942] group-hover:scale-105 transition-transform">
+                <Sparkles className="w-5 h-5" />
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-bold font-heading text-[#064E3B] group-hover:text-emerald-950 transition-colors">
+                {isBengali ? 'এই প্যাকেজটি সরাসরি বুক করুন' : 'Confirm Your Dates for this Package'}
+              </h3>
+              <span className={`p-1.5 rounded-full bg-emerald-100 text-[#064E3B] transition-transform duration-300 ${isFormOpen ? 'rotate-180' : ''}`}>
+                <ChevronDown className="w-5 h-5" />
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-600">
+              {isFormOpen
+                ? (isBengali
+                    ? '▲ ফরম্যাটটি বন্ধ করতে ক্লিক করুন (অথবা নিচে ফর্মটি পূরণ করুন)'
+                    : '▲ Click here to close format (or fill the form below)')
+                : (isBengali
+                    ? '▼ ফরম্যাটটি খুলতে এখানে ক্লিক করুন — আসন ও তারিখ সরাসরি বুক করুন'
+                    : '▼ Click here to open booking format — reserve dates & seats')}
+            </p>
+          </button>
         </div>
-        <BookingForm key={pkg.slug} initialPackageSlug={pkg.slug} />
+
+        {isFormOpen && (
+          <div className="transition-all duration-300">
+            <BookingForm key={pkg.slug} initialPackageSlug={pkg.slug} />
+          </div>
+        )}
       </section>
     </div>
   );
