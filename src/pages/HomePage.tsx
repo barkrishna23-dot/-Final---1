@@ -198,48 +198,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         <HamiltonStorySection onNavigate={onNavigate} />
       </div>
 
-      {/* 7. Featured Packages Section (Our Tour Plans moved down) */}
-      <section id="section-packages" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-          <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#064E3B] uppercase tracking-wider bg-emerald-100 px-3 py-1 rounded-full mb-2">
-              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-              <span>{isBengali ? 'জনপ্রিয় ট্যুর প্যাকেজ সমূহ' : 'Signature Tour Packages'}</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold font-heading text-[#064E3B]">
-              {isBengali ? 'আপনার সময় ও বাজেট অনুযায়ী সঠিক প্যাকেজ' : 'Find Your Ideal Sundarban Safari'}
-            </h2>
-          </div>
-
-          <button
-            onClick={() => onNavigate('packages')}
-            className="inline-flex items-center gap-2 text-sm font-bold text-[#064E3B] hover:text-[#096049] transition-colors"
-          >
-            <span>{isBengali ? 'সকল প্যাকেজ দেখুন (৫টি)' : 'View All 5 Packages'}</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredPackages.map(pkg => (
-            <PackageCard
-              key={pkg.id}
-              pkg={pkg}
-              onSelect={slug => onSelectPackage(slug)}
-              onBookNow={slug => {
-                if (onBookNow) {
-                  onBookNow(slug);
-                } else {
-                  onSelectPackage(slug);
-                  onNavigate('booking');
-                }
-              }}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* 8. Authentic Bengali Cuisine Section */}
+      {/* 7. Authentic Bengali Cuisine Section (Moved above packages) */}
       <section id="section-cuisine" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
           <div>
@@ -254,7 +213,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
           <button
             onClick={() => onNavigate('food')}
-            className="inline-flex items-center gap-2 text-sm font-bold text-[#064E3B] hover:text-[#096049] transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-bold text-[#064E3B] hover:text-[#096049] transition-colors cursor-pointer"
           >
             <span>{isBengali ? 'সম্পূর্ণ খাবার মেনু দেখুন' : 'Explore Full Daily Menu'}</span>
             <ArrowRight className="w-4 h-4" />
@@ -293,6 +252,47 @@ export const HomePage: React.FC<HomePageProps> = ({
                 )}
               </div>
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 8. Featured Packages Section (Placed below cuisine) */}
+      <section id="section-packages" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#064E3B] uppercase tracking-wider bg-emerald-100 px-3 py-1 rounded-full mb-2">
+              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+              <span>{isBengali ? 'জনপ্রিয় ট্যুর প্যাকেজ সমূহ' : 'Signature Tour Packages'}</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold font-heading text-[#064E3B]">
+              {isBengali ? 'আপনার সময় ও বাজেট অনুযায়ী সঠিক প্যাকেজ' : 'Find Your Ideal Sundarban Safari'}
+            </h2>
+          </div>
+
+          <button
+            onClick={() => onNavigate('packages')}
+            className="inline-flex items-center gap-2 text-sm font-bold text-[#064E3B] hover:text-[#096049] transition-colors cursor-pointer"
+          >
+            <span>{isBengali ? 'সকল প্যাকেজ দেখুন (৫টি)' : 'View All 5 Packages'}</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {featuredPackages.map(pkg => (
+            <PackageCard
+              key={pkg.id}
+              pkg={pkg}
+              onSelect={slug => onSelectPackage(slug)}
+              onBookNow={slug => {
+                if (onBookNow) {
+                  onBookNow(slug);
+                } else {
+                  onSelectPackage(slug);
+                  onNavigate('booking');
+                }
+              }}
+            />
           ))}
         </div>
       </section>
