@@ -31,6 +31,11 @@ CREATE TABLE IF NOT EXISTS public.booking_enquiries (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Optional referral tracking columns (safe to run on existing table)
+ALTER TABLE public.booking_enquiries
+  ADD COLUMN IF NOT EXISTS referral_code_used TEXT,
+  ADD COLUMN IF NOT EXISTS discount_amount NUMERIC DEFAULT 0;
+
 -- Index for faster sorting by newest bookings
 CREATE INDEX IF NOT EXISTS idx_booking_enquiries_created_at
   ON public.booking_enquiries (created_at DESC);

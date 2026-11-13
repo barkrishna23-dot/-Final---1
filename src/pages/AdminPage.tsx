@@ -29,6 +29,9 @@ import {
   UserPlus,
   Search,
   RefreshCw,
+  Copy,
+  Check,
+  Tag,
 } from 'lucide-react';
 import { getAvailableDates, saveAvailableDates, AvailableSafariDate } from '../data/bookingAvailability';
 
@@ -46,6 +49,7 @@ export const AdminPage: React.FC = () => {
     enquiries,
     isLoadingEnquiries,
     refreshEnquiries,
+    getReferenceCodeStatus,
     reviews,
     updateEnquiryStatus,
     deleteEnquiry,
@@ -74,6 +78,7 @@ export const AdminPage: React.FC = () => {
   const [captchaExpected, setCaptchaExpected] = useState('');
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showLoginWhenEmpty, setShowLoginWhenEmpty] = useState(false);
 
   // Forgot password state
   const [isForgotMode, setIsForgotMode] = useState(false);
@@ -89,6 +94,7 @@ export const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'enquiries' | 'reviews' | 'credentials' | 'dates'>('enquiries');
   const [bookingSearch, setBookingSearch] = useState('');
   const [bookingStatusFilter, setBookingStatusFilter] = useState<'all' | BookingEnquiry['status']>('all');
+  const [copiedRefCode, setCopiedRefCode] = useState<string | null>(null);
   const [datesList, setDatesList] = useState<AvailableSafariDate[]>(() => getAvailableDates());
   const [newDateInput, setNewDateInput] = useState('');
   const [newDateSeats, setNewDateSeats] = useState(8);
@@ -121,15 +127,17 @@ export const AdminPage: React.FC = () => {
     setLoginError(null);
   };
 
-  // Draw Captcha on canvas whenever captchaExpected changes (only in login mode when single admin slot exists)
-  useEffect(() => {
-    if (!isAdminAuthenticated && hasAdminAccount && !captchaExpected) {
-      generateNewCaptcha();
-    }
-  }, [isAdminAuthenticated, hasAdminAccount, captchaExpected]);
+  // Draw Captcha on canvas whenever login form is visible
+  const isLoginViewActive = !isAdminAuthenticated && !isForgotMode && (hasAdminAccount || showLoginWhenEmpty);
 
   useEffect(() => {
-    if (!isAdminAuthenticated && hasAdminAccount && captchaExpected && canvasRef.current) {
+    if (isLoginViewActive && !captchaExpected) {
+      generateNewCaptcha();
+    }
+  }, [isLoginViewActive, captchaExpected]);
+
+  useEffect(() => {
+    if (isLoginViewActive && captchaExpected && canvasRef.current) {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
@@ -187,7 +195,7 @@ export const AdminPage: React.FC = () => {
         ctx.restore();
       }
     }
-  }, [isAdminAuthenticated, captchaExpected]);
+  }, [isLoginViewActive, captchaExpected]);
 
   const handleCreateSingleAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -301,7 +309,13 @@ export const AdminPage: React.FC = () => {
 
     const result = await adminLogin(userInput, passInput);
     if (!result.success) {
-      if (result.error === 'invalid_user') {
+      if (result.error === 'no_account') {
+        setLoginError(
+          isBengali
+            ? 'এখনো কোনো অ্যাডমিন অ্যাকাউন্ট তৈরি করা হয়নি! অনুগ্রহ করে প্রথমে ১টি অ্যাডমিন অ্যাকাউন্ট তৈরি করুন।'
+            : 'No admin account has been registered yet. Please create the 1 admin account first.'
+        );
+      } else if (result.error === 'invalid_user') {
         setLoginError(
           isBengali
             ? 'ভুল ইউজার আইডি বা ইমেল! শুধুমাত্র রেজিস্টার্ড অ্যাডমিন লগইন করতে পারবেন।'
@@ -463,9 +477,9 @@ export const AdminPage: React.FC = () => {
     );
   });
 
-  // 1. Unauthenticated Screen: Either Single-Slot Admin Sign-Up (if empty) OR Admin Login (locked)
+  // 1. Unauthenticated Screen: Single-Slot Admin Sign-Up (if empty) OR Admin Login (locked once created)
   if (!isAdminAuthenticated) {
-    if (!hasAdminAccount) {
+    if (!hasAdminAccount && !showLoginWhenEmpty && !isForgotMode) {
       return (
         <div className="min-h-[82vh] flex items-center justify-center px-4 py-12">
           <div className="w-full max-w-lg bg-white rounded-3xl p-7 sm:p-10 border-2 border-emerald-200 shadow-2xl space-y-6">
@@ -636,6 +650,29 @@ export const AdminPage: React.FC = () => {
                 </span>
               </button>
             </form>
+
+            {/* Login Option Right Below Create Admin Account */}
+            <div className="pt-4 border-t border-slate-200 text-center space-y-2.5">
+              <p className="text-[11px] text-slate-500">
+                {isBengali
+                  ? 'ইতিমধ্যে অ্যাডমিন অ্যাকাউন্ট তৈরি করা থাকলে নিচের বাটন থেকে ইউজার আইডি ও পাসওয়ার্ড দিয়ে লগইন করুন:'
+                  : 'Already registered the admin account? Log in below with your User ID & Password:'}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowLoginWhenEmpty(true);
+                  setLoginError(null);
+                  generateNewCaptcha();
+                }}
+                className="w-full py-2.5 px-4 rounded-xl border-2 border-[#064E3B] bg-emerald-50 hover:bg-emerald-100 text-[#064E3B] font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              >
+                <Lock className="w-4 h-4" />
+                <span>
+                  {isBengali ? 'অ্যাডমিন লগইন করুন (ইউজার আইডি ও পাসওয়ার্ড)' : 'Admin Login (User ID & Password)'}
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       );
@@ -944,7 +981,7 @@ export const AdminPage: React.FC = () => {
           </form>
 
           {/* Bottom Secondary Link */}
-          <div className="text-center pt-2 border-t border-slate-100">
+          <div className="text-center pt-2 border-t border-slate-100 space-y-2.5">
             <button
               type="button"
               onClick={() => {
@@ -955,10 +992,28 @@ export const AdminPage: React.FC = () => {
                 setForgotNewPass('');
                 setForgotConfirmPass('');
               }}
-              className="text-xs text-slate-500 hover:text-emerald-800 font-medium transition-colors"
+              className="text-xs text-slate-500 hover:text-emerald-800 font-medium transition-colors block mx-auto cursor-pointer"
             >
               {isBengali ? 'পাসওয়ার্ড ভুলে গেছেন? এখানে ক্লিক করুন' : 'Forgot Password? Click here to reset'}
             </button>
+
+            {!hasAdminAccount && (
+              <button
+                type="button"
+                onClick={() => {
+                  setShowLoginWhenEmpty(false);
+                  setLoginError(null);
+                }}
+                className="w-full py-2 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <UserPlus className="w-3.5 h-3.5" />
+                <span>
+                  {isBengali
+                    ? 'অ্যাডমিন অ্যাকাউন্ট তৈরি করুন (১টি মাত্র স্লট খালি)'
+                    : 'Create Single Admin Account (1 Slot Open)'}
+                </span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -1124,10 +1179,10 @@ export const AdminPage: React.FC = () => {
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 text-slate-500 uppercase font-semibold border-b border-slate-200">
                 <tr>
-                  <th className="p-4">Guest & Booking ID</th>
+                  <th className="p-4">Guest &amp; রেফারেন্স / বিল কোড</th>
                   <th className="p-4">Contact</th>
                   <th className="p-4">Package</th>
-                  <th className="p-4">Date & Pax</th>
+                  <th className="p-4">Date &amp; Pax</th>
                   <th className="p-4">Est. Cost</th>
                   <th className="p-4">Status</th>
                   <th className="p-4 text-right">Actions</th>
@@ -1148,17 +1203,62 @@ export const AdminPage: React.FC = () => {
                   const adults = (enq as any).adults || (enq as any).adultsCount || 1;
                   const kids = (enq as any).children || (enq as any).childrenCount || 0;
                   const cost = (enq as any).calculatedEstimatedCost || 0;
+                  const refStatus = getReferenceCodeStatus(enq);
+                  const expiryLabel = new Date(refStatus.expiryDate).toLocaleDateString(
+                    isBengali ? 'bn-IN' : 'en-IN',
+                    { day: '2-digit', month: 'short', year: 'numeric' }
+                  );
 
                   return (
                     <tr key={enq.id} className="hover:bg-slate-50/70">
-                      <td className="p-4">
+                      <td className="p-4 space-y-1">
                         <strong className="text-slate-900 block font-heading">{guestName}</strong>
-                        <span className="text-[11px] font-mono font-semibold text-emerald-800 block">
-                          {enq.id}
-                        </span>
-                        <span className="text-[11px] text-slate-400">
-                          {new Date(enq.createdAt).toLocaleDateString()}
-                        </span>
+                        <div className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-lg px-2 py-1">
+                          <span className="text-[10px] text-slate-600 font-semibold">
+                            {isBengali ? 'রেফারেন্স / বিল কোড:' : 'Ref Code:'}
+                          </span>
+                          <span className="text-[11px] font-mono font-bold text-[#064E3B]">
+                            {enq.id}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (navigator.clipboard) {
+                                navigator.clipboard.writeText(enq.id);
+                                setCopiedRefCode(enq.id);
+                                setTimeout(() => setCopiedRefCode(null), 2000);
+                              }
+                            }}
+                            className="p-0.5 text-emerald-700 hover:text-emerald-950 cursor-pointer"
+                            title={isBengali ? 'কোড কপি করুন' : 'Copy Reference Code'}
+                          >
+                            {copiedRefCode === enq.id ? (
+                              <Check className="w-3 h-3 text-emerald-700" />
+                            ) : (
+                              <Copy className="w-3 h-3" />
+                            )}
+                          </button>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                          <span className="text-[11px] text-slate-400">
+                            {new Date(enq.createdAt).toLocaleDateString()}
+                          </span>
+                          {refStatus.status === 'active' && (
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200">
+                              {isBengali ? `৫% কোড সক্রিয় (মেয়াদ: ${expiryLabel})` : `5% Active till ${expiryLabel}`}
+                            </span>
+                          )}
+                          {refStatus.status === 'used' && (
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 border border-sky-200">
+                              {isBengali ? `ব্যবহৃত (${refStatus.usedInId})` : `Used in ${refStatus.usedInId}`}
+                            </span>
+                          )}
+                          {refStatus.status === 'expired' && (
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200">
+                              {isBengali ? 'কোড মেয়াদ উত্তীর্ণ (১ মাস শেষ)' : 'Code Expired (>1m)'}
+                            </span>
+                          )}
+                        </div>
                         {((enq as any).idNumber || (enq as any).idType) && (
                           <div className="text-[10px] text-emerald-800 font-medium bg-emerald-50 px-1.5 py-0.5 rounded mt-1 border border-emerald-200/80 inline-block">
                             🪪 {((enq as any).idType || 'ID').toUpperCase()}:{' '}
@@ -1215,8 +1315,16 @@ export const AdminPage: React.FC = () => {
                         )}
                       </td>
 
-                      <td className="p-4 font-bold text-slate-900">
-                        ₹{cost.toLocaleString('en-IN')}
+                      <td className="p-4 font-bold text-slate-900 space-y-1">
+                        <div>₹{cost.toLocaleString('en-IN')}</div>
+                        {enq.referralCodeUsed && (
+                          <div className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
+                            <Tag className="w-2.5 h-2.5" />
+                            <span>
+                              5% Off (-₹{(enq.discountAmount || 0).toLocaleString('en-IN')}) • {enq.referralCodeUsed}
+                            </span>
+                          </div>
+                        )}
                       </td>
 
                       <td className="p-4">

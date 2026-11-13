@@ -158,6 +158,8 @@ export interface BookingEnquiry {
   cameramanAddon: boolean;
   customRequests?: string;
   calculatedEstimatedCost?: number;
+  referralCodeUsed?: string;
+  discountAmount?: number;
   status: 'pending' | 'contacted' | 'confirmed' | 'cancelled';
   createdAt: string;
 }

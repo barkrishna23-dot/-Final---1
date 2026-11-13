@@ -38,6 +38,16 @@ async function hashAdminPassword(password: string): Promise<string> {
   return `fnv_${(hash >>> 0).toString(16)}`;
 }
 
+const REDEEMED_REF_CODES_STORAGE_KEY = 'sv_redeemed_ref_codes_v1';
+
+export interface ReferenceCodeValidationResult {
+  valid: boolean;
+  reason?: 'empty' | 'not_found' | 'cancelled' | 'expired' | 'already_used';
+  code?: string;
+  expiryDate?: string;
+  usedInId?: string;
+}
+
 interface AdminContextType {
   enquiries: BookingEnquiry[];
   reviews: Review[];
@@ -49,6 +59,12 @@ interface AdminContextType {
   currentUsername: string;
   isLoadingEnquiries: boolean;
   refreshEnquiries: () => Promise<void>;
+  validateReferenceCode: (rawCode: string) => Promise<ReferenceCodeValidationResult>;
+  getReferenceCodeStatus: (enquiry: BookingEnquiry) => {
+    status: 'active' | 'used' | 'expired' | 'cancelled';
+    expiryDate: string;
+    usedInId?: string;
+  };
   registerSingleAdminAccount: (details: {
     fullName: string;
     email: string;
@@ -360,21 +376,31 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     inputUserOrEmail: string,
     inputPass: string
   ): Promise<{ success: boolean; error?: string }> => {
-    if (!adminAccount) {
+    let activeAccount = adminAccount;
+    if (!activeAccount && isSupabaseConfigured) {
+      const remote = await fetchSingleAdminAccount();
+      if (remote.account) {
+        activeAccount = remote.account;
+        setAdminAccount(remote.account);
+        localStorage.setItem(ADMIN_ACCOUNT_STORAGE_KEY, JSON.stringify(remote.account));
+      }
+    }
+
+    if (!activeAccount) {
       return { success: false, error: 'no_account' };
     }
 
     const cleanInput = inputUserOrEmail.trim().toLowerCase();
     const isUserValid =
-      cleanInput === adminAccount.username.trim().toLowerCase() ||
-      cleanInput === adminAccount.email.trim().toLowerCase();
+      cleanInput === activeAccount.username.trim().toLowerCase() ||
+      cleanInput === activeAccount.email.trim().toLowerCase();
 
     if (!isUserValid) {
       return { success: false, error: 'invalid_user' };
     }
 
     const inputHash = await hashAdminPassword(inputPass);
-    if (inputHash !== adminAccount.passwordHash) {
+    if (inputHash !== activeAccount.passwordHash) {
       return { success: false, error: 'invalid_password' };
     }
 
@@ -395,6 +421,141 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const adminLogout = logoutAdmin;
 
+  const readRedeemedRefMap = (): Record<string, string> => {
+    try {
+      const raw = localStorage.getItem(REDEEMED_REF_CODES_STORAGE_KEY);
+      if (raw) return JSON.parse(raw) as Record<string, string>;
+    } catch {
+      // ignore storage errors
+    }
+    return {};
+  };
+
+  const markRefCodeRedeemedLocally = (code: string, usedInBookingId: string) => {
+    try {
+      const map = readRedeemedRefMap();
+      map[code.trim().toUpperCase()] = usedInBookingId;
+      localStorage.setItem(REDEEMED_REF_CODES_STORAGE_KEY, JSON.stringify(map));
+    } catch {
+      // ignore storage errors
+    }
+  };
+
+  const evaluateReferenceCodeAgainstList = (
+    rawCode: string,
+    list: BookingEnquiry[]
+  ): ReferenceCodeValidationResult => {
+    const code = rawCode.trim().toUpperCase();
+    if (!code) {
+      return { valid: false, reason: 'empty' };
+    }
+
+    const target = list.find(e => e.id.trim().toUpperCase() === code);
+    if (!target) {
+      return { valid: false, reason: 'not_found', code };
+    }
+
+    if (target.status === 'cancelled') {
+      return { valid: false, reason: 'cancelled', code };
+    }
+
+    // Check 1-month validity from original booking date
+    const createdAtDate = new Date(target.createdAt);
+    const expiryDate = new Date(createdAtDate.getTime());
+    expiryDate.setMonth(expiryDate.getMonth() + 1);
+
+    if (Number.isNaN(expiryDate.getTime()) || Date.now() > expiryDate.getTime()) {
+      return {
+        valid: false,
+        reason: 'expired',
+        code,
+        expiryDate: Number.isNaN(expiryDate.getTime()) ? undefined : expiryDate.toISOString(),
+      };
+    }
+
+    // Check 1-bill single-use constraint across enquiries + local redeemed map
+    const usedByEnquiry = list.find(
+      e =>
+        e.status !== 'cancelled' &&
+        e.referralCodeUsed &&
+        e.referralCodeUsed.trim().toUpperCase() === code
+    );
+    const redeemedMap = readRedeemedRefMap();
+    const localUsedInId = redeemedMap[code];
+    const usedInId = usedByEnquiry?.id || localUsedInId;
+
+    if (usedInId) {
+      return {
+        valid: false,
+        reason: 'already_used',
+        code,
+        expiryDate: expiryDate.toISOString(),
+        usedInId,
+      };
+    }
+
+    return {
+      valid: true,
+      code,
+      expiryDate: expiryDate.toISOString(),
+    };
+  };
+
+  const validateReferenceCode = async (rawCode: string): Promise<ReferenceCodeValidationResult> => {
+    const code = rawCode.trim().toUpperCase();
+    if (!code) return { valid: false, reason: 'empty' };
+
+    let mergedList = enquiries;
+    if (isSupabaseConfigured) {
+      const { data, error } = await fetchBookingEnquiries();
+      if (!error && data.length > 0) {
+        const remoteIds = new Set(data.map(item => item.id));
+        const localOnly = enquiries.filter(item => !remoteIds.has(item.id));
+        mergedList = [...data, ...localOnly];
+        setEnquiries(mergedList);
+      }
+    }
+
+    return evaluateReferenceCodeAgainstList(code, mergedList);
+  };
+
+  const getReferenceCodeStatus = (
+    enquiry: BookingEnquiry
+  ): {
+    status: 'active' | 'used' | 'expired' | 'cancelled';
+    expiryDate: string;
+    usedInId?: string;
+  } => {
+    const createdAtDate = new Date(enquiry.createdAt);
+    const expiryDate = new Date(createdAtDate.getTime());
+    expiryDate.setMonth(expiryDate.getMonth() + 1);
+    const expiryIso = Number.isNaN(expiryDate.getTime()) ? enquiry.createdAt : expiryDate.toISOString();
+
+    if (enquiry.status === 'cancelled') {
+      return { status: 'cancelled', expiryDate: expiryIso };
+    }
+
+    const code = enquiry.id.trim().toUpperCase();
+    const usedByEnquiry = enquiries.find(
+      e =>
+        e.status !== 'cancelled' &&
+        e.referralCodeUsed &&
+        e.referralCodeUsed.trim().toUpperCase() === code
+    );
+    const redeemedMap = readRedeemedRefMap();
+    const usedInId = usedByEnquiry?.id || redeemedMap[code];
+
+    if (usedInId) {
+      return { status: 'used', expiryDate: expiryIso, usedInId };
+    }
+
+    if (Number.isNaN(expiryDate.getTime()) || Date.now() > expiryDate.getTime()) {
+      return { status: 'expired', expiryDate: expiryIso };
+    }
+
+    return { status: 'active', expiryDate: expiryIso };
+  };
+
   const deleteEnquiry = (id: string) => {
     setEnquiries(prev => prev.filter(e => e.id !== id));
     void deleteBookingEnquiryFromSupabase(id);
@@ -402,6 +563,19 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const addEnquiry = async (enquiryData: Omit<BookingEnquiry, 'id' | 'createdAt' | 'status'>): Promise<string> => {
     const anyData = enquiryData as Omit<BookingEnquiry, 'id' | 'createdAt' | 'status'> & Record<string, unknown>;
+
+    // Re-verify single-use referral code if supplied
+    let verifiedReferralCode: string | undefined;
+    let verifiedDiscountAmount: number | undefined;
+    if (enquiryData.referralCodeUsed && enquiryData.referralCodeUsed.trim()) {
+      const check = await validateReferenceCode(enquiryData.referralCodeUsed);
+      if (!check.valid || !check.code) {
+        throw new Error(`REFERRAL_INVALID:${check.reason || 'not_found'}`);
+      }
+      verifiedReferralCode = check.code;
+      verifiedDiscountAmount = Math.max(Math.round(Number(enquiryData.discountAmount || 0)), 0);
+    }
+
     const uniqueSuffix = `${String(enquiries.length + 1).padStart(3, '0')}-${Date.now().toString(36).toUpperCase().slice(-4)}`;
     const newId = `ENQ-${new Date().getFullYear()}-${uniqueSuffix}`;
     const newEnquiry: BookingEnquiry = {
@@ -418,10 +592,16 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       foodPreference: enquiryData.foodPreference || 'bengali-nonveg',
       cameramanAddon: Boolean(enquiryData.cameramanAddon),
       customRequests: enquiryData.customRequests || (anyData.specialRequests as string) || '',
+      referralCodeUsed: verifiedReferralCode,
+      discountAmount: verifiedDiscountAmount,
       id: newId,
       status: 'pending',
       createdAt: new Date().toISOString(),
     };
+
+    if (verifiedReferralCode) {
+      markRefCodeRedeemedLocally(verifiedReferralCode, newId);
+    }
 
     setEnquiries(prev => [newEnquiry, ...prev]);
 
@@ -521,6 +701,8 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         currentUsername: adminAccount?.username || '',
         isLoadingEnquiries,
         refreshEnquiries,
+        validateReferenceCode,
+        getReferenceCodeStatus,
         registerSingleAdminAccount,
         loginAdmin,
         adminLogin,

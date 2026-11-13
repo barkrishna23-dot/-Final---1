@@ -1,7 +1,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { BookingEnquiry } from '../types';
 
-export const SUPABASE_PROJECT_ID = 'hafklqLp6LosyvXH';
+export const SUPABASE_PROJECT_ID = 'tdylepklnfoprgvehbvx';
 
 const envUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const envKey =
@@ -69,6 +69,44 @@ export interface BookingEnquiryRow {
   created_at: string;
 }
 
+const REF_META_REGEX = /\n?\[SV_REF:([^|\]]+)\|DISC:(\d+)\]/;
+
+function buildCustomRequestsWithReferral(enquiry: BookingEnquiry): string | null {
+  const baseText = (
+    enquiry.customRequests ||
+    ((enquiry as BookingEnquiry & Record<string, unknown>).specialRequests as string) ||
+    ''
+  )
+    .replace(REF_META_REGEX, '')
+    .trim();
+
+  if (enquiry.referralCodeUsed) {
+    const code = enquiry.referralCodeUsed.trim().toUpperCase();
+    const disc = Math.max(Math.round(Number(enquiry.discountAmount || 0)), 0);
+    const marker = `[SV_REF:${code}|DISC:${disc}]`;
+    return baseText ? `${baseText}\n${marker}` : marker;
+  }
+  return baseText || null;
+}
+
+function parseReferralFromCustomRequests(raw: string | null): {
+  cleanCustomRequests?: string;
+  referralCodeUsed?: string;
+  discountAmount?: number;
+} {
+  if (!raw) return {};
+  const match = raw.match(REF_META_REGEX);
+  if (!match) {
+    return { cleanCustomRequests: raw };
+  }
+  const clean = raw.replace(REF_META_REGEX, '').trim();
+  return {
+    cleanCustomRequests: clean || undefined,
+    referralCodeUsed: match[1].trim().toUpperCase(),
+    discountAmount: Number(match[2] || 0),
+  };
+}
+
 export function mapEnquiryToRow(enquiry: BookingEnquiry): BookingEnquiryRow {
   const anyEnq = enquiry as BookingEnquiry & Record<string, unknown>;
   return {
@@ -95,7 +133,7 @@ export function mapEnquiryToRow(enquiry: BookingEnquiry): BookingEnquiryRow {
     origin_type: enquiry.originType || null,
     origin_state_or_country: enquiry.originStateOrCountry || null,
     cameraman_addon: Boolean(enquiry.cameramanAddon),
-    custom_requests: enquiry.customRequests || (anyEnq.specialRequests as string) || null,
+    custom_requests: buildCustomRequestsWithReferral(enquiry),
     calculated_estimated_cost: Number(enquiry.calculatedEstimatedCost ?? 0),
     status: enquiry.status || 'pending',
     created_at: enquiry.createdAt || new Date().toISOString(),
@@ -103,6 +141,8 @@ export function mapEnquiryToRow(enquiry: BookingEnquiry): BookingEnquiryRow {
 }
 
 export function mapRowToEnquiry(row: BookingEnquiryRow): BookingEnquiry {
+  const parsedRef = parseReferralFromCustomRequests(row.custom_requests);
+  const anyRow = row as BookingEnquiryRow & { referral_code_used?: string | null; discount_amount?: number | null };
   return {
     id: row.id,
     fullName: row.full_name,
@@ -127,8 +167,10 @@ export function mapRowToEnquiry(row: BookingEnquiryRow): BookingEnquiry {
     originType: row.origin_type || undefined,
     originStateOrCountry: row.origin_state_or_country || undefined,
     cameramanAddon: row.cameraman_addon,
-    customRequests: row.custom_requests || undefined,
+    customRequests: parsedRef.cleanCustomRequests,
     calculatedEstimatedCost: Number(row.calculated_estimated_cost || 0),
+    referralCodeUsed: anyRow.referral_code_used || parsedRef.referralCodeUsed,
+    discountAmount: anyRow.discount_amount ?? parsedRef.discountAmount,
     status: row.status,
     createdAt: row.created_at,
   };

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Check, Phone, MessageCircle, Calendar, Users, MapPin, Sparkles, CheckCircle2, ShieldCheck, AlertCircle, Heart, Smile, CreditCard, Globe, AlertTriangle, XCircle, Clock, Receipt, Copy, Printer } from 'lucide-react';
+import { Check, Phone, MessageCircle, Calendar, Users, MapPin, Sparkles, CheckCircle2, ShieldCheck, AlertCircle, Heart, Smile, CreditCard, Globe, AlertTriangle, XCircle, Clock, Receipt, Copy, Printer, Tag } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAdmin } from '../../context/AdminContext';
 import { TOUR_PACKAGES } from '../../data/packages';
 import { BRAND_INFO } from '../../data/brandInfo';
 import { getAvailableDates, checkDateAvailability, AvailableSafariDate } from '../../data/bookingAvailability';
 import { BookingPaymentModal } from './BookingPaymentModal';
+import { BrandLogo } from '../common/BrandLogo';
+import { PrintableBookingBill } from './PrintableBookingBill';
 
 export const ID_VALIDATION_CONFIG: Record<
   'aadhaar' | 'voter' | 'passport' | 'driving_license',
@@ -140,7 +142,7 @@ interface BookingFormProps {
 
 export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, onSuccess }) => {
   const { language, isBengali } = useLanguage();
-  const { addEnquiry, updateEnquiryStatus } = useAdmin();
+  const { addEnquiry, updateEnquiryStatus, validateReferenceCode } = useAdmin();
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -182,6 +184,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedId, setSubmittedId] = useState<string | null>(null);
+  const [bookedAtIso, setBookedAtIso] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isBookingConfirmed, setIsBookingConfirmed] = useState(false);
@@ -191,6 +194,11 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
     amount: number;
   } | null>(null);
   const [copiedPageBill, setCopiedPageBill] = useState(false);
+  const [referralCodeInput, setReferralCodeInput] = useState('');
+  const [appliedReferralCode, setAppliedReferralCode] = useState<string | null>(null);
+  const [referralExpiryDate, setReferralExpiryDate] = useState<string | null>(null);
+  const [referralErrorMsg, setReferralErrorMsg] = useState('');
+  const [isValidatingRef, setIsValidatingRef] = useState(false);
   const [paymentBookingDetails, setPaymentBookingDetails] = useState<{
     enquiryId: string;
     fullName: string;
@@ -198,6 +206,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
     customerWhatsapp?: string;
     packageTitle: string;
     preferredDate: string;
+    bookingDate?: string;
     pickupPoint?: string;
     guestsCount: number;
     adultsCount?: number;
@@ -205,6 +214,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
     perAdultRate?: number;
     perChildRate?: number;
     addonAmount?: number;
+    referralCodeUsed?: string;
+    discountAmount?: number;
     totalAmount: number;
     whatsappUrl: string;
     buildCustomerWhatsappBillUrl?: (paidAmount: number, paymentMethod: string, txnId?: string) => string;
@@ -252,7 +263,9 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
     const childTotal = childrenCount * perChild;
     const addonTotal = formData.cameramanAddon ? 2500 : 0;
 
-    const grandTotal = adultTotal + childTotal + addonTotal;
+    const subtotalTotal = adultTotal + childTotal + addonTotal;
+    const discountAmount = appliedReferralCode ? Math.round(subtotalTotal * 0.05) : 0;
+    const grandTotal = Math.max(subtotalTotal - discountAmount, 0);
 
     return {
       baseRate,
@@ -265,12 +278,69 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
       adultTotal,
       childTotal,
       addonTotal,
+      subtotalTotal,
+      discountAmount,
       grandTotal,
     };
   };
 
   const estimate = getPricingEstimate();
   const calculateEstimatedTotal = () => estimate.grandTotal;
+
+  const formatReferralError = (reason?: string, usedInId?: string): string => {
+    if (reason === 'empty') {
+      return isBengali ? 'অনুগ্রহ করে একটি রেফারেন্স / বিল কোড লিখুন।' : 'Please enter a Reference / Bill Code.';
+    }
+    if (reason === 'expired') {
+      return isBengali
+        ? 'এই রেফারেন্স কোডটির ১ মাসের মেয়াদ শেষ হয়ে গেছে (১ মাস পর্যন্তই প্রযোজ্য)।'
+        : 'This Reference Code has expired (valid for 1 month only).';
+    }
+    if (reason === 'already_used') {
+      return isBengali
+        ? `এই রেফারেন্স কোডটি ইতিমধ্যেই ১টি বিলে${usedInId ? ` (${usedInId})` : ''} ব্যবহার হয়ে গেছে। একটি কোড শুধু একটি বিলেই ব্যবহার করা যায়।`
+        : `This Reference Code has already been used on 1 bill${usedInId ? ` (${usedInId})` : ''}. One code can only be used once.`;
+    }
+    if (reason === 'cancelled') {
+      return isBengali
+        ? 'এই বুকিংটি বাতিল (Cancelled) হওয়ায় রেফারেন্স কোডটি প্রযোজ্য নয়।'
+        : 'This booking was cancelled, so its reference code is inactive.';
+    }
+    return isBengali
+      ? 'সঠিক রেফারেন্স / বিল কোড পাওয়া যায়নি! অনুগ্রহ করে কোডটি যাচাই করুন।'
+      : 'Invalid Reference / Bill Code! Please check and try again.';
+  };
+
+  const handleApplyReferralCode = async () => {
+    setReferralErrorMsg('');
+    if (!referralCodeInput.trim()) {
+      setReferralErrorMsg(formatReferralError('empty'));
+      return;
+    }
+    setIsValidatingRef(true);
+    try {
+      const result = await validateReferenceCode(referralCodeInput);
+      if (!result.valid || !result.code) {
+        setAppliedReferralCode(null);
+        setReferralExpiryDate(null);
+        setReferralErrorMsg(formatReferralError(result.reason, result.usedInId));
+      } else {
+        setAppliedReferralCode(result.code);
+        setReferralCodeInput(result.code);
+        setReferralExpiryDate(result.expiryDate || null);
+        setReferralErrorMsg('');
+      }
+    } finally {
+      setIsValidatingRef(false);
+    }
+  };
+
+  const handleRemoveReferralCode = () => {
+    setAppliedReferralCode(null);
+    setReferralExpiryDate(null);
+    setReferralCodeInput('');
+    setReferralErrorMsg('');
+  };
 
   const handlePhoneChange = (val: string) => {
     setFormData(prev => ({
@@ -414,6 +484,9 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
         ...(currentEstimate.addonTotal > 0
           ? [`• প্রফেশনাল ক্যামেরাম্যান = ₹${currentEstimate.addonTotal.toLocaleString('en-IN')}`]
           : []),
+        ...(currentEstimate.discountAmount > 0 && appliedReferralCode
+          ? [`🏷️ *রেফারেন্স কোড ছাড় (৫% - ${appliedReferralCode}):* -₹${currentEstimate.discountAmount.toLocaleString('en-IN')}`]
+          : []),
         `━━━━━━━━━━━━━━━━━━━━━━`,
         `💰 *মোট বিল:* ₹${currentEstimate.grandTotal.toLocaleString('en-IN')}`,
         `💳 *পরিশোধের ধরন:* ${paymentMethod}`,
@@ -444,6 +517,9 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
         : []),
       ...(currentEstimate.addonTotal > 0
         ? [`• Professional Cameraman Add-on = ₹${currentEstimate.addonTotal.toLocaleString('en-IN')}`]
+        : []),
+      ...(currentEstimate.discountAmount > 0 && appliedReferralCode
+        ? [`🏷️ *Referral 5% Discount (${appliedReferralCode}):* -₹${currentEstimate.discountAmount.toLocaleString('en-IN')}`]
         : []),
       `━━━━━━━━━━━━━━━━━━━━━━`,
       `💰 *Total Bill:* ₹${currentEstimate.grandTotal.toLocaleString('en-IN')}`,
@@ -514,7 +590,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
     try {
       const finalPickup = formData.pickupPoint;
 
-      const totalAmt = calculateEstimatedTotal();
+      const currentEst = getPricingEstimate();
+      const totalAmt = currentEst.grandTotal;
       const combinedGroupType =
         formData.groupTypes && formData.groupTypes.length > 0
           ? formData.groupTypes.join(', ')
@@ -543,15 +620,24 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
         dietaryAllergies: formData.dietaryAllergies,
         cameramanAddon: formData.cameramanAddon,
         customRequests: formData.customRequests,
+        referralCodeUsed: appliedReferralCode || undefined,
+        discountAmount: currentEst.discountAmount || undefined,
         calculatedEstimatedCost: totalAmt,
       });
 
+      const nowIso = new Date().toISOString();
+      const formattedNowDate = new Date(nowIso).toLocaleDateString(isBengali ? 'bn-IN' : 'en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      });
+
       setSubmittedId(enquiryId);
+      setBookedAtIso(nowIso);
       setIsBookingConfirmed(false);
       setConfirmedPaymentInfo(null);
 
       const customerWa = (formData.whatsappSameAsPhone ? formData.phone : formData.whatsapp) || formData.phone;
-      const currentEst = getPricingEstimate();
 
       // Setup details for "বুকিং আবেদন জমা দিন" Confirmation & Payment Modal
       const bookingInfo = {
@@ -561,6 +647,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
         customerWhatsapp: customerWa,
         packageTitle: isBengali ? selectedPkg.title.bn : selectedPkg.title.en,
         preferredDate: formData.preferredDate,
+        bookingDate: formattedNowDate,
         pickupPoint: formData.pickupPoint,
         guestsCount: Number(formData.adultsCount) + Number(formData.childrenCount),
         adultsCount: currentEst.adultsCount,
@@ -568,6 +655,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
         perAdultRate: currentEst.perAdult,
         perChildRate: currentEst.perChild,
         addonAmount: currentEst.addonTotal,
+        referralCodeUsed: appliedReferralCode || undefined,
+        discountAmount: currentEst.discountAmount || undefined,
         totalAmount: totalAmt,
         whatsappUrl: getWhatsAppBookingUrl(),
         buildCustomerWhatsappBillUrl: (paidAmt: number, method: string, txnId?: string) =>
@@ -580,7 +669,17 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
 
       if (onSuccess) onSuccess(enquiryId);
     } catch (err) {
-      setErrorMessage(isBengali ? 'বুকিং জমা দিতে সমস্যা হয়েছে, অনুগ্রহ করে ফোন করুন।' : 'Submission failed. Please call us directly.');
+      const msg = err instanceof Error ? err.message : '';
+      if (msg.startsWith('REFERRAL_INVALID:')) {
+        const reason = msg.replace('REFERRAL_INVALID:', '');
+        setAppliedReferralCode(null);
+        setReferralExpiryDate(null);
+        const errText = formatReferralError(reason);
+        setReferralErrorMsg(errText);
+        setErrorMessage(errText);
+      } else {
+        setErrorMessage(isBengali ? 'বুকিং জমা দিতে সমস্যা হয়েছে, অনুগ্রহ করে ফোন করুন।' : 'Submission failed. Please call us directly.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -594,6 +693,14 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
       (isBengali ? 'নরমাল বুকিং (ভ্রমণের সময় প্রদেয়)' : 'Normal Booking (Pay Later)');
     const paidTxnId = confirmedPaymentInfo?.transactionId;
     const balanceAmt = Math.max(estimate.grandTotal - paidAmt, 0);
+    const formattedBookingDate = new Date(bookedAtIso || Date.now()).toLocaleDateString(
+      isBengali ? 'bn-IN' : 'en-IN',
+      {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      }
+    );
     const customerBillWhatsappLink = createCustomerWhatsappBillUrl(submittedId, paidAmt, paidMethod, paidTxnId);
 
     const handleConfirmOnPage = () => {
@@ -649,14 +756,54 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
         {/* Official Bill Receipt & Customer WhatsApp Action Card */}
         {isBookingConfirmed ? (
           <div className="bg-slate-50 border-2 border-emerald-200 rounded-2xl p-4 sm:p-5 text-left space-y-3 text-xs shadow-xs">
-            <div className="flex items-center justify-between pb-2 border-b border-emerald-200">
-              <div className="flex items-center gap-1.5 font-bold text-[#064E3B] text-sm">
-                <Receipt className="w-4 h-4 text-emerald-700" />
-                <span>{isBengali ? 'কনফার্ম বুকিং ও বিল রিসিপ্ট' : 'Confirmed Booking Bill Receipt'}</span>
+            {/* Single 1-Page A4 Printable Bill Portal */}
+            <PrintableBookingBill
+              enquiryId={submittedId}
+              fullName={formData.fullName}
+              phone={formData.phone}
+              customerWhatsapp={customerWaDisplay}
+              email={formData.email}
+              packageTitle={isBengali ? selectedPkg.title.bn : selectedPkg.title.en}
+              preferredDate={formData.preferredDate}
+              bookingDate={formattedBookingDate}
+              pickupPoint={formData.pickupPoint}
+              adultsCount={estimate.adultsCount}
+              childrenCount={estimate.childrenCount}
+              perAdultRate={estimate.perAdult}
+              perChildRate={estimate.perChild}
+              addonAmount={estimate.addonTotal}
+              referralCodeUsed={appliedReferralCode || undefined}
+              discountAmount={estimate.discountAmount || undefined}
+              totalAmount={estimate.grandTotal}
+              paidAmount={paidAmt}
+              paymentMethod={paidMethod}
+              transactionId={paidTxnId}
+              isBengali={isBengali}
+            />
+
+            <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-emerald-200">
+              <BrandLogo
+                size={38}
+                showText={true}
+                lang={isBengali ? 'bn' : 'en'}
+                variant="light"
+              />
+              <div className="text-right">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-700 text-white font-bold text-[10px] inline-block">
+                  CONFIRMED
+                </span>
+                <div className="text-[11px] font-bold text-[#064E3B] mt-1 flex items-center justify-end gap-1">
+                  <Receipt className="w-3.5 h-3.5 text-emerald-700" />
+                  <span>{isBengali ? 'অফিসিয়াল বুকিং বিল' : 'Official Booking Bill'}</span>
+                </div>
               </div>
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-700 text-white font-bold text-[10px]">
-                CONFIRMED
+            </div>
+
+            <div className="flex justify-between items-center bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2">
+              <span className="font-bold text-slate-700">
+                {isBengali ? 'রেফারেন্স / বিল কোড:' : 'Reference / Bill Code:'}
               </span>
+              <span className="font-mono font-black text-sm text-[#064E3B]">{submittedId}</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -673,6 +820,10 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
                 <span className="font-semibold text-slate-800">{isBengali ? selectedPkg.title.bn : selectedPkg.title.en}</span>
               </div>
               <div>
+                <span className="text-slate-500 block">{isBengali ? 'বুকিংয়ের তারিখ:' : 'Booking Date:'}</span>
+                <span className="font-semibold text-slate-800">{formattedBookingDate}</span>
+              </div>
+              <div className="sm:col-span-2">
                 <span className="text-slate-500 block">{isBengali ? 'যাত্রার তারিখ:' : 'Travel Date:'}</span>
                 <span className="font-semibold text-slate-800">{formData.preferredDate}</span>
               </div>
@@ -703,6 +854,16 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
                   <span className="font-semibold">₹{estimate.addonTotal.toLocaleString('en-IN')}</span>
                 </div>
               )}
+              {estimate.discountAmount > 0 && appliedReferralCode && (
+                <div className="flex justify-between text-emerald-700 font-semibold">
+                  <span>
+                    {isBengali
+                      ? `রেফারেন্স কোড ছাড় (৫% • ${appliedReferralCode})`
+                      : `Referral 5% Discount (${appliedReferralCode})`}
+                  </span>
+                  <span>-₹{estimate.discountAmount.toLocaleString('en-IN')}</span>
+                </div>
+              )}
               <div className="flex justify-between font-bold text-sm pt-1.5 border-t border-slate-200 text-slate-900">
                 <span>{isBengali ? 'মোট বিল:' : 'Total Bill:'}</span>
                 <span>₹{estimate.grandTotal.toLocaleString('en-IN')}</span>
@@ -714,6 +875,24 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
               <div className="flex justify-between text-amber-800 font-bold">
                 <span>{isBengali ? 'বাকি এমাউন্ট:' : 'Balance Due:'}</span>
                 <span>₹{balanceAmt.toLocaleString('en-IN')}</span>
+              </div>
+            </div>
+
+            {/* Thank You, Owner & Company Phone Footer */}
+            <div className="pt-2.5 border-t border-emerald-200 flex items-end justify-between gap-2 text-[11px]">
+              <div>
+                <p className="font-bold text-[#064E3B]">
+                  {isBengali ? 'Thank You! অসংখ্য ধন্যবাদ!' : 'Thank You for booking with us!'}
+                </p>
+                <p className="text-slate-600 font-mono font-semibold">
+                  {isBengali ? 'কোম্পানি ফোন:' : 'Company Phone:'} {BRAND_INFO.phone}
+                </p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="font-bold text-slate-900">Srikrishna Bar</p>
+                <p className="text-[10px] text-slate-500">
+                  {isBengali ? 'স্বত্বাধিকারী • সুন্দরবন ভ্রমণ' : 'Owner • Sundarban Vromon'}
+                </p>
               </div>
             </div>
 
@@ -829,8 +1008,13 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
           <button
             onClick={() => {
               setSubmittedId(null);
+              setBookedAtIso(null);
               setIsBookingConfirmed(false);
               setConfirmedPaymentInfo(null);
+              setAppliedReferralCode(null);
+              setReferralExpiryDate(null);
+              setReferralCodeInput('');
+              setReferralErrorMsg('');
               setFormData({
                 fullName: '',
                 phone: '',
@@ -1858,6 +2042,16 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
                 <span className="font-medium text-slate-900">+₹2,500</span>
               </div>
             )}
+            {estimate.discountAmount > 0 && appliedReferralCode && (
+              <div className="flex items-center justify-between text-emerald-700 font-semibold">
+                <span>
+                  {isBengali
+                    ? `রেফারেন্স কোড ডিসকাউন্ট (৫% • ${appliedReferralCode}):`
+                    : `Reference Code 5% Off (${appliedReferralCode}):`}
+                </span>
+                <span>-₹{estimate.discountAmount.toLocaleString('en-IN')}</span>
+              </div>
+            )}
             <div className="flex items-center justify-between pt-2 border-t border-emerald-200 text-slate-900 font-bold text-sm">
               <span>{isBengali ? 'সর্বমোট বুকিং এমাউন্ট:' : 'Total Booking Amount:'}</span>
               <span className="text-emerald-900 font-black text-lg font-heading">
@@ -1865,6 +2059,91 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
               </span>
             </div>
           </div>
+        </div>
+
+        {/* 🏷️ Reference / Bill Code 5% Discount Box (1 Month Validity, 1 Bill Single-Use) */}
+        <div className="bg-white/90 rounded-xl p-3.5 sm:p-4 border border-emerald-200 space-y-2.5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <label className="text-xs font-bold text-[#064E3B] flex items-center gap-1.5">
+              <Tag className="w-4 h-4 text-emerald-700" />
+              <span>
+                {isBengali
+                  ? 'রেফারেন্স / বিল কোড (৫% ডিসকাউন্ট — ঐচ্ছিক):'
+                  : 'Reference / Bill Code (5% Discount — Optional):'}
+              </span>
+            </label>
+            <span className="text-[10px] font-semibold text-slate-500">
+              {isBengali
+                ? 'মেয়াদ: ১ মাস • ১টি কোড শুধু ১টি বিলে ব্যবহারযোগ্য'
+                : 'Valid 1 month • Single-use (1 code per 1 bill)'}
+            </span>
+          </div>
+
+          {appliedReferralCode ? (
+            <div className="flex flex-wrap items-center justify-between gap-2 bg-emerald-50 border border-emerald-300 rounded-xl px-3.5 py-2.5 text-xs">
+              <div className="flex items-center gap-2 text-emerald-900">
+                <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
+                <div>
+                  <span className="font-bold block">
+                    {isBengali
+                      ? `✓ রেফারেন্স কোড "${appliedReferralCode}" যুক্ত হয়েছে — ৫% ছাড় (-₹${estimate.discountAmount.toLocaleString('en-IN')})`
+                      : `✓ Code "${appliedReferralCode}" applied — 5% Off (-₹${estimate.discountAmount.toLocaleString('en-IN')})`}
+                  </span>
+                  {referralExpiryDate && (
+                    <span className="text-[10px] text-emerald-700">
+                      {isBengali
+                        ? `কোডের মেয়াদ: ${new Date(referralExpiryDate).toLocaleDateString('bn-IN', { day: '2-digit', month: 'short', year: 'numeric' })} পর্যন্ত (১ বিলে ব্যবহৃত হবে)`
+                        : `Valid till ${new Date(referralExpiryDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })} (1-bill limit)`}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleRemoveReferralCode}
+                className="px-2.5 py-1 rounded-lg bg-white border border-red-200 text-red-700 hover:bg-red-50 text-[11px] font-bold cursor-pointer"
+              >
+                {isBengali ? 'সরান' : 'Remove'}
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input
+                type="text"
+                value={referralCodeInput}
+                onChange={e => {
+                  setReferralCodeInput(e.target.value.toUpperCase());
+                  if (referralErrorMsg) setReferralErrorMsg('');
+                }}
+                placeholder={isBengali ? 'পূর্বের রেফারেন্স / বিল কোড লিখুন (যেমন: ENQ-2026-...)' : 'Enter Reference / Bill Code (e.g. ENQ-2026-...)'}
+                className="flex-1 px-3.5 py-2 rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-2 focus:ring-emerald-100 text-xs sm:text-sm font-mono uppercase outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => void handleApplyReferralCode()}
+                disabled={isValidatingRef || !referralCodeInput.trim()}
+                className="px-4 py-2 rounded-xl bg-[#064E3B] hover:bg-[#08614a] disabled:opacity-50 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shrink-0 transition-colors"
+              >
+                <Tag className="w-3.5 h-3.5 text-[#F4B942]" />
+                <span>
+                  {isValidatingRef
+                    ? isBengali
+                      ? 'যাচাই হচ্ছে...'
+                      : 'Checking...'
+                    : isBengali
+                    ? '৫% ছাড় প্রয়োগ করুন'
+                    : 'Apply 5% Off'}
+                </span>
+              </button>
+            </div>
+          )}
+
+          {referralErrorMsg && (
+            <div className="text-[11px] font-semibold text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2 flex items-center gap-1.5">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+              <span>{referralErrorMsg}</span>
+            </div>
+          )}
         </div>
 
         <div className="text-[11px] text-emerald-900 bg-emerald-100/70 p-2.5 rounded-xl flex items-center gap-2 border border-emerald-200/60">

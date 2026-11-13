@@ -20,6 +20,7 @@ import {
   Printer
 } from 'lucide-react';
 import { BRAND_INFO } from '../../data/brandInfo';
+import { BrandLogo } from '../common/BrandLogo';
 
 export interface BookingPaymentModalProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ export interface BookingPaymentModalProps {
     customerWhatsapp?: string;
     packageTitle: string;
     preferredDate: string;
+    bookingDate?: string;
     pickupPoint?: string;
     guestsCount: number;
     adultsCount?: number;
@@ -38,6 +40,8 @@ export interface BookingPaymentModalProps {
     perAdultRate?: number;
     perChildRate?: number;
     addonAmount?: number;
+    referralCodeUsed?: string;
+    discountAmount?: number;
     totalAmount: number;
     whatsappUrl: string;
     buildCustomerWhatsappBillUrl?: (paidAmount: number, paymentMethod: string, txnId?: string) => string;
@@ -363,19 +367,27 @@ export const BookingPaymentModal: React.FC<BookingPaymentModalProps> = ({
 
             {/* Official Itemized Bill Receipt */}
             <div className="bg-slate-50 border-2 border-emerald-200 rounded-2xl p-4 text-left space-y-2.5 text-xs shadow-xs">
-              <div className="flex items-center justify-between pb-2 border-b border-emerald-200">
-                <div className="flex items-center gap-1.5 font-bold text-[#064E3B] text-sm">
-                  <Receipt className="w-4 h-4 text-emerald-700" />
-                  <span>{isBengali ? 'অফিসিয়াল বুকিং বিল রিসিপ্ট' : 'Official Booking Bill Receipt'}</span>
+              <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-emerald-200">
+                <BrandLogo
+                  size={36}
+                  showText={true}
+                  lang={isBengali ? 'bn' : 'en'}
+                  variant="light"
+                />
+                <div className="text-right">
+                  <span className="px-2 py-0.5 rounded bg-emerald-700 text-white font-bold text-[10px] inline-block">
+                    CONFIRMED
+                  </span>
+                  <div className="flex items-center justify-end gap-1 font-bold text-[#064E3B] text-[11px] mt-1">
+                    <Receipt className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>{isBengali ? 'অফিসিয়াল বুকিং বিল' : 'Official Booking Bill'}</span>
+                  </div>
                 </div>
-                <span className="px-2 py-0.5 rounded bg-emerald-700 text-white font-bold text-[10px]">
-                  CONFIRMED
-                </span>
               </div>
 
-              <div className="flex justify-between items-center">
-                <span className="text-slate-500">{isBengali ? 'বুকিং / রিসিপ্ট আইডি:' : 'Booking / Receipt ID:'}</span>
-                <span className="font-mono font-bold text-slate-900 text-sm">{bookingDetails.enquiryId}</span>
+              <div className="flex justify-between items-center bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2">
+                <span className="font-bold text-slate-700">{isBengali ? 'রেফারেন্স / বিল কোড:' : 'Reference / Bill Code:'}</span>
+                <span className="font-mono font-black text-[#064E3B] text-sm">{bookingDetails.enquiryId}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-slate-500">{isBengali ? 'অতিথির নাম:' : 'Guest Name:'}</span>
@@ -385,8 +397,19 @@ export const BookingPaymentModal: React.FC<BookingPaymentModalProps> = ({
                 <span className="text-slate-500">{isBengali ? 'কাস্টমার ফোন / WhatsApp:' : 'Customer Phone / WhatsApp:'}</span>
                 <span className="font-mono font-bold text-emerald-900">{bookingDetails.customerWhatsapp || bookingDetails.phone}</span>
               </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500">{isBengali ? 'বুকিংয়ের তারিখ:' : 'Booking Date:'}</span>
+                <span className="font-semibold text-slate-800">
+                  {bookingDetails.bookingDate ||
+                    new Date().toLocaleDateString(isBengali ? 'bn-IN' : 'en-IN', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                </span>
+              </div>
               <div className="flex justify-between items-start gap-2">
-                <span className="text-slate-500 shrink-0">{isBengali ? 'প্যাকেজ ও তারিখ:' : 'Package & Date:'}</span>
+                <span className="text-slate-500 shrink-0">{isBengali ? 'প্যাকেজ ও যাত্রার তারিখ:' : 'Package & Travel Date:'}</span>
                 <span className="font-semibold text-slate-800 text-right">
                   {bookingDetails.packageTitle} ({bookingDetails.preferredDate})
                 </span>
@@ -424,6 +447,16 @@ export const BookingPaymentModal: React.FC<BookingPaymentModalProps> = ({
                     <span className="font-semibold">₹{(bookingDetails.addonAmount || 0).toLocaleString('en-IN')}</span>
                   </div>
                 )}
+                {Boolean(bookingDetails.discountAmount) && (
+                  <div className="flex justify-between text-emerald-700 font-semibold">
+                    <span>
+                      {isBengali
+                        ? `রেফারেন্স কোড ছাড় (৫%${bookingDetails.referralCodeUsed ? ` • ${bookingDetails.referralCodeUsed}` : ''})`
+                        : `Referral 5% Discount${bookingDetails.referralCodeUsed ? ` (${bookingDetails.referralCodeUsed})` : ''}`}
+                    </span>
+                    <span>-₹{(bookingDetails.discountAmount || 0).toLocaleString('en-IN')}</span>
+                  </div>
+                )}
               </div>
 
               <div className="pt-2 border-t border-slate-200 space-y-1">
@@ -448,6 +481,24 @@ export const BookingPaymentModal: React.FC<BookingPaymentModalProps> = ({
                 <div className="flex justify-between items-center font-bold text-sm text-amber-800">
                   <span>{isBengali ? 'বাকি এমাউন্ট:' : 'Balance Due:'}</span>
                   <span>₹{balanceDue.toLocaleString('en-IN')}</span>
+                </div>
+              </div>
+
+              {/* Thank You, Owner & Company Phone Footer */}
+              <div className="pt-2.5 border-t border-emerald-200 flex items-end justify-between gap-2 text-[11px]">
+                <div>
+                  <p className="font-bold text-[#064E3B]">
+                    {isBengali ? 'Thank You! অসংখ্য ধন্যবাদ!' : 'Thank You for booking with us!'}
+                  </p>
+                  <p className="text-slate-600 font-mono font-semibold">
+                    {isBengali ? 'কোম্পানি ফোন:' : 'Company Phone:'} {BRAND_INFO.phone}
+                  </p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="font-bold text-slate-900">Srikrishna Bar</p>
+                  <p className="text-[10px] text-slate-500">
+                    {isBengali ? 'স্বত্বাধিকারী • সুন্দরবন ভ্রমণ' : 'Owner • Sundarban Vromon'}
+                  </p>
                 </div>
               </div>
             </div>
