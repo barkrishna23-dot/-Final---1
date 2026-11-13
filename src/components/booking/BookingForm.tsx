@@ -397,6 +397,12 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
     try {
       const finalPickup = formData.pickupPoint;
 
+      const totalAmt = calculateEstimatedTotal();
+      const combinedGroupType =
+        formData.groupTypes && formData.groupTypes.length > 0
+          ? formData.groupTypes.join(', ')
+          : formData.groupType;
+
       const enquiryId = await addEnquiry({
         fullName: formData.fullName,
         phone: formData.phone,
@@ -409,7 +415,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
         childrenCount: Number(formData.childrenCount),
         childrenAges: formData.childrenAges,
         pickupPoint: finalPickup,
-        groupType: formData.groupType,
+        groupType: combinedGroupType,
         idType: formData.idType,
         idNumber: formData.idNumber,
         originType: formData.originType,
@@ -420,12 +426,12 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
         dietaryAllergies: formData.dietaryAllergies,
         cameramanAddon: formData.cameramanAddon,
         customRequests: formData.customRequests,
+        calculatedEstimatedCost: totalAmt,
       });
 
       setSubmittedId(enquiryId);
 
       // Setup details for Payment Gateway Modal
-      const totalAmt = calculateEstimatedTotal();
       const bookingInfo = {
         enquiryId,
         fullName: formData.fullName || (isBengali ? 'ভ্রমণকারী' : 'Traveler'),

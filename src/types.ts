@@ -146,9 +146,9 @@ export interface BookingEnquiry {
   childrenCount: number;
   childrenAges?: string;
   pickupPoint: string;
-  roomType: 'ac' | 'non-ac' | 'undecided';
-  roomSharing: 'double' | 'triple' | 'four' | 'family-suite';
-  foodPreference: 'bengali-nonveg' | 'bengali-veg' | 'jain-veg' | 'mixed';
+  roomType: 'ac' | 'non-ac' | 'luxury-suite' | 'undecided' | string;
+  roomSharing: 'single' | 'double' | 'triple' | 'four' | 'family-suite' | string;
+  foodPreference: 'bengali-nonveg' | 'bengali-veg' | 'pure-veg' | 'jain' | 'jain-veg' | 'custom-seafood' | 'mixed' | string;
   dietaryAllergies?: string;
   groupType?: 'family' | 'couple' | 'friends' | 'female-friends' | string;
   idType?: 'aadhaar' | 'voter' | 'passport' | 'driving_license' | string;
@@ -157,6 +157,7 @@ export interface BookingEnquiry {
   originStateOrCountry?: string;
   cameramanAddon: boolean;
   customRequests?: string;
+  calculatedEstimatedCost?: number;
   status: 'pending' | 'contacted' | 'confirmed' | 'cancelled';
   createdAt: string;
 }

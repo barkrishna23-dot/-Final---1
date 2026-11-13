@@ -2,6 +2,12 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { BookingEnquiry, Review, TourPackage } from '../types';
 import { TOUR_PACKAGES } from '../data/packages';
 import { INITIAL_EXTENDED_REVIEWS } from '../data/extendedReviews';
+import {
+  insertBookingEnquiry,
+  fetchBookingEnquiries,
+  updateBookingEnquiryStatus,
+  deleteBookingEnquiry as deleteBookingEnquiryFromSupabase,
+} from '../lib/supabase';
 
 interface AdminContextType {
   enquiries: BookingEnquiry[];
@@ -126,6 +132,24 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [enquiries]);
 
   useEffect(() => {
+    let isMounted = true;
+    const loadRemoteEnquiries = async () => {
+      const { data, error } = await fetchBookingEnquiries();
+      if (!isMounted || error || data.length === 0) return;
+
+      setEnquiries(prev => {
+        const remoteIds = new Set(data.map(item => item.id));
+        const localOnly = prev.filter(item => !remoteIds.has(item.id));
+        return [...data, ...localOnly];
+      });
+    };
+    loadRemoteEnquiries();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem('sv_reviews', JSON.stringify(reviews));
   }, [reviews]);
 
@@ -216,22 +240,45 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const deleteEnquiry = (id: string) => {
     setEnquiries(prev => prev.filter(e => e.id !== id));
+    void deleteBookingEnquiryFromSupabase(id);
   };
 
   const addEnquiry = async (enquiryData: Omit<BookingEnquiry, 'id' | 'createdAt' | 'status'>): Promise<string> => {
-    const newId = `ENQ-${new Date().getFullYear()}-${String(enquiries.length + 1).padStart(3, '0')}`;
+    const anyData = enquiryData as Omit<BookingEnquiry, 'id' | 'createdAt' | 'status'> & Record<string, unknown>;
+    const uniqueSuffix = `${String(enquiries.length + 1).padStart(3, '0')}-${Date.now().toString(36).toUpperCase().slice(-4)}`;
+    const newId = `ENQ-${new Date().getFullYear()}-${uniqueSuffix}`;
     const newEnquiry: BookingEnquiry = {
       ...enquiryData,
+      fullName: enquiryData.fullName || (anyData.guestName as string) || 'Guest',
+      phone: enquiryData.phone || (anyData.guestPhone as string) || '',
+      whatsapp: enquiryData.whatsapp || enquiryData.phone || (anyData.guestPhone as string) || '',
+      email: enquiryData.email || (anyData.guestEmail as string) || '',
+      preferredDate: enquiryData.preferredDate || (anyData.travelDate as string) || 'TBD',
+      isFlexibleDate: enquiryData.isFlexibleDate ?? true,
+      adultsCount: Number(enquiryData.adultsCount ?? anyData.adults ?? 1),
+      childrenCount: Number(enquiryData.childrenCount ?? anyData.children ?? 0),
+      roomSharing: enquiryData.roomSharing || 'double',
+      foodPreference: enquiryData.foodPreference || 'bengali-nonveg',
+      cameramanAddon: Boolean(enquiryData.cameramanAddon),
+      customRequests: enquiryData.customRequests || (anyData.specialRequests as string) || '',
       id: newId,
       status: 'pending',
       createdAt: new Date().toISOString(),
     };
+
     setEnquiries(prev => [newEnquiry, ...prev]);
+
+    const { success, error } = await insertBookingEnquiry(newEnquiry);
+    if (!success) {
+      console.warn('Enquiry saved locally; Supabase insert failed:', error);
+    }
+
     return newId;
   };
 
   const updateEnquiryStatus = (id: string, status: BookingEnquiry['status']) => {
     setEnquiries(prev => prev.map(enq => (enq.id === id ? { ...enq, status } : enq)));
+    void updateBookingEnquiryStatus(id, status);
   };
 
   const addReview = async (reviewData: Omit<Review, 'id' | 'createdAt' | 'isApproved' | 'isVerifiedGuest'>) => {

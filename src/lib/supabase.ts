@@ -1,0 +1,240 @@
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { BookingEnquiry } from '../types';
+
+export const SUPABASE_PROJECT_ID = 'hafklqLp6LosyvXH';
+
+const envUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+const envKey =
+  (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined) ||
+  (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined);
+
+const hasExplicitEnvUrl = Boolean(
+  envUrl && envUrl.trim() && !envUrl.includes('your-project-ref')
+);
+
+const isStandardSupabaseRef = /^[a-z]{20}$/.test(SUPABASE_PROJECT_ID);
+
+export const SUPABASE_URL = hasExplicitEnvUrl
+  ? envUrl!.trim().replace(/\/+$/, '')
+  : `https://${SUPABASE_PROJECT_ID.toLowerCase()}.supabase.co`;
+
+export const SUPABASE_PUBLISHABLE_KEY =
+  envKey && envKey.trim() && !envKey.includes('your-supabase')
+    ? envKey.trim()
+    : 'sb_publishable_FBnp2NspzSx5Gj-_hmqtgg_zav3voja';
+
+export const isSupabaseConfigured =
+  (hasExplicitEnvUrl || isStandardSupabaseRef) && Boolean(SUPABASE_PUBLISHABLE_KEY);
+
+export const supabase: SupabaseClient = createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY,
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  }
+);
+
+export const BOOKING_ENQUIRIES_TABLE = 'booking_enquiries';
+
+export interface BookingEnquiryRow {
+  id: string;
+  full_name: string;
+  phone: string;
+  whatsapp: string | null;
+  email: string | null;
+  package_slug: string;
+  custom_trip_days: number | null;
+  preferred_date: string;
+  is_flexible_date: boolean;
+  adults_count: number;
+  children_count: number;
+  children_ages: string | null;
+  pickup_point: string;
+  room_type: string;
+  room_sharing: string;
+  food_preference: string;
+  dietary_allergies: string | null;
+  group_type: string | null;
+  id_type: string | null;
+  id_number: string | null;
+  origin_type: string | null;
+  origin_state_or_country: string | null;
+  cameraman_addon: boolean;
+  custom_requests: string | null;
+  calculated_estimated_cost: number;
+  status: 'pending' | 'contacted' | 'confirmed' | 'cancelled';
+  created_at: string;
+}
+
+export function mapEnquiryToRow(enquiry: BookingEnquiry): BookingEnquiryRow {
+  const anyEnq = enquiry as BookingEnquiry & Record<string, unknown>;
+  return {
+    id: enquiry.id,
+    full_name: enquiry.fullName || (anyEnq.guestName as string) || 'Guest',
+    phone: enquiry.phone || (anyEnq.guestPhone as string) || '',
+    whatsapp: enquiry.whatsapp || enquiry.phone || (anyEnq.guestPhone as string) || null,
+    email: enquiry.email || (anyEnq.guestEmail as string) || null,
+    package_slug: enquiry.packageSlug || 'custom-tour',
+    custom_trip_days: enquiry.customTripDays ?? null,
+    preferred_date: enquiry.preferredDate || (anyEnq.travelDate as string) || 'TBD',
+    is_flexible_date: enquiry.isFlexibleDate ?? true,
+    adults_count: Number(enquiry.adultsCount ?? anyEnq.adults ?? 1),
+    children_count: Number(enquiry.childrenCount ?? anyEnq.children ?? 0),
+    children_ages: enquiry.childrenAges || null,
+    pickup_point: enquiry.pickupPoint || 'Kolkata',
+    room_type: enquiry.roomType || 'ac',
+    room_sharing: enquiry.roomSharing || 'double',
+    food_preference: enquiry.foodPreference || 'bengali-nonveg',
+    dietary_allergies: enquiry.dietaryAllergies || null,
+    group_type: enquiry.groupType || null,
+    id_type: enquiry.idType || null,
+    id_number: enquiry.idNumber || null,
+    origin_type: enquiry.originType || null,
+    origin_state_or_country: enquiry.originStateOrCountry || null,
+    cameraman_addon: Boolean(enquiry.cameramanAddon),
+    custom_requests: enquiry.customRequests || (anyEnq.specialRequests as string) || null,
+    calculated_estimated_cost: Number(enquiry.calculatedEstimatedCost ?? 0),
+    status: enquiry.status || 'pending',
+    created_at: enquiry.createdAt || new Date().toISOString(),
+  };
+}
+
+export function mapRowToEnquiry(row: BookingEnquiryRow): BookingEnquiry {
+  return {
+    id: row.id,
+    fullName: row.full_name,
+    phone: row.phone,
+    whatsapp: row.whatsapp || row.phone,
+    email: row.email || '',
+    packageSlug: row.package_slug,
+    customTripDays: row.custom_trip_days ?? undefined,
+    preferredDate: row.preferred_date,
+    isFlexibleDate: row.is_flexible_date,
+    adultsCount: row.adults_count,
+    childrenCount: row.children_count,
+    childrenAges: row.children_ages || undefined,
+    pickupPoint: row.pickup_point,
+    roomType: row.room_type as BookingEnquiry['roomType'],
+    roomSharing: row.room_sharing as BookingEnquiry['roomSharing'],
+    foodPreference: row.food_preference as BookingEnquiry['foodPreference'],
+    dietaryAllergies: row.dietary_allergies || undefined,
+    groupType: row.group_type || undefined,
+    idType: row.id_type || undefined,
+    idNumber: row.id_number || undefined,
+    originType: row.origin_type || undefined,
+    originStateOrCountry: row.origin_state_or_country || undefined,
+    cameramanAddon: row.cameraman_addon,
+    customRequests: row.custom_requests || undefined,
+    calculatedEstimatedCost: Number(row.calculated_estimated_cost || 0),
+    status: row.status,
+    createdAt: row.created_at,
+  };
+}
+
+export async function insertBookingEnquiry(
+  enquiry: BookingEnquiry
+): Promise<{ success: boolean; error?: string }> {
+  if (!isSupabaseConfigured) {
+    return {
+      success: false,
+      error: 'VITE_SUPABASE_URL is not configured with a valid Supabase project URL.',
+    };
+  }
+
+  try {
+    const row = mapEnquiryToRow(enquiry);
+    const { error } = await supabase
+      .from(BOOKING_ENQUIRIES_TABLE)
+      .insert([row]);
+
+    if (error) {
+      console.warn('Supabase booking insert failed:', error.message);
+      return { success: false, error: error.message };
+    }
+    return { success: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn('Supabase booking insert exception:', message);
+    return { success: false, error: message };
+  }
+}
+
+export async function fetchBookingEnquiries(): Promise<{
+  data: BookingEnquiry[];
+  error?: string;
+}> {
+  if (!isSupabaseConfigured) {
+    return { data: [] };
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from(BOOKING_ENQUIRIES_TABLE)
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.warn('Supabase booking fetch failed:', error.message);
+      return { data: [], error: error.message };
+    }
+
+    const mapped = (data as BookingEnquiryRow[] | null)?.map(mapRowToEnquiry) ?? [];
+    return { data: mapped };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn('Supabase booking fetch exception:', message);
+    return { data: [], error: message };
+  }
+}
+
+export async function updateBookingEnquiryStatus(
+  id: string,
+  status: BookingEnquiry['status']
+): Promise<{ success: boolean; error?: string }> {
+  if (!isSupabaseConfigured) {
+    return { success: false, error: 'Supabase URL not configured.' };
+  }
+
+  try {
+    const { error } = await supabase
+      .from(BOOKING_ENQUIRIES_TABLE)
+      .update({ status })
+      .eq('id', id);
+
+    if (error) {
+      console.warn('Supabase booking status update failed:', error.message);
+      return { success: false, error: error.message };
+    }
+    return { success: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { success: false, error: message };
+  }
+}
+
+export async function deleteBookingEnquiry(
+  id: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!isSupabaseConfigured) {
+    return { success: false, error: 'Supabase URL not configured.' };
+  }
+
+  try {
+    const { error } = await supabase
+      .from(BOOKING_ENQUIRIES_TABLE)
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.warn('Supabase booking delete failed:', error.message);
+      return { success: false, error: error.message };
+    }
+    return { success: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { success: false, error: message };
+  }
+}
