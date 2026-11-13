@@ -15,7 +15,9 @@ import {
   ExternalLink,
   MessageCircle,
   HelpCircle,
-  AlertCircle
+  AlertCircle,
+  Receipt,
+  Printer
 } from 'lucide-react';
 import { BRAND_INFO } from '../../data/brandInfo';
 
@@ -26,13 +28,23 @@ export interface BookingPaymentModalProps {
     enquiryId: string;
     fullName: string;
     phone: string;
+    customerWhatsapp?: string;
     packageTitle: string;
     preferredDate: string;
+    pickupPoint?: string;
     guestsCount: number;
+    adultsCount?: number;
+    childrenCount?: number;
+    perAdultRate?: number;
+    perChildRate?: number;
+    addonAmount?: number;
     totalAmount: number;
     whatsappUrl: string;
+    buildCustomerWhatsappBillUrl?: (paidAmount: number, paymentMethod: string, txnId?: string) => string;
+    buildBillReceiptText?: (paidAmount: number, paymentMethod: string, txnId?: string) => string;
   };
   isBengali: boolean;
+  onConfirmBookingOnly?: () => void;
   onPaymentSuccess?: (paymentInfo: { method: string; transactionId: string; amount: number }) => void;
 }
 
@@ -41,6 +53,7 @@ export const BookingPaymentModal: React.FC<BookingPaymentModalProps> = ({
   onClose,
   bookingDetails,
   isBengali,
+  onConfirmBookingOnly,
   onPaymentSuccess,
 }) => {
   // Device auto-detection (Mobile vs Desktop)
@@ -49,6 +62,7 @@ export const BookingPaymentModal: React.FC<BookingPaymentModalProps> = ({
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
   };
 
+  const [bookingMode, setBookingMode] = useState<'confirm-only' | 'pay-online'>('confirm-only');
   const [deviceMode, setDeviceMode] = useState<'mobile' | 'desktop'>('mobile');
   const [activePaymentTab, setActivePaymentTab] = useState<'upi' | 'card'>('upi');
 
@@ -60,6 +74,7 @@ export const BookingPaymentModal: React.FC<BookingPaymentModalProps> = ({
   // QR Code State
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
   const [copiedUpi, setCopiedUpi] = useState<boolean>(false);
+  const [copiedBill, setCopiedBill] = useState<boolean>(false);
 
   // Card details state
   const [cardType, setCardType] = useState<'debit' | 'credit'>('debit');
@@ -73,15 +88,18 @@ export const BookingPaymentModal: React.FC<BookingPaymentModalProps> = ({
     txnId: string;
     method: string;
     amount: number;
+    isConfirmOnly?: boolean;
   } | null>(null);
 
   // Initialize device mode upon mount or resize
   useEffect(() => {
     if (isOpen) {
       setDeviceMode(isMobile() ? 'mobile' : 'desktop');
+      setBookingMode('confirm-only');
       setPaymentSuccessData(null);
       setCardError('');
       setIsProcessingPayment(false);
+      setCopiedBill(false);
     }
   }, [isOpen]);
 
@@ -200,7 +218,52 @@ export const BookingPaymentModal: React.FC<BookingPaymentModalProps> = ({
     }
   };
 
+  // Confirm Normal Booking (Without Online Payment) -> Saves confirmed status & shows Bill Receipt
+  const handleConfirmBookingOnly = () => {
+    const confirmMethod = isBengali
+      ? 'পেমেন্ট ছাড়া নরমাল বুকিং (ভ্রমণের সময় প্রদেয়)'
+      : 'Normal Booking (Pay at Tour / Later)';
+    setPaymentSuccessData({
+      txnId: 'CONFIRMED',
+      method: confirmMethod,
+      amount: 0,
+      isConfirmOnly: true,
+    });
+    if (onConfirmBookingOnly) {
+      onConfirmBookingOnly();
+    }
+  };
+
+  // Copy formatted bill receipt text
+  const handleCopyBillReceipt = () => {
+    if (!paymentSuccessData) return;
+    const text = bookingDetails.buildBillReceiptText
+      ? bookingDetails.buildBillReceiptText(
+          paymentSuccessData.amount,
+          paymentSuccessData.method,
+          paymentSuccessData.txnId
+        )
+      : `Booking ID: ${bookingDetails.enquiryId}\nName: ${bookingDetails.fullName}\nPackage: ${bookingDetails.packageTitle}\nDate: ${bookingDetails.preferredDate}\nTotal Bill: ₹${bookingDetails.totalAmount}`;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedBill(true);
+      setTimeout(() => setCopiedBill(false), 2500);
+    }
+  };
+
   if (!isOpen) return null;
+
+  const customerWhatsappTargetUrl = paymentSuccessData && bookingDetails.buildCustomerWhatsappBillUrl
+    ? bookingDetails.buildCustomerWhatsappBillUrl(
+        paymentSuccessData.amount,
+        paymentSuccessData.method,
+        paymentSuccessData.txnId
+      )
+    : bookingDetails.whatsappUrl;
+
+  const balanceDue = paymentSuccessData
+    ? Math.max(bookingDetails.totalAmount - paymentSuccessData.amount, 0)
+    : bookingDetails.totalAmount;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-900/70 backdrop-blur-xs overflow-y-auto">
@@ -272,66 +335,170 @@ export const BookingPaymentModal: React.FC<BookingPaymentModalProps> = ({
 
         {/* Content Body */}
         {paymentSuccessData ? (
-          /* Payment Success View */
-          <div className="p-6 sm:p-8 text-center space-y-6">
+          /* Confirmed Booking & Official Bill Receipt View */
+          <div className="p-5 sm:p-7 text-center space-y-5">
             <div className="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto shadow-inner animate-in zoom-in-90 duration-300">
               <CheckCircle2 className="w-10 h-10" />
             </div>
 
             <div className="space-y-1.5">
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 inline-block">
-                {isBengali ? '✓ পেমেন্ট সফলভাবে গৃহীত হয়েছে' : '✓ Payment Confirmed Successfully'}
+              <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300 inline-block">
+                {paymentSuccessData.isConfirmOnly
+                  ? isBengali
+                    ? '✓ বুকিং কনফার্ম হয়েছে (ডাটাবেসে সংরক্ষিত)'
+                    : '✓ Booking Confirmed (Saved to Database)'
+                  : isBengali
+                  ? '✓ পেমেন্ট ও বুকিং সফলভাবে কনফার্ম হয়েছে'
+                  : '✓ Payment & Booking Confirmed'}
               </span>
-              <h4 className="text-2xl font-black font-heading text-slate-900">
-                {isBengali ? 'ধন্যবাদ, আপনার বুকিং নিশ্চিত!' : 'Thank You, Booking Confirmed!'}
+              <h4 className="text-xl sm:text-2xl font-black font-heading text-slate-900">
+                {isBengali ? 'ধন্যবাদ! আপনার বুকিং কনফার্ম ও বিল তৈরি হয়েছে' : 'Confirmed Booking & Official Bill Receipt'}
               </h4>
               <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
                 {isBengali
-                  ? `আপনার সুন্দরবন ভ্রমণের জন্য ₹${paymentSuccessData.amount.toLocaleString('en-IN')} সফলভাবে রেকর্ড করা হয়েছে। আমাদের টিম খুব শীঘ্রই ফোন করে যোগাযোগ করবে।`
-                  : `Payment of ₹${paymentSuccessData.amount.toLocaleString('en-IN')} received. Our team will contact you shortly to coordinate logistics.`}
+                  ? 'আপনার সম্পূর্ণ বুকিং তথ্য আমাদের ডাটাবেসে সফলভাবে জমা হয়েছে। নিচের রিসিপ্ট ও বিল কাস্টমারের হোয়াটসঅ্যাপে পাঠাতে পারবেন।'
+                  : 'Your booking is saved in our database. Send the official bill receipt below directly to the customer WhatsApp.'}
               </p>
             </div>
 
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-left space-y-2 text-xs">
-              <div className="flex justify-between items-center pb-2 border-b border-slate-200">
-                <span className="text-slate-500">{isBengali ? 'বুকিং রেফারেন্স আইডি:' : 'Reference ID:'}</span>
+            {/* Official Itemized Bill Receipt */}
+            <div className="bg-slate-50 border-2 border-emerald-200 rounded-2xl p-4 text-left space-y-2.5 text-xs shadow-xs">
+              <div className="flex items-center justify-between pb-2 border-b border-emerald-200">
+                <div className="flex items-center gap-1.5 font-bold text-[#064E3B] text-sm">
+                  <Receipt className="w-4 h-4 text-emerald-700" />
+                  <span>{isBengali ? 'অফিসিয়াল বুকিং বিল রিসিপ্ট' : 'Official Booking Bill Receipt'}</span>
+                </div>
+                <span className="px-2 py-0.5 rounded bg-emerald-700 text-white font-bold text-[10px]">
+                  CONFIRMED
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500">{isBengali ? 'বুকিং / রিসিপ্ট আইডি:' : 'Booking / Receipt ID:'}</span>
                 <span className="font-mono font-bold text-slate-900 text-sm">{bookingDetails.enquiryId}</span>
               </div>
-              <div className="flex justify-between items-center pb-2 border-b border-slate-200">
-                <span className="text-slate-500">{isBengali ? 'ট্রানজ্যাকশন আইডি:' : 'Transaction ID:'}</span>
-                <span className="font-mono font-bold text-emerald-800">{paymentSuccessData.txnId}</span>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500">{isBengali ? 'অতিথির নাম:' : 'Guest Name:'}</span>
+                <span className="font-bold text-slate-900">{bookingDetails.fullName}</span>
               </div>
-              <div className="flex justify-between items-center pb-2 border-b border-slate-200">
-                <span className="text-slate-500">{isBengali ? 'পেমেন্ট মাধ্যম:' : 'Payment Method:'}</span>
-                <span className="font-bold text-slate-800">{paymentSuccessData.method}</span>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500">{isBengali ? 'কাস্টমার ফোন / WhatsApp:' : 'Customer Phone / WhatsApp:'}</span>
+                <span className="font-mono font-bold text-emerald-900">{bookingDetails.customerWhatsapp || bookingDetails.phone}</span>
               </div>
-              <div className="flex justify-between items-center font-bold text-sm pt-1 text-slate-900">
-                <span>{isBengali ? 'পরিশোধিত অর্থ:' : 'Amount Paid:'}</span>
-                <span className="text-emerald-700 text-base font-black">₹{paymentSuccessData.amount.toLocaleString('en-IN')}</span>
+              <div className="flex justify-between items-start gap-2">
+                <span className="text-slate-500 shrink-0">{isBengali ? 'প্যাকেজ ও তারিখ:' : 'Package & Date:'}</span>
+                <span className="font-semibold text-slate-800 text-right">
+                  {bookingDetails.packageTitle} ({bookingDetails.preferredDate})
+                </span>
+              </div>
+
+              {/* Price Breakdown */}
+              <div className="pt-2 border-t border-dashed border-slate-300 space-y-1">
+                {bookingDetails.adultsCount !== undefined && bookingDetails.perAdultRate !== undefined && (
+                  <div className="flex justify-between text-slate-700">
+                    <span>
+                      {isBengali
+                        ? `প্রাপ্তবয়স্ক (${bookingDetails.adultsCount} × ₹${bookingDetails.perAdultRate.toLocaleString('en-IN')})`
+                        : `Adults (${bookingDetails.adultsCount} × ₹${bookingDetails.perAdultRate.toLocaleString('en-IN')})`}
+                    </span>
+                    <span className="font-semibold">
+                      ₹{(bookingDetails.adultsCount * bookingDetails.perAdultRate).toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                )}
+                {Boolean(bookingDetails.childrenCount) && bookingDetails.perChildRate !== undefined && (
+                  <div className="flex justify-between text-slate-700">
+                    <span>
+                      {isBengali
+                        ? `শিশু (${bookingDetails.childrenCount} × ₹${bookingDetails.perChildRate.toLocaleString('en-IN')})`
+                        : `Children (${bookingDetails.childrenCount} × ₹${bookingDetails.perChildRate.toLocaleString('en-IN')})`}
+                    </span>
+                    <span className="font-semibold">
+                      ₹{((bookingDetails.childrenCount || 0) * bookingDetails.perChildRate).toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                )}
+                {Boolean(bookingDetails.addonAmount) && (
+                  <div className="flex justify-between text-slate-700">
+                    <span>{isBengali ? 'অতিরিক্ত সুবিধা (ক্যামেরাম্যান)' : 'Cameraman Add-on'}</span>
+                    <span className="font-semibold">₹{(bookingDetails.addonAmount || 0).toLocaleString('en-IN')}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="pt-2 border-t border-slate-200 space-y-1">
+                <div className="flex justify-between items-center font-bold text-sm text-slate-900">
+                  <span>{isBengali ? 'মোট বিল:' : 'Total Bill:'}</span>
+                  <span>₹{bookingDetails.totalAmount.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-slate-500">{isBengali ? 'পরিশোধের ধরন:' : 'Payment Status:'}</span>
+                  <span className="font-semibold text-slate-800 text-right">{paymentSuccessData.method}</span>
+                </div>
+                {!paymentSuccessData.isConfirmOnly && (
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-slate-500">{isBengali ? 'ট্রানজ্যাকশন আইডি:' : 'Transaction ID:'}</span>
+                    <span className="font-mono font-bold text-emerald-800">{paymentSuccessData.txnId}</span>
+                  </div>
+                )}
+                <div className="flex justify-between items-center font-bold text-sm pt-1 text-emerald-800">
+                  <span>{isBengali ? 'পরিশোধিত অর্থ:' : 'Paid Amount:'}</span>
+                  <span>₹{paymentSuccessData.amount.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="flex justify-between items-center font-bold text-sm text-amber-800">
+                  <span>{isBengali ? 'বাকি এমাউন্ট:' : 'Balance Due:'}</span>
+                  <span>₹{balanceDue.toLocaleString('en-IN')}</span>
+                </div>
               </div>
             </div>
 
-            <div className="pt-2 flex flex-col sm:flex-row gap-3">
+            {/* Customer WhatsApp Bill & Actions */}
+            <div className="space-y-2.5">
               <a
-                href={bookingDetails.whatsappUrl}
+                href={customerWhatsappTargetUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 py-3 px-4 bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all"
+                className="w-full py-3.5 px-4 bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-2 shadow-md transition-all"
               >
-                <MessageCircle className="w-4 h-4" />
-                <span>{isBengali ? 'রিসিপ্ট হোয়াটসঅ্যাপে নিশ্চিত করুন' : 'Confirm on WhatsApp'}</span>
+                <MessageCircle className="w-4 h-4 shrink-0" />
+                <span>
+                  {isBengali
+                    ? `কাস্টমারের হোয়াটসঅ্যাপে বিল রিসিপ্ট পাঠান (${bookingDetails.customerWhatsapp || bookingDetails.phone})`
+                    : `Send Bill Receipt to Customer WhatsApp (${bookingDetails.customerWhatsapp || bookingDetails.phone})`}
+                </span>
               </a>
-              <button
-                type="button"
-                onClick={onClose}
-                className="py-3 px-5 border border-slate-300 text-slate-700 font-bold text-xs sm:text-sm rounded-xl hover:bg-slate-100 transition-colors"
-              >
-                {isBengali ? 'সম্পন্ন' : 'Done'}
-              </button>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={handleCopyBillReceipt}
+                  className="py-2.5 px-3 border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  {copiedBill ? <Check className="w-3.5 h-3.5 text-emerald-700" /> : <Copy className="w-3.5 h-3.5 text-emerald-700" />}
+                  <span>{copiedBill ? (isBengali ? 'কপি হয়েছে' : 'Copied') : (isBengali ? 'বিল কপি করুন' : 'Copy Bill')}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="py-2.5 px-3 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Printer className="w-3.5 h-3.5 text-slate-600" />
+                  <span>{isBengali ? 'প্রিন্ট রিসিপ্ট' : 'Print Receipt'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="col-span-2 sm:col-span-1 py-2.5 px-4 bg-[#064E3B] hover:bg-[#08614a] text-white font-bold text-xs rounded-xl transition-colors cursor-pointer"
+                >
+                  {isBengali ? 'সম্পন্ন' : 'Done'}
+                </button>
+              </div>
             </div>
           </div>
         ) : (
-          /* Payment Processing View */
+          /* Booking Confirmation / Payment Processing View */
           <div className="p-5 sm:p-6 space-y-5">
             {/* Tour & Amount Summary Card */}
             <div className="bg-gradient-to-r from-emerald-50/80 to-slate-50 p-4 rounded-2xl border border-emerald-200/80 space-y-3">
@@ -351,7 +518,56 @@ export const BookingPaymentModal: React.FC<BookingPaymentModalProps> = ({
                 </div>
               </div>
 
-              {/* Amount Selection Toggle (25% Token Advance vs 100% Full) */}
+              {/* Booking Mode Selector INSIDE "বুকিং আবেদন জমা দিন" */}
+              <div className="pt-2.5 border-t border-emerald-200/80">
+                <span className="text-xs font-bold text-slate-700 block mb-1.5">
+                  {isBengali ? 'বুকিং পদ্ধতি নির্বাচন করুন:' : 'Choose Booking Option:'}
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setBookingMode('confirm-only')}
+                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                      bookingMode === 'confirm-only'
+                        ? 'bg-[#064E3B] text-white border-[#064E3B] shadow-sm ring-2 ring-emerald-200'
+                        : 'bg-white text-slate-800 border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold">
+                        {isBengali ? 'শুধু বুকিং কনফার্ম' : 'Confirm Booking Only'}
+                      </span>
+                      {bookingMode === 'confirm-only' && <Check className="w-3.5 h-3.5 text-[#F4B942]" />}
+                    </div>
+                    <div className={`text-[10px] mt-1 ${bookingMode === 'confirm-only' ? 'text-emerald-100' : 'text-slate-500'}`}>
+                      {isBengali ? 'পেমেন্ট ছাড়া সাধারণ বুকিং + বিল রিসিপ্ট' : 'Normal Booking • Pay Later + Bill Receipt'}
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setBookingMode('pay-online')}
+                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                      bookingMode === 'pay-online'
+                        ? 'bg-[#064E3B] text-white border-[#064E3B] shadow-sm ring-2 ring-emerald-200'
+                        : 'bg-white text-slate-800 border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold">
+                        {isBengali ? 'অনলাইন পেমেন্ট সহ' : 'Pay Online Now'}
+                      </span>
+                      {bookingMode === 'pay-online' && <Check className="w-3.5 h-3.5 text-[#F4B942]" />}
+                    </div>
+                    <div className={`text-[10px] mt-1 ${bookingMode === 'pay-online' ? 'text-emerald-100' : 'text-slate-500'}`}>
+                      {isBengali ? 'PhonePe / UPI / কিউআর / কার্ড' : 'PhonePe / UPI / QR / Card'}
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Amount Selection Toggle (25% Token Advance vs 100% Full) - shown in Pay Online mode */}
+              {bookingMode === 'pay-online' && (
               <div className="pt-2.5 border-t border-emerald-200/80">
                 <span className="text-xs font-semibold text-slate-700 block mb-1.5">
                   {isBengali ? 'পরিশোধের পরিমাণ নির্বাচন করুন:' : 'Select Payable Option:'}
@@ -400,8 +616,56 @@ export const BookingPaymentModal: React.FC<BookingPaymentModalProps> = ({
                   </button>
                 </div>
               </div>
+              )}
             </div>
 
+            {bookingMode === 'confirm-only' ? (
+              /* Normal Booking Confirmation Card (Inside "বুকিং আবেদন জমা দিন") */
+              <div className="space-y-4 animate-in fade-in duration-200">
+                <div className="bg-slate-50 border border-emerald-200 rounded-2xl p-4 space-y-2.5 text-xs">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                    <span className="font-bold text-[#064E3B] flex items-center gap-1.5 text-sm">
+                      <Receipt className="w-4 h-4 text-emerald-700" />
+                      <span>{isBengali ? 'বুকিং কনফার্ম ও বিল সামারি' : 'Booking Confirmation & Bill Summary'}</span>
+                    </span>
+                    <span className="font-mono text-[11px] bg-white px-2 py-0.5 rounded border border-slate-200 text-slate-700">
+                      {bookingDetails.enquiryId}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">{isBengali ? 'কাস্টমারের নাম:' : 'Customer Name:'}</span>
+                    <span className="font-bold text-slate-900">{bookingDetails.fullName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">{isBengali ? 'কাস্টমারের WhatsApp নম্বর:' : 'Customer WhatsApp:'}</span>
+                    <span className="font-mono font-bold text-emerald-800">{bookingDetails.customerWhatsapp || bookingDetails.phone}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">{isBengali ? 'মোট প্রাক্কলিত বিল:' : 'Total Bill Amount:'}</span>
+                    <span className="font-black text-[#064E3B] text-sm">₹{bookingDetails.totalAmount.toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200 text-[11px] text-emerald-900 flex items-start gap-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                    <span>
+                      {isBengali
+                        ? 'নিচের বাটনে ক্লিক করলে বুকিং কনফার্ম হয়ে ডাটাবেসে সেভ থাকবে এবং কাস্টমারের হোয়াটসঅ্যাপে পাঠানোর জন্য অফিসিয়াল বিল রিসিপ্ট তৈরি হবে।'
+                        : 'Click below to confirm this booking in the database and generate the official bill receipt for the customer WhatsApp.'}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleConfirmBookingOnly}
+                  className="w-full py-3.5 px-5 rounded-xl bg-[#064E3B] hover:bg-[#08614a] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <CheckCircle2 className="w-5 h-5 text-[#F4B942]" />
+                  <span>{isBengali ? 'বুকিং কনফার্ম করুন ও বিল রিসিপ্ট দেখুন' : 'Confirm Booking & Get Bill Receipt'}</span>
+                </button>
+              </div>
+            ) : (
+              <>
             {/* Payment Mode Selector Tabs (UPI / PhonePe vs Debit/Credit Cards) */}
             <div className="flex items-center p-1 bg-slate-100 rounded-2xl border border-slate-200">
               <button
@@ -808,6 +1072,8 @@ export const BookingPaymentModal: React.FC<BookingPaymentModalProps> = ({
                   </span>
                 </button>
               </form>
+            )}
+              </>
             )}
           </div>
         )}

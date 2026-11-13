@@ -238,3 +238,132 @@ export async function deleteBookingEnquiry(
     return { success: false, error: message };
   }
 }
+
+// =========================================================================
+// Single-Slot Admin Account Helpers
+// =========================================================================
+export const ADMIN_ACCOUNT_TABLE = 'admin_account';
+
+export interface AdminAccountRecord {
+  fullName: string;
+  email: string;
+  phone?: string;
+  username: string;
+  passwordHash: string;
+  createdAt: string;
+}
+
+interface AdminAccountRow {
+  id: number;
+  full_name: string;
+  email: string;
+  phone: string | null;
+  username: string;
+  password_hash: string;
+  created_at: string;
+}
+
+export async function fetchSingleAdminAccount(): Promise<{
+  account: AdminAccountRecord | null;
+  error?: string;
+}> {
+  if (!isSupabaseConfigured) {
+    return { account: null };
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from(ADMIN_ACCOUNT_TABLE)
+      .select('*')
+      .eq('id', 1)
+      .maybeSingle();
+
+    if (error) {
+      console.warn('Supabase admin fetch failed:', error.message);
+      return { account: null, error: error.message };
+    }
+
+    if (!data) return { account: null };
+    const row = data as AdminAccountRow;
+    return {
+      account: {
+        fullName: row.full_name,
+        email: row.email,
+        phone: row.phone || undefined,
+        username: row.username,
+        passwordHash: row.password_hash,
+        createdAt: row.created_at,
+      },
+    };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { account: null, error: message };
+  }
+}
+
+export async function createSingleAdminAccountInSupabase(
+  account: AdminAccountRecord
+): Promise<{ success: boolean; error?: string; alreadyExists?: boolean }> {
+  if (!isSupabaseConfigured) {
+    return { success: false, error: 'Supabase URL not configured.' };
+  }
+
+  try {
+    const { error } = await supabase.from(ADMIN_ACCOUNT_TABLE).insert([
+      {
+        id: 1,
+        full_name: account.fullName,
+        email: account.email,
+        phone: account.phone || null,
+        username: account.username,
+        password_hash: account.passwordHash,
+        created_at: account.createdAt,
+      },
+    ]);
+
+    if (error) {
+      const lower = error.message.toLowerCase();
+      const alreadyExists =
+        lower.includes('duplicate') ||
+        lower.includes('unique') ||
+        lower.includes('row-level security') ||
+        lower.includes('policy');
+      return { success: false, error: error.message, alreadyExists };
+    }
+    return { success: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { success: false, error: message };
+  }
+}
+
+export async function updateSingleAdminAccountInSupabase(
+  updates: Partial<Pick<AdminAccountRecord, 'username' | 'passwordHash' | 'fullName' | 'email' | 'phone'>>
+): Promise<{ success: boolean; error?: string }> {
+  if (!isSupabaseConfigured) {
+    return { success: false, error: 'Supabase URL not configured.' };
+  }
+
+  try {
+    const payload: Record<string, string | null> = {};
+    if (updates.username !== undefined) payload.username = updates.username;
+    if (updates.passwordHash !== undefined) payload.password_hash = updates.passwordHash;
+    if (updates.fullName !== undefined) payload.full_name = updates.fullName;
+    if (updates.email !== undefined) payload.email = updates.email;
+    if (updates.phone !== undefined) payload.phone = updates.phone || null;
+
+    const { error } = await supabase
+      .from(ADMIN_ACCOUNT_TABLE)
+      .update(payload)
+      .eq('id', 1);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+    return { success: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { success: false, error: message };
+  }
+}
+

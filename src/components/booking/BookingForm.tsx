@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Check, Phone, MessageCircle, Calendar, Users, MapPin, Sparkles, CheckCircle2, ShieldCheck, AlertCircle, Heart, Smile, CreditCard, Globe, AlertTriangle, XCircle, Clock } from 'lucide-react';
+import { Check, Phone, MessageCircle, Calendar, Users, MapPin, Sparkles, CheckCircle2, ShieldCheck, AlertCircle, Heart, Smile, CreditCard, Globe, AlertTriangle, XCircle, Clock, Receipt, Copy, Printer } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAdmin } from '../../context/AdminContext';
 import { TOUR_PACKAGES } from '../../data/packages';
@@ -140,7 +140,7 @@ interface BookingFormProps {
 
 export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, onSuccess }) => {
   const { language, isBengali } = useLanguage();
-  const { addEnquiry } = useAdmin();
+  const { addEnquiry, updateEnquiryStatus } = useAdmin();
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -184,15 +184,31 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
   const [submittedId, setSubmittedId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isBookingConfirmed, setIsBookingConfirmed] = useState(false);
+  const [confirmedPaymentInfo, setConfirmedPaymentInfo] = useState<{
+    method: string;
+    transactionId: string;
+    amount: number;
+  } | null>(null);
+  const [copiedPageBill, setCopiedPageBill] = useState(false);
   const [paymentBookingDetails, setPaymentBookingDetails] = useState<{
     enquiryId: string;
     fullName: string;
     phone: string;
+    customerWhatsapp?: string;
     packageTitle: string;
     preferredDate: string;
+    pickupPoint?: string;
     guestsCount: number;
+    adultsCount?: number;
+    childrenCount?: number;
+    perAdultRate?: number;
+    perChildRate?: number;
+    addonAmount?: number;
     totalAmount: number;
     whatsappUrl: string;
+    buildCustomerWhatsappBillUrl?: (paidAmount: number, paymentMethod: string, txnId?: string) => string;
+    buildBillReceiptText?: (paidAmount: number, paymentMethod: string, txnId?: string) => string;
   } | null>(null);
 
   // Selected package reference dynamically found from packages data
@@ -352,6 +368,107 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
     return `https://wa.me/${BRAND_INFO.whatsappRaw}?text=${encodeURIComponent(text)}`;
   };
 
+  // Normalize customer phone/WhatsApp number for wa.me link
+  const formatCustomerWhatsAppNumber = (rawPhone: string): string => {
+    const digits = rawPhone.replace(/\D/g, '');
+    if (!digits) return BRAND_INFO.whatsappRaw;
+    if (digits.length === 10 && /^[6-9]/.test(digits)) {
+      return `91${digits}`;
+    }
+    if (digits.length === 11 && digits.startsWith('0')) {
+      if (digits.startsWith('01')) return `88${digits}`;
+      return `91${digits.slice(1)}`;
+    }
+    return digits;
+  };
+
+  // Official itemized Bill Receipt generator for customer WhatsApp & clipboard
+  const createBillReceiptText = (
+    receiptId: string,
+    paidAmount: number = 0,
+    paymentMethod: string = isBengali ? 'নরমাল বুকিং (ভ্রমণের সময় প্রদেয়)' : 'Normal Booking (Pay Later)',
+    txnId?: string
+  ): string => {
+    const currentEstimate = getPricingEstimate();
+    const balanceDue = Math.max(currentEstimate.grandTotal - paidAmount, 0);
+    const customerName = formData.fullName || (isBengali ? 'সম্মানিত অতিথি' : 'Valued Guest');
+    const customerPhone = (formData.whatsappSameAsPhone ? formData.phone : formData.whatsapp) || formData.phone;
+
+    if (isBengali) {
+      return [
+        `🌿 *সুন্দরবন ভ্রমণ — অফিসিয়াল বুকিং বিল ও রিসিপ্ট*`,
+        `━━━━━━━━━━━━━━━━━━━━━━`,
+        `✅ *স্ট্যাটাস:* বুকিং কনফার্ম হয়েছে (CONFIRMED)`,
+        `🧾 *বুকিং / বিল আইডি:* ${receiptId}`,
+        `👤 *অতিথির নাম:* ${customerName}`,
+        `📞 *ফোন / WhatsApp:* ${customerPhone}`,
+        `📦 *প্যাকেজ:* ${selectedPkg.title.bn}`,
+        `📅 *যাত্রার তারিখ:* ${formData.preferredDate}`,
+        `📍 *পিকআপ:* ${formData.pickupPoint}`,
+        `━━━━━━━━━━━━━━━━━━━━━━`,
+        `📋 *খরচের বিবরণ (Bill Breakdown):*`,
+        `• প্রাপ্তবয়স্ক (${currentEstimate.adultsCount} জন × ₹${currentEstimate.perAdult.toLocaleString('en-IN')}) = ₹${currentEstimate.adultTotal.toLocaleString('en-IN')}`,
+        ...(currentEstimate.childrenCount > 0
+          ? [`• শিশু (${currentEstimate.childrenCount} জন × ₹${currentEstimate.perChild.toLocaleString('en-IN')}) = ₹${currentEstimate.childTotal.toLocaleString('en-IN')}`]
+          : []),
+        ...(currentEstimate.addonTotal > 0
+          ? [`• প্রফেশনাল ক্যামেরাম্যান = ₹${currentEstimate.addonTotal.toLocaleString('en-IN')}`]
+          : []),
+        `━━━━━━━━━━━━━━━━━━━━━━`,
+        `💰 *মোট বিল:* ₹${currentEstimate.grandTotal.toLocaleString('en-IN')}`,
+        `💳 *পরিশোধের ধরন:* ${paymentMethod}`,
+        ...(txnId && txnId !== 'CONFIRMED' ? [`🔑 *ট্রানজ্যাকশন আইডি:* ${txnId}`] : []),
+        `✅ *পরিশোধিত অর্থ:* ₹${paidAmount.toLocaleString('en-IN')}`,
+        `⏳ *বাকি এমাউন্ট:* ₹${balanceDue.toLocaleString('en-IN')}`,
+        `━━━━━━━━━━━━━━━━━━━━━━`,
+        `📞 *হেল্পলাইন:* +91 90024 13094`,
+        `সুন্দরবন ভ্রমণের সাথে থাকার জন্য ধন্যবাদ!`,
+      ].join('\n');
+    }
+
+    return [
+      `🌿 *Sundarban Vromon — Official Booking Bill & Receipt*`,
+      `━━━━━━━━━━━━━━━━━━━━━━`,
+      `✅ *Status:* BOOKING CONFIRMED`,
+      `🧾 *Booking / Bill ID:* ${receiptId}`,
+      `👤 *Guest Name:* ${customerName}`,
+      `📞 *Phone / WhatsApp:* ${customerPhone}`,
+      `📦 *Package:* ${selectedPkg.title.en}`,
+      `📅 *Travel Date:* ${formData.preferredDate}`,
+      `📍 *Pickup:* ${formData.pickupPoint}`,
+      `━━━━━━━━━━━━━━━━━━━━━━`,
+      `📋 *Bill Breakdown:*`,
+      `• Adults (${currentEstimate.adultsCount} × ₹${currentEstimate.perAdult.toLocaleString('en-IN')}) = ₹${currentEstimate.adultTotal.toLocaleString('en-IN')}`,
+      ...(currentEstimate.childrenCount > 0
+        ? [`• Children (${currentEstimate.childrenCount} × ₹${currentEstimate.perChild.toLocaleString('en-IN')}) = ₹${currentEstimate.childTotal.toLocaleString('en-IN')}`]
+        : []),
+      ...(currentEstimate.addonTotal > 0
+        ? [`• Professional Cameraman Add-on = ₹${currentEstimate.addonTotal.toLocaleString('en-IN')}`]
+        : []),
+      `━━━━━━━━━━━━━━━━━━━━━━`,
+      `💰 *Total Bill:* ₹${currentEstimate.grandTotal.toLocaleString('en-IN')}`,
+      `💳 *Payment Mode:* ${paymentMethod}`,
+      ...(txnId && txnId !== 'CONFIRMED' ? [`🔑 *Transaction ID:* ${txnId}`] : []),
+      `✅ *Amount Paid:* ₹${paidAmount.toLocaleString('en-IN')}`,
+      `⏳ *Balance Due:* ₹${balanceDue.toLocaleString('en-IN')}`,
+      `━━━━━━━━━━━━━━━━━━━━━━`,
+      `📞 *Helpline:* +91 90024 13094`,
+      `Thank you for booking with Sundarban Vromon!`,
+    ].join('\n');
+  };
+
+  const createCustomerWhatsappBillUrl = (
+    receiptId: string,
+    paidAmount: number = 0,
+    paymentMethod: string = isBengali ? 'নরমাল বুকিং (ভ্রমণের সময় প্রদেয়)' : 'Normal Booking (Pay Later)',
+    txnId?: string
+  ): string => {
+    const rawCustomerWa = (formData.whatsappSameAsPhone ? formData.phone : formData.whatsapp) || formData.phone;
+    const normalizedPhone = formatCustomerWhatsAppNumber(rawCustomerWa);
+    const receiptText = createBillReceiptText(receiptId, paidAmount, paymentMethod, txnId);
+    return `https://wa.me/${normalizedPhone}?text=${encodeURIComponent(receiptText)}`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
@@ -430,17 +547,33 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
       });
 
       setSubmittedId(enquiryId);
+      setIsBookingConfirmed(false);
+      setConfirmedPaymentInfo(null);
 
-      // Setup details for Payment Gateway Modal
+      const customerWa = (formData.whatsappSameAsPhone ? formData.phone : formData.whatsapp) || formData.phone;
+      const currentEst = getPricingEstimate();
+
+      // Setup details for "বুকিং আবেদন জমা দিন" Confirmation & Payment Modal
       const bookingInfo = {
         enquiryId,
         fullName: formData.fullName || (isBengali ? 'ভ্রমণকারী' : 'Traveler'),
         phone: formData.phone,
+        customerWhatsapp: customerWa,
         packageTitle: isBengali ? selectedPkg.title.bn : selectedPkg.title.en,
         preferredDate: formData.preferredDate,
+        pickupPoint: formData.pickupPoint,
         guestsCount: Number(formData.adultsCount) + Number(formData.childrenCount),
+        adultsCount: currentEst.adultsCount,
+        childrenCount: currentEst.childrenCount,
+        perAdultRate: currentEst.perAdult,
+        perChildRate: currentEst.perChild,
+        addonAmount: currentEst.addonTotal,
         totalAmount: totalAmt,
         whatsappUrl: getWhatsAppBookingUrl(),
+        buildCustomerWhatsappBillUrl: (paidAmt: number, method: string, txnId?: string) =>
+          createCustomerWhatsappBillUrl(enquiryId, paidAmt, method, txnId),
+        buildBillReceiptText: (paidAmt: number, method: string, txnId?: string) =>
+          createBillReceiptText(enquiryId, paidAmt, method, txnId),
       };
       setPaymentBookingDetails(bookingInfo);
       setIsPaymentModalOpen(true);
@@ -454,31 +587,192 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
   };
 
   if (submittedId) {
+    const customerWaDisplay = (formData.whatsappSameAsPhone ? formData.phone : formData.whatsapp) || formData.phone;
+    const paidAmt = confirmedPaymentInfo?.amount ?? 0;
+    const paidMethod =
+      confirmedPaymentInfo?.method ||
+      (isBengali ? 'নরমাল বুকিং (ভ্রমণের সময় প্রদেয়)' : 'Normal Booking (Pay Later)');
+    const paidTxnId = confirmedPaymentInfo?.transactionId;
+    const balanceAmt = Math.max(estimate.grandTotal - paidAmt, 0);
+    const customerBillWhatsappLink = createCustomerWhatsappBillUrl(submittedId, paidAmt, paidMethod, paidTxnId);
+
+    const handleConfirmOnPage = () => {
+      setIsBookingConfirmed(true);
+      updateEnquiryStatus(submittedId, 'confirmed');
+    };
+
+    const handleCopyPageBill = () => {
+      const text = createBillReceiptText(submittedId, paidAmt, paidMethod, paidTxnId);
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text);
+        setCopiedPageBill(true);
+        setTimeout(() => setCopiedPageBill(false), 2500);
+      }
+    };
+
     return (
-      <div className="bg-white rounded-3xl p-8 sm:p-10 border border-emerald-300 shadow-xl text-center space-y-6 animate-in zoom-in-95 duration-500 max-w-2xl mx-auto">
+      <div className="bg-white rounded-3xl p-6 sm:p-10 border border-emerald-300 shadow-xl text-center space-y-6 animate-in zoom-in-95 duration-500 max-w-2xl mx-auto">
         <div className="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto">
           <CheckCircle2 className="w-10 h-10" />
         </div>
 
         <div className="space-y-2">
           <div className="text-xs font-bold uppercase tracking-widest text-[#0E7490]">
-            {isBengali ? 'বুকিং অনুসন্ধান সফলভাবে গৃহীত হয়েছে' : 'Enquiry Received Successfully'}
+            {isBookingConfirmed
+              ? isBengali
+                ? '✓ কনফার্ম বুকিং সফল (ডাটাবেসে সংরক্ষিত)'
+                : '✓ Booking Confirmed & Saved'
+              : isBengali
+              ? 'বুকিং আবেদন ডাটাবেসে গৃহীত হয়েছে'
+              : 'Booking Request Saved'}
           </div>
           <h3 className="text-2xl sm:text-3xl font-bold font-heading text-[#064E3B]">
             {isBengali ? 'ধন্যবাদ, ' : 'Thank You, '} {formData.fullName}
           </h3>
           <p className="text-slate-600 text-sm max-w-md mx-auto">
-            {isBengali
-              ? 'আপনার বুকিং রেফারেন্স আইডি নিচে দেওয়া হলো। আমাদের টিম খুব শীঘ্রই আপনার সাথে ফোনে যোগাযোগ করবে।'
-              : 'Your booking reference number is generated below. Our representative will contact you shortly to confirm dates and permits.'}
+            {isBookingConfirmed
+              ? isBengali
+                ? 'আপনার বুকিং কনফার্ম হয়েছে ও ডাটাবেসে সংরক্ষিত আছে। নিচের অফিসিয়াল বিল রিসিপ্ট কাস্টমারের হোয়াটসঅ্যাপে পাঠাতে পারবেন।'
+                : 'Your booking is confirmed and saved in the database. Send the official bill receipt below to the customer WhatsApp.'
+              : isBengali
+              ? 'আপনার বুকিং তথ্য ডাটাবেসে সেভ হয়েছে। বুকিং কনফার্ম করতে এবং কাস্টমারের হোয়াটসঅ্যাপে বিল রিসিপ্ট পেতে নিচের বাটনে ক্লিক করুন।'
+              : 'Your booking is saved in our database. Click below to confirm your booking and get the bill receipt.'}
           </p>
         </div>
 
         {/* Reference ID Pill */}
         <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 inline-block">
-          <span className="text-xs text-slate-500 block">{isBengali ? 'রেফারেন্স কোড:' : 'Reference ID:'}</span>
+          <span className="text-xs text-slate-500 block">{isBengali ? 'রেফারেন্স / বিল কোড:' : 'Reference / Bill ID:'}</span>
           <span className="text-xl font-mono font-bold text-[#064E3B]">{submittedId}</span>
         </div>
+
+        {/* Official Bill Receipt & Customer WhatsApp Action Card */}
+        {isBookingConfirmed ? (
+          <div className="bg-slate-50 border-2 border-emerald-200 rounded-2xl p-4 sm:p-5 text-left space-y-3 text-xs shadow-xs">
+            <div className="flex items-center justify-between pb-2 border-b border-emerald-200">
+              <div className="flex items-center gap-1.5 font-bold text-[#064E3B] text-sm">
+                <Receipt className="w-4 h-4 text-emerald-700" />
+                <span>{isBengali ? 'কনফার্ম বুকিং ও বিল রিসিপ্ট' : 'Confirmed Booking Bill Receipt'}</span>
+              </div>
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-700 text-white font-bold text-[10px]">
+                CONFIRMED
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div>
+                <span className="text-slate-500 block">{isBengali ? 'অতিথির নাম:' : 'Guest Name:'}</span>
+                <span className="font-bold text-slate-900">{formData.fullName}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block">{isBengali ? 'কাস্টমার WhatsApp:' : 'Customer WhatsApp:'}</span>
+                <span className="font-mono font-bold text-emerald-900">{customerWaDisplay}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block">{isBengali ? 'প্যাকেজ:' : 'Package:'}</span>
+                <span className="font-semibold text-slate-800">{isBengali ? selectedPkg.title.bn : selectedPkg.title.en}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block">{isBengali ? 'যাত্রার তারিখ:' : 'Travel Date:'}</span>
+                <span className="font-semibold text-slate-800">{formData.preferredDate}</span>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-dashed border-slate-300 space-y-1">
+              <div className="flex justify-between">
+                <span className="text-slate-600">
+                  {isBengali
+                    ? `প্রাপ্তবয়স্ক (${estimate.adultsCount} × ₹${estimate.perAdult.toLocaleString('en-IN')})`
+                    : `Adults (${estimate.adultsCount} × ₹${estimate.perAdult.toLocaleString('en-IN')})`}
+                </span>
+                <span className="font-semibold">₹{estimate.adultTotal.toLocaleString('en-IN')}</span>
+              </div>
+              {estimate.childrenCount > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-slate-600">
+                    {isBengali
+                      ? `শিশু (${estimate.childrenCount} × ₹${estimate.perChild.toLocaleString('en-IN')})`
+                      : `Children (${estimate.childrenCount} × ₹${estimate.perChild.toLocaleString('en-IN')})`}
+                  </span>
+                  <span className="font-semibold">₹{estimate.childTotal.toLocaleString('en-IN')}</span>
+                </div>
+              )}
+              {estimate.addonTotal > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-slate-600">{isBengali ? 'ক্যামেরাম্যান অ্যাড-অন' : 'Cameraman Add-on'}</span>
+                  <span className="font-semibold">₹{estimate.addonTotal.toLocaleString('en-IN')}</span>
+                </div>
+              )}
+              <div className="flex justify-between font-bold text-sm pt-1.5 border-t border-slate-200 text-slate-900">
+                <span>{isBengali ? 'মোট বিল:' : 'Total Bill:'}</span>
+                <span>₹{estimate.grandTotal.toLocaleString('en-IN')}</span>
+              </div>
+              <div className="flex justify-between text-emerald-800 font-bold">
+                <span>{isBengali ? 'পরিশোধিত:' : 'Paid:'}</span>
+                <span>₹{paidAmt.toLocaleString('en-IN')}</span>
+              </div>
+              <div className="flex justify-between text-amber-800 font-bold">
+                <span>{isBengali ? 'বাকি এমাউন্ট:' : 'Balance Due:'}</span>
+                <span>₹{balanceAmt.toLocaleString('en-IN')}</span>
+              </div>
+            </div>
+
+            <div className="pt-2 space-y-2">
+              <a
+                href={customerBillWhatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-3 px-4 bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-2 shadow-md transition-all"
+              >
+                <MessageCircle className="w-4 h-4 shrink-0" />
+                <span>
+                  {isBengali
+                    ? `কাস্টমারের হোয়াটসঅ্যাপে বিল রিসিপ্ট পাঠান (${customerWaDisplay})`
+                    : `Send Bill Receipt to Customer WhatsApp (${customerWaDisplay})`}
+                </span>
+              </a>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleCopyPageBill}
+                  className="flex-1 py-2 px-3 border border-emerald-300 bg-white hover:bg-emerald-50 text-emerald-900 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  {copiedPageBill ? <Check className="w-3.5 h-3.5 text-emerald-700" /> : <Copy className="w-3.5 h-3.5 text-emerald-700" />}
+                  <span>{copiedPageBill ? (isBengali ? 'বিল কপি হয়েছে' : 'Bill Copied') : (isBengali ? 'বিল কপি করুন' : 'Copy Bill')}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="flex-1 py-2 px-3 border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>{isBengali ? 'প্রিন্ট রিসিপ্ট' : 'Print Receipt'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-left">
+            <div>
+              <span className="text-xs font-bold text-[#064E3B] block">
+                {isBengali ? 'শুধু বুকিং কনফার্ম ও বিল রিসিপ্ট:' : 'Confirm Booking & Get Bill Receipt:'}
+              </span>
+              <span className="text-[11px] text-slate-600 block">
+                {isBengali
+                  ? 'কনফার্ম করলে কাস্টমারের হোয়াটসঅ্যাপে বিল রিসিপ্ট পাঠানো যাবে।'
+                  : 'Confirm to generate the official bill receipt for customer WhatsApp.'}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={handleConfirmOnPage}
+              className="w-full sm:w-auto px-5 py-2.5 bg-[#064E3B] hover:bg-[#08614a] text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer shrink-0"
+            >
+              <CheckCircle2 className="w-4 h-4 text-[#F4B942]" />
+              <span>{isBengali ? 'কনফার্ম বুকিং করুন' : 'Confirm Booking'}</span>
+            </button>
+          </div>
+        )}
 
         {/* Online Payment Card & Re-open Modal */}
         <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl border border-emerald-200 text-left space-y-2.5">
@@ -508,6 +802,16 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
             onClose={() => setIsPaymentModalOpen(false)}
             bookingDetails={paymentBookingDetails}
             isBengali={isBengali}
+            onConfirmBookingOnly={() => {
+              setIsBookingConfirmed(true);
+              setConfirmedPaymentInfo(null);
+              updateEnquiryStatus(submittedId, 'confirmed');
+            }}
+            onPaymentSuccess={info => {
+              setIsBookingConfirmed(true);
+              setConfirmedPaymentInfo(info);
+              updateEnquiryStatus(submittedId, 'confirmed');
+            }}
           />
         )}
 
@@ -525,6 +829,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
           <button
             onClick={() => {
               setSubmittedId(null);
+              setIsBookingConfirmed(false);
+              setConfirmedPaymentInfo(null);
               setFormData({
                 fullName: '',
                 phone: '',
@@ -539,6 +845,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
                 preferredDate: '',
                 isFlexibleDate: true,
                 groupType: 'family',
+                groupTypes: ['family'],
                 adultsCount: 1,
                 childrenCount: 0,
                 childrenAges: '',
@@ -1582,7 +1889,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
             href={getWhatsAppBookingUrl()}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-5 py-3 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
+            className="px-4 py-3 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
           >
             <MessageCircle className="w-4 h-4" />
             <span className="hidden sm:inline">{isBengali ? 'হোয়াটসঅ্যাপে পাঠান' : 'WhatsApp'}</span>
@@ -1591,9 +1898,9 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex-1 sm:flex-initial px-8 py-3 rounded-xl bg-[#064E3B] hover:bg-[#08614a] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 cursor-pointer"
+            className="flex-1 sm:flex-initial px-6 py-3 rounded-xl bg-[#064E3B] hover:bg-[#08614a] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 cursor-pointer"
           >
-            <Sparkles className="w-4 h-4 text-[#F4B942]" />
+            <Sparkles className="w-4 h-4 text-[#F4B942] shrink-0" />
             <div className="text-left">
               <span className="block leading-tight font-bold">
                 {isSubmitting
@@ -1605,7 +1912,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
                   : 'Submit Booking Request'}
               </span>
               <span className="text-[10px] text-emerald-200 font-normal block">
-                {isBengali ? 'ফোন থেকে ডিরেক্ট / কম্পিউটারে কিউআর কোড' : 'Direct on Phone / QR Code on Desktop'}
+                {isBengali ? 'কনফার্ম বুকিং ও বিল রিসিপ্ট / অনলাইন পেমেন্ট' : 'Confirm Booking & Bill Receipt / Online Payment'}
               </span>
             </div>
           </button>
@@ -1618,6 +1925,16 @@ export const BookingForm: React.FC<BookingFormProps> = ({ initialPackageSlug, on
           onClose={() => setIsPaymentModalOpen(false)}
           bookingDetails={paymentBookingDetails}
           isBengali={isBengali}
+          onConfirmBookingOnly={() => {
+            setIsBookingConfirmed(true);
+            setConfirmedPaymentInfo(null);
+            if (submittedId) updateEnquiryStatus(submittedId, 'confirmed');
+          }}
+          onPaymentSuccess={info => {
+            setIsBookingConfirmed(true);
+            setConfirmedPaymentInfo(info);
+            if (submittedId) updateEnquiryStatus(submittedId, 'confirmed');
+          }}
         />
       )}
     </form>

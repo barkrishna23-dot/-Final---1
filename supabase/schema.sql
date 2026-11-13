@@ -70,3 +70,41 @@ CREATE POLICY "Allow booking delete"
   FOR DELETE
   TO anon, authenticated
   USING (true);
+
+-- =========================================================================
+-- Single-Slot Admin Account Table (Strictly allows ONLY 1 admin account)
+-- =========================================================================
+CREATE TABLE IF NOT EXISTS public.admin_account (
+  id INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  full_name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  username TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE public.admin_account ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow admin account read" ON public.admin_account;
+CREATE POLICY "Allow admin account read"
+  ON public.admin_account
+  FOR SELECT
+  TO anon, authenticated
+  USING (true);
+
+DROP POLICY IF EXISTS "Allow single admin signup once" ON public.admin_account;
+CREATE POLICY "Allow single admin signup once"
+  ON public.admin_account
+  FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (id = 1 AND NOT EXISTS (SELECT 1 FROM public.admin_account));
+
+DROP POLICY IF EXISTS "Allow single admin update" ON public.admin_account;
+CREATE POLICY "Allow single admin update"
+  ON public.admin_account
+  FOR UPDATE
+  TO anon, authenticated
+  USING (id = 1)
+  WITH CHECK (id = 1);
+

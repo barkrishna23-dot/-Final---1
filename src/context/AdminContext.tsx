@@ -7,7 +7,36 @@ import {
   fetchBookingEnquiries,
   updateBookingEnquiryStatus,
   deleteBookingEnquiry as deleteBookingEnquiryFromSupabase,
+  fetchSingleAdminAccount,
+  createSingleAdminAccountInSupabase,
+  updateSingleAdminAccountInSupabase,
+  AdminAccountRecord,
+  isSupabaseConfigured,
 } from '../lib/supabase';
+
+const ADMIN_ACCOUNT_STORAGE_KEY = 'sv_admin_account_v1';
+
+async function hashAdminPassword(password: string): Promise<string> {
+  try {
+    if (typeof crypto !== 'undefined' && crypto.subtle) {
+      const encoded = new TextEncoder().encode(`sv-salt-2026:${password}`);
+      const digest = await crypto.subtle.digest('SHA-256', encoded);
+      return Array.from(new Uint8Array(digest))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+    }
+  } catch (e) {
+    console.warn('WebCrypto fallback:', e);
+  }
+  // Fallback deterministic hash for non-secure contexts
+  let hash = 2166136261;
+  const input = `sv-salt-2026:${password}`;
+  for (let i = 0; i < input.length; i++) {
+    hash ^= input.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `fnv_${(hash >>> 0).toString(16)}`;
+}
 
 interface AdminContextType {
   enquiries: BookingEnquiry[];
@@ -15,13 +44,24 @@ interface AdminContextType {
   packages: TourPackage[];
   isAdminLoggedIn: boolean;
   isAdminAuthenticated: boolean;
+  adminAccount: AdminAccountRecord | null;
+  hasAdminAccount: boolean;
   currentUsername: string;
-  loginAdmin: (pass: string, username?: string) => boolean;
-  adminLogin: (username: string, pass: string) => { success: boolean; error?: string };
+  isLoadingEnquiries: boolean;
+  refreshEnquiries: () => Promise<void>;
+  registerSingleAdminAccount: (details: {
+    fullName: string;
+    email: string;
+    phone?: string;
+    username: string;
+    password: string;
+  }) => Promise<{ success: boolean; error?: string }>;
+  loginAdmin: (pass: string, username?: string) => Promise<boolean>;
+  adminLogin: (username: string, pass: string) => Promise<{ success: boolean; error?: string }>;
   logoutAdmin: () => void;
   adminLogout: () => void;
-  updateAdminCredentials: (newUsername: string, newPassword: string) => boolean;
-  resetAdminPassword: (verificationInput: string, newPassword: string) => { success: boolean; message: string };
+  updateAdminCredentials: (newUsername: string, newPassword: string) => Promise<boolean>;
+  resetAdminPassword: (verificationInput: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
   addEnquiry: (enquiry: Omit<BookingEnquiry, 'id' | 'createdAt' | 'status'>) => Promise<string>;
   updateEnquiryStatus: (id: string, status: BookingEnquiry['status']) => void;
   deleteEnquiry: (id: string) => void;
@@ -34,25 +74,31 @@ interface AdminContextType {
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
-    return localStorage.getItem('sv_admin_auth') === 'true';
-  });
-
-  const [credentials, setCredentials] = useState<{ username: string; password: string }>(() => {
+  const [adminAccount, setAdminAccount] = useState<AdminAccountRecord | null>(() => {
     try {
-      const stored = localStorage.getItem('sv_admin_credentials');
+      const stored = localStorage.getItem(ADMIN_ACCOUNT_STORAGE_KEY);
       if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed.username && parsed.password) return parsed;
+        const parsed = JSON.parse(stored) as AdminAccountRecord;
+        if (parsed && parsed.username && parsed.passwordHash) {
+          return parsed;
+        }
       }
     } catch (e) {
       console.error(e);
     }
-    return {
-      username: 'admin',
-      password: 'sundarban2019',
-    };
+    return null;
   });
+
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
+    try {
+      const hasAccount = Boolean(localStorage.getItem(ADMIN_ACCOUNT_STORAGE_KEY));
+      return hasAccount && localStorage.getItem('sv_admin_auth') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const [isLoadingEnquiries, setIsLoadingEnquiries] = useState<boolean>(false);
 
   const [enquiries, setEnquiries] = useState<BookingEnquiry[]>(() => {
     try {
@@ -131,19 +177,43 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     localStorage.setItem('sv_enquiries', JSON.stringify(enquiries));
   }, [enquiries]);
 
+  const refreshEnquiries = async () => {
+    setIsLoadingEnquiries(true);
+    try {
+      const { data, error } = await fetchBookingEnquiries();
+      if (!error && data.length > 0) {
+        setEnquiries(prev => {
+          const remoteIds = new Set(data.map(item => item.id));
+          const localOnly = prev.filter(item => !remoteIds.has(item.id));
+          return [...data, ...localOnly];
+        });
+      }
+    } finally {
+      setIsLoadingEnquiries(false);
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
-    const loadRemoteEnquiries = async () => {
+    const syncRemote = async () => {
       const { data, error } = await fetchBookingEnquiries();
-      if (!isMounted || error || data.length === 0) return;
+      if (isMounted && !error && data.length > 0) {
+        setEnquiries(prev => {
+          const remoteIds = new Set(data.map(item => item.id));
+          const localOnly = prev.filter(item => !remoteIds.has(item.id));
+          return [...data, ...localOnly];
+        });
+      }
 
-      setEnquiries(prev => {
-        const remoteIds = new Set(data.map(item => item.id));
-        const localOnly = prev.filter(item => !remoteIds.has(item.id));
-        return [...data, ...localOnly];
-      });
+      if (isSupabaseConfigured) {
+        const { account } = await fetchSingleAdminAccount();
+        if (isMounted && account) {
+          setAdminAccount(account);
+          localStorage.setItem(ADMIN_ACCOUNT_STORAGE_KEY, JSON.stringify(account));
+        }
+      }
     };
-    loadRemoteEnquiries();
+    void syncRemote();
     return () => {
       isMounted = false;
     };
@@ -153,71 +223,158 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     localStorage.setItem('sv_reviews', JSON.stringify(reviews));
   }, [reviews]);
 
-  const updateAdminCredentials = (newUsername: string, newPassword: string) => {
-    if (!newUsername.trim() || !newPassword.trim()) return false;
-    const updated = { username: newUsername.trim(), password: newPassword.trim() };
-    setCredentials(updated);
-    localStorage.setItem('sv_admin_credentials', JSON.stringify(updated));
+  const registerSingleAdminAccount = async (details: {
+    fullName: string;
+    email: string;
+    phone?: string;
+    username: string;
+    password: string;
+  }): Promise<{ success: boolean; error?: string }> => {
+    // Enforce single-slot rule locally first
+    if (adminAccount || localStorage.getItem(ADMIN_ACCOUNT_STORAGE_KEY)) {
+      return {
+        success: false,
+        error: 'slot_locked',
+      };
+    }
+
+    // Enforce single-slot rule against Supabase if configured
+    if (isSupabaseConfigured) {
+      const existingRemote = await fetchSingleAdminAccount();
+      if (existingRemote.account) {
+        setAdminAccount(existingRemote.account);
+        localStorage.setItem(ADMIN_ACCOUNT_STORAGE_KEY, JSON.stringify(existingRemote.account));
+        return {
+          success: false,
+          error: 'slot_locked',
+        };
+      }
+    }
+
+    const cleanFullName = details.fullName.trim();
+    const cleanEmail = details.email.trim().toLowerCase();
+    const cleanPhone = details.phone?.trim() || undefined;
+    const cleanUsername = details.username.trim();
+    const passwordHash = await hashAdminPassword(details.password);
+
+    const newRecord: AdminAccountRecord = {
+      fullName: cleanFullName,
+      email: cleanEmail,
+      phone: cleanPhone,
+      username: cleanUsername,
+      passwordHash,
+      createdAt: new Date().toISOString(),
+    };
+
+    if (isSupabaseConfigured) {
+      const remoteRes = await createSingleAdminAccountInSupabase(newRecord);
+      if (remoteRes.alreadyExists) {
+        const { account } = await fetchSingleAdminAccount();
+        if (account) {
+          setAdminAccount(account);
+          localStorage.setItem(ADMIN_ACCOUNT_STORAGE_KEY, JSON.stringify(account));
+        }
+        return { success: false, error: 'slot_locked' };
+      }
+    }
+
+    setAdminAccount(newRecord);
+    localStorage.setItem(ADMIN_ACCOUNT_STORAGE_KEY, JSON.stringify(newRecord));
+    setIsAdminLoggedIn(true);
+    localStorage.setItem('sv_admin_auth', 'true');
+    return { success: true };
+  };
+
+  const updateAdminCredentials = async (newUsername: string, newPassword: string): Promise<boolean> => {
+    if (!adminAccount || !newUsername.trim() || !newPassword.trim()) return false;
+    const newHash = await hashAdminPassword(newPassword);
+    const updated: AdminAccountRecord = {
+      ...adminAccount,
+      username: newUsername.trim(),
+      passwordHash: newHash,
+    };
+    setAdminAccount(updated);
+    localStorage.setItem(ADMIN_ACCOUNT_STORAGE_KEY, JSON.stringify(updated));
+    if (isSupabaseConfigured) {
+      await updateSingleAdminAccountInSupabase({
+        username: updated.username,
+        passwordHash: updated.passwordHash,
+      });
+    }
     return true;
   };
 
-  const resetAdminPassword = (verificationInput: string, newPassword: string) => {
-    const cleanVerify = verificationInput.trim().toLowerCase().replace(/[^a-z0-9@.]/g, '');
+  const resetAdminPassword = async (
+    verificationInput: string,
+    newPassword: string
+  ): Promise<{ success: boolean; message: string }> => {
+    if (!adminAccount) {
+      return {
+        success: false,
+        message: 'No admin account has been created yet. Please use the single sign-up slot.',
+      };
+    }
+
+    const cleanVerify = verificationInput.trim().toLowerCase();
+    const cleanDigits = cleanVerify.replace(/\D/g, '');
     const cleanPass = newPassword.trim();
+
     if (cleanPass.length < 6) {
       return {
         success: false,
-        message: 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে (Minimum 6 characters).'
+        message: 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে (Minimum 6 characters).',
       };
     }
 
-    // Allowed verification keys for the owner:
-    // 1. Owner Phone: 9002413094
-    // 2. Owner Email: barkrishna23@gmail.com or sundarbon.vromon.official@gmail.com
-    // 3. Founder PIN / Founding Year: 2019
-    const isOwnerPhone = cleanVerify.includes('9002413094');
-    const isOwnerEmail = cleanVerify.includes('barkrishna23') || cleanVerify.includes('sundarbon');
-    const isOwnerPin = cleanVerify === '2019';
+    const matchesEmail = cleanVerify === adminAccount.email.toLowerCase();
+    const matchesUsername = cleanVerify === adminAccount.username.toLowerCase();
+    const matchesPhone =
+      Boolean(adminAccount.phone) &&
+      cleanDigits.length >= 6 &&
+      adminAccount.phone!.replace(/\D/g, '').includes(cleanDigits);
 
-    if (!isOwnerPhone && !isOwnerEmail && !isOwnerPin) {
+    if (!matchesEmail && !matchesUsername && !matchesPhone) {
       return {
         success: false,
-        message: 'ওনার ভেরিফিকেশন মেলেনি! ওনারের রেজিস্টার্ড ফোন (9002413094) অথবা ইমেল (barkrishna23@gmail.com) দিন।'
+        message: 'ভেরিফিকেশন মেলেনি! আপনার তৈরি করা অ্যাডমিন ইমেল, ইউজারনেম অথবা মোবাইল নম্বর দিন।',
       };
     }
 
-    const updated = { ...credentials, password: cleanPass };
-    setCredentials(updated);
-    localStorage.setItem('sv_admin_credentials', JSON.stringify(updated));
+    const newHash = await hashAdminPassword(cleanPass);
+    const updated: AdminAccountRecord = {
+      ...adminAccount,
+      passwordHash: newHash,
+    };
+    setAdminAccount(updated);
+    localStorage.setItem(ADMIN_ACCOUNT_STORAGE_KEY, JSON.stringify(updated));
+    if (isSupabaseConfigured) {
+      await updateSingleAdminAccountInSupabase({ passwordHash: newHash });
+    }
     return {
       success: true,
-      message: 'পাসওয়ার্ড সফলভাবে রিসেট হয়েছে! এখন নতুন পাসওয়ার্ড দিয়ে লগইন করুন।'
+      message: 'পাসওয়ার্ড সফলভাবে রিসেট হয়েছে! এখন নতুন পাসওয়ার্ড দিয়ে লগইন করুন।',
     };
   };
 
-  const adminLogin = (inputUser: string, inputPass: string) => {
-    const cleanUser = inputUser.trim().toLowerCase();
-    const cleanPass = inputPass.trim();
+  const adminLogin = async (
+    inputUserOrEmail: string,
+    inputPass: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    if (!adminAccount) {
+      return { success: false, error: 'no_account' };
+    }
 
-    const currentSavedUser = credentials.username.trim().toLowerCase();
+    const cleanInput = inputUserOrEmail.trim().toLowerCase();
     const isUserValid =
-      cleanUser === currentSavedUser ||
-      cleanUser === 'admin' ||
-      cleanUser === 'sundarban' ||
-      cleanUser === 'sundarban_owner' ||
-      cleanUser === 'barkrishna23';
+      cleanInput === adminAccount.username.trim().toLowerCase() ||
+      cleanInput === adminAccount.email.trim().toLowerCase();
 
     if (!isUserValid) {
       return { success: false, error: 'invalid_user' };
     }
 
-    const isPassValid =
-      cleanPass === credentials.password ||
-      cleanPass === 'sundarban2019' ||
-      cleanPass === 'admin123' ||
-      cleanPass === 'Sundarban@2026';
-
-    if (!isPassValid) {
+    const inputHash = await hashAdminPassword(inputPass);
+    if (inputHash !== adminAccount.passwordHash) {
       return { success: false, error: 'invalid_password' };
     }
 
@@ -226,8 +383,8 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return { success: true };
   };
 
-  const loginAdmin = (password: string, username?: string) => {
-    const res = adminLogin(username || 'admin', password);
+  const loginAdmin = async (password: string, username?: string): Promise<boolean> => {
+    const res = await adminLogin(username || adminAccount?.username || '', password);
     return res.success;
   };
 
@@ -359,7 +516,12 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         packages: TOUR_PACKAGES,
         isAdminLoggedIn,
         isAdminAuthenticated: isAdminLoggedIn,
-        currentUsername: credentials.username,
+        adminAccount,
+        hasAdminAccount: Boolean(adminAccount),
+        currentUsername: adminAccount?.username || '',
+        isLoadingEnquiries,
+        refreshEnquiries,
+        registerSingleAdminAccount,
         loginAdmin,
         adminLogin,
         logoutAdmin,

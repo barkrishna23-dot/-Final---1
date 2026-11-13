@@ -26,18 +26,26 @@ import {
   MessageCircle,
   Calendar,
   Plus,
+  UserPlus,
+  Search,
+  RefreshCw,
 } from 'lucide-react';
 import { getAvailableDates, saveAvailableDates, AvailableSafariDate } from '../data/bookingAvailability';
 
 export const AdminPage: React.FC = () => {
   const {
     isAdminAuthenticated,
+    hasAdminAccount,
+    adminAccount,
+    registerSingleAdminAccount,
     adminLogin,
     adminLogout,
     currentUsername,
     updateAdminCredentials,
     resetAdminPassword,
     enquiries,
+    isLoadingEnquiries,
+    refreshEnquiries,
     reviews,
     updateEnquiryStatus,
     deleteEnquiry,
@@ -46,6 +54,17 @@ export const AdminPage: React.FC = () => {
   } = useAdmin();
 
   const { isBengali } = useLanguage();
+
+  // Single-Slot Admin Sign-Up state (only available when !hasAdminAccount)
+  const [signupFullName, setSignupFullName] = useState('');
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPhone, setSignupPhone] = useState('');
+  const [signupUsername, setSignupUsername] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
+  const [signupShowPassword, setSignupShowPassword] = useState(false);
+  const [signupError, setSignupError] = useState<string | null>(null);
+  const [isCreatingAccount, setIsCreatingAccount] = useState(false);
 
   // Login form state
   const [userInput, setUserInput] = useState('');
@@ -66,18 +85,27 @@ export const AdminPage: React.FC = () => {
   const [forgotSuccess, setForgotSuccess] = useState<string | null>(null);
   const [isResetting, setIsResetting] = useState(false);
 
-  // Admin tabs & Settings state
+  // Admin tabs, filters & Settings state
   const [activeTab, setActiveTab] = useState<'enquiries' | 'reviews' | 'credentials' | 'dates'>('enquiries');
+  const [bookingSearch, setBookingSearch] = useState('');
+  const [bookingStatusFilter, setBookingStatusFilter] = useState<'all' | BookingEnquiry['status']>('all');
   const [datesList, setDatesList] = useState<AvailableSafariDate[]>(() => getAvailableDates());
   const [newDateInput, setNewDateInput] = useState('');
   const [newDateSeats, setNewDateSeats] = useState(8);
   const [newDateHighlight, setNewDateHighlight] = useState('');
   const [dateSuccessMsg, setDateSuccessMsg] = useState('');
-  const [newUsername, setNewUsername] = useState(currentUsername || 'admin');
+  const [dateErrorMsg, setDateErrorMsg] = useState('');
+  const [newUsername, setNewUsername] = useState(currentUsername || '');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [credentialSuccessMsg, setCredentialSuccessMsg] = useState('');
   const [credentialErrorMsg, setCredentialErrorMsg] = useState('');
+
+  useEffect(() => {
+    if (currentUsername && !newUsername) {
+      setNewUsername(currentUsername);
+    }
+  }, [currentUsername, newUsername]);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -93,15 +121,15 @@ export const AdminPage: React.FC = () => {
     setLoginError(null);
   };
 
-  // Draw Captcha on canvas whenever captchaExpected changes
+  // Draw Captcha on canvas whenever captchaExpected changes (only in login mode when single admin slot exists)
   useEffect(() => {
-    if (!isAdminAuthenticated && !captchaExpected) {
+    if (!isAdminAuthenticated && hasAdminAccount && !captchaExpected) {
       generateNewCaptcha();
     }
-  }, [isAdminAuthenticated, captchaExpected]);
+  }, [isAdminAuthenticated, hasAdminAccount, captchaExpected]);
 
   useEffect(() => {
-    if (!isAdminAuthenticated && captchaExpected && canvasRef.current) {
+    if (!isAdminAuthenticated && hasAdminAccount && captchaExpected && canvasRef.current) {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
@@ -161,7 +189,72 @@ export const AdminPage: React.FC = () => {
     }
   }, [isAdminAuthenticated, captchaExpected]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleCreateSingleAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSignupError(null);
+
+    if (hasAdminAccount) {
+      setSignupError(
+        isBengali
+          ? 'একমাত্র অ্যাডমিন স্লট ইতিমধ্যেই তৈরি হয়ে গেছে! নতুন অ্যাকাউন্ট তৈরি করা যাবে না।'
+          : 'Admin slot has already been claimed. No additional admin accounts are allowed.'
+      );
+      return;
+    }
+
+    if (!signupFullName.trim()) {
+      setSignupError(isBengali ? 'অনুগ্রহ করে আপনার সম্পূর্ণ নাম লিখুন।' : 'Please enter your full name.');
+      return;
+    }
+
+    if (!signupEmail.trim() || !signupEmail.includes('@')) {
+      setSignupError(isBengali ? 'অনুগ্রহ করে সঠিক ইমেল ঠিকানা দিন।' : 'Please enter a valid email address.');
+      return;
+    }
+
+    if (signupUsername.trim().length < 3) {
+      setSignupError(
+        isBengali ? 'ইউজারনেম কমপক্ষে ৩ অক্ষরের হতে হবে।' : 'Username must be at least 3 characters.'
+      );
+      return;
+    }
+
+    if (signupPassword.length < 6) {
+      setSignupError(
+        isBengali ? 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।' : 'Password must be at least 6 characters.'
+      );
+      return;
+    }
+
+    if (signupPassword !== signupConfirmPassword) {
+      setSignupError(isBengali ? 'পাসওয়ার্ড দুটি মেলেনি!' : 'Passwords do not match!');
+      return;
+    }
+
+    setIsCreatingAccount(true);
+    const res = await registerSingleAdminAccount({
+      fullName: signupFullName,
+      email: signupEmail,
+      phone: signupPhone,
+      username: signupUsername,
+      password: signupPassword,
+    });
+    setIsCreatingAccount(false);
+
+    if (!res.success) {
+      setSignupError(
+        isBengali
+          ? 'অ্যাডমিন স্লট ইতিমধ্যেই নেওয়া হয়ে গেছে! আর কোনো নতুন অ্যাডমিন অ্যাকাউন্ট তৈরি করা যাবে না।'
+          : 'Admin slot is already taken. Only one admin account is allowed.'
+      );
+      return;
+    }
+
+    setSignupPassword('');
+    setSignupConfirmPassword('');
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setLoginError(null);
@@ -192,7 +285,7 @@ export const AdminPage: React.FC = () => {
     // 2. Verify User ID & Password via adminLogin
     if (!userInput.trim()) {
       setLoginError(
-        isBengali ? 'অনুগ্রহ করে ইউজার আইডি দিন।' : 'Please enter your User ID.'
+        isBengali ? 'অনুগ্রহ করে ইউজার আইডি বা ইমেল দিন।' : 'Please enter your User ID or Email.'
       );
       setIsSubmitting(false);
       return;
@@ -206,13 +299,13 @@ export const AdminPage: React.FC = () => {
       return;
     }
 
-    const result = adminLogin(userInput, passInput);
+    const result = await adminLogin(userInput, passInput);
     if (!result.success) {
       if (result.error === 'invalid_user') {
         setLoginError(
           isBengali
-            ? 'ভুল ইউজার আইডি! শুধুমাত্র অনুমোদিত সাইট ওনার লগইন করতে পারবেন।'
-            : 'Invalid User ID! Only the authorized site owner can access.'
+            ? 'ভুল ইউজার আইডি বা ইমেল! শুধুমাত্র রেজিস্টার্ড অ্যাডমিন লগইন করতে পারবেন।'
+            : 'Invalid Username or Email! Only the registered admin can access.'
         );
       } else {
         setLoginError(
@@ -234,7 +327,7 @@ export const AdminPage: React.FC = () => {
     setIsSubmitting(false);
   };
 
-  const handleResetPassword = (e: React.FormEvent) => {
+  const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setForgotError(null);
     setForgotSuccess(null);
@@ -243,8 +336,8 @@ export const AdminPage: React.FC = () => {
     if (!cleanInput) {
       setForgotError(
         isBengali
-          ? 'অনুগ্রহ করে ওনারের রেজিস্টার্ড ফোন (9002413094) বা ইমেল দিন।'
-          : 'Please enter registered owner phone or email.'
+          ? 'অনুগ্রহ করে আপনার রেজিস্টার্ড অ্যাডমিন ইমেল, ইউজারনেম বা মোবাইল নম্বর দিন।'
+          : 'Please enter your registered admin email, username, or phone.'
       );
       return;
     }
@@ -266,7 +359,7 @@ export const AdminPage: React.FC = () => {
     }
 
     setIsResetting(true);
-    const result = resetAdminPassword(cleanInput, forgotNewPass);
+    const result = await resetAdminPassword(cleanInput, forgotNewPass);
     setIsResetting(false);
 
     if (result.success) {
@@ -281,7 +374,7 @@ export const AdminPage: React.FC = () => {
     }
   };
 
-  const handleUpdateCredentials = (e: React.FormEvent) => {
+  const handleUpdateCredentials = async (e: React.FormEvent) => {
     e.preventDefault();
     setCredentialSuccessMsg('');
     setCredentialErrorMsg('');
@@ -305,7 +398,7 @@ export const AdminPage: React.FC = () => {
       return;
     }
 
-    const ok = updateAdminCredentials(newUsername.trim(), newPassword);
+    const ok = await updateAdminCredentials(newUsername.trim(), newPassword);
     if (ok) {
       setCredentialSuccessMsg(
         isBengali
@@ -354,9 +447,200 @@ export const AdminPage: React.FC = () => {
     0
   );
   const pendingCount = enquiries.filter(e => e.status === 'pending').length;
+  const confirmedCount = enquiries.filter(e => e.status === 'confirmed').length;
 
-  // 1. Unauthenticated Login Screen
+  const filteredEnquiries = enquiries.filter(enq => {
+    const matchesStatus = bookingStatusFilter === 'all' || enq.status === bookingStatusFilter;
+    if (!matchesStatus) return false;
+    if (!bookingSearch.trim()) return true;
+    const q = bookingSearch.trim().toLowerCase();
+    return (
+      enq.id.toLowerCase().includes(q) ||
+      (enq.fullName || '').toLowerCase().includes(q) ||
+      (enq.phone || '').toLowerCase().includes(q) ||
+      (enq.email || '').toLowerCase().includes(q) ||
+      (enq.packageSlug || '').toLowerCase().includes(q)
+    );
+  });
+
+  // 1. Unauthenticated Screen: Either Single-Slot Admin Sign-Up (if empty) OR Admin Login (locked)
   if (!isAdminAuthenticated) {
+    if (!hasAdminAccount) {
+      return (
+        <div className="min-h-[82vh] flex items-center justify-center px-4 py-12">
+          <div className="w-full max-w-lg bg-white rounded-3xl p-7 sm:p-10 border-2 border-emerald-200 shadow-2xl space-y-6">
+            <div className="text-center space-y-2.5">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-300 text-amber-900 text-[11px] font-bold">
+                <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
+                <span>
+                  {isBengali
+                    ? '১টি মাত্র অ্যাডমিন স্লট খালি (একবার তৈরি হলে লক হয়ে যাবে)'
+                    : '1 Admin Slot Available • Locks Permanently After Setup'}
+                </span>
+              </div>
+
+              <div className="w-16 h-16 rounded-2xl bg-[#064E3B] text-[#F4B942] mx-auto flex items-center justify-center shadow-md border border-emerald-800">
+                <UserPlus className="w-8 h-8" />
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-bold font-heading text-slate-900">
+                {isBengali ? 'অ্যাডমিন অ্যাকাউন্ট তৈরি করুন' : 'Create Single Admin Account'}
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+                {isBengali
+                  ? 'এই ওয়েবসাইটের জন্য শুধুমাত্র ১টি অ্যাডমিন অ্যাকাউন্ট তৈরি করা যাবে। আপনার তথ্য দিয়ে সাইন আপ সম্পন্ন করলে ভবিষ্যতে আর কেউ নতুন অ্যাডমিন অ্যাকাউন্ট তৈরি করতে পারবে না।'
+                  : 'This website allows strictly ONE admin account. Once you create your admin details below, sign-up will be permanently closed for everyone else.'}
+              </p>
+            </div>
+
+            <form onSubmit={handleCreateSingleAdmin} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="space-y-1 text-left">
+                  <label className="block text-xs font-bold text-slate-700">
+                    {isBengali ? 'আপনার সম্পূর্ণ নাম *' : 'Full Name *'}
+                  </label>
+                  <input
+                    type="text"
+                    value={signupFullName}
+                    onChange={e => setSignupFullName(e.target.value)}
+                    placeholder={isBengali ? 'যেমন: শ্রীকৃষ্ণ বার' : 'e.g. Srikrishna Bar'}
+                    className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-2 focus:ring-[#064E3B]/20 outline-none"
+                    required
+                    autoFocus
+                  />
+                </div>
+
+                <div className="space-y-1 text-left">
+                  <label className="block text-xs font-bold text-slate-700">
+                    {isBengali ? 'মোবাইল নম্বর (ঐচ্ছিক)' : 'Phone Number (Optional)'}
+                  </label>
+                  <input
+                    type="tel"
+                    value={signupPhone}
+                    onChange={e => setSignupPhone(e.target.value)}
+                    placeholder="9002413094"
+                    className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-2 focus:ring-[#064E3B]/20 outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="space-y-1 text-left">
+                  <label className="block text-xs font-bold text-slate-700">
+                    {isBengali ? 'ইমেল ঠিকানা *' : 'Email Address *'}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <Mail className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="email"
+                      value={signupEmail}
+                      onChange={e => setSignupEmail(e.target.value)}
+                      placeholder="owner@example.com"
+                      className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-2 focus:ring-[#064E3B]/20 outline-none"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1 text-left">
+                  <label className="block text-xs font-bold text-slate-700">
+                    {isBengali ? 'অ্যাডমিন ইউজার আইডি *' : 'Admin Username *'}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <User className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="text"
+                      value={signupUsername}
+                      onChange={e => setSignupUsername(e.target.value)}
+                      placeholder={isBengali ? 'যেমন: admin_srikrishna' : 'e.g. admin_owner'}
+                      className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-2 focus:ring-[#064E3B]/20 outline-none"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="space-y-1 text-left">
+                  <label className="block text-xs font-bold text-slate-700">
+                    {isBengali ? 'পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর) *' : 'Password (Min 6 chars) *'}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                    <input
+                      type={signupShowPassword ? 'text' : 'password'}
+                      value={signupPassword}
+                      onChange={e => setSignupPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full pl-9 pr-9 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-2 focus:ring-[#064E3B]/20 outline-none"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setSignupShowPassword(!signupShowPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
+                      tabIndex={-1}
+                    >
+                      {signupShowPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-1 text-left">
+                  <label className="block text-xs font-bold text-slate-700">
+                    {isBengali ? 'পাসওয়ার্ড নিশ্চিত করুন *' : 'Confirm Password *'}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                    <input
+                      type={signupShowPassword ? 'text' : 'password'}
+                      value={signupConfirmPassword}
+                      onChange={e => setSignupConfirmPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-2 focus:ring-[#064E3B]/20 outline-none"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {signupError && (
+                <div className="p-3 rounded-xl bg-red-50 border border-red-200 flex items-start gap-2 text-left">
+                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                  <p className="text-xs text-red-700 font-semibold">{signupError}</p>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isCreatingAccount}
+                className="w-full py-3.5 rounded-xl bg-[#064E3B] hover:bg-[#08614a] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-75 cursor-pointer"
+              >
+                <ShieldCheck className="w-4 h-4 text-[#F4B942]" />
+                <span>
+                  {isCreatingAccount
+                    ? isBengali
+                      ? 'তৈরি হচ্ছে...'
+                      : 'Creating Admin Account...'
+                    : isBengali
+                    ? 'অ্যাডমিন অ্যাকাউন্ট তৈরি করুন (স্লট লক করুন)'
+                    : 'Create Admin Account & Lock Slot'}
+                </span>
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
     if (isForgotMode) {
       return (
         <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
@@ -390,17 +674,17 @@ export const AdminPage: React.FC = () => {
               </h2>
               <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
                 {isBengali
-                  ? 'আপনার রেজিস্টার্ড ওনার মোবাইল নম্বর (যেমন: 9002413094) অথবা ইমেল দিয়ে ভেরিফাই করে সরাসরি নতুন পাসওয়ার্ড সেট করুন।'
-                  : 'Verify with your registered owner mobile or email to securely set a new password.'}
+                  ? 'আপনার রেজিস্টার্ড অ্যাডমিন ইমেল, ইউজারনেম অথবা মোবাইল নম্বর দিয়ে ভেরিফাই করে সরাসরি নতুন পাসওয়ার্ড সেট করুন।'
+                  : 'Verify with your registered admin email, username, or phone to securely set a new password.'}
               </p>
             </div>
 
             {/* Reset Form */}
             <form onSubmit={handleResetPassword} className="space-y-4">
-              {/* Registered Phone or Email */}
+              {/* Registered Phone, Email or Username */}
               <div className="space-y-1.5 text-left">
                 <label className="block text-xs font-bold text-slate-700">
-                  {isBengali ? 'রেজিস্টার্ড ফোন নম্বর বা ইমেল' : 'Registered Phone or Email'}
+                  {isBengali ? 'রেজিস্টার্ড ইমেল, ইউজারনেম বা ফোন নম্বর' : 'Registered Email, Username, or Phone'}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -410,7 +694,7 @@ export const AdminPage: React.FC = () => {
                     type="text"
                     value={forgotRecoveryInput}
                     onChange={e => setForgotRecoveryInput(e.target.value)}
-                    placeholder={isBengali ? 'যেমন: 9002413094 বা barkrishna23@gmail.com' : 'e.g. 9002413094 or owner email'}
+                    placeholder={isBengali ? 'ইমেল, ইউজারনেম অথবা ফোন নম্বর' : 'Email, username, or phone'}
                     className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-2 focus:ring-[#064E3B]/20 outline-none transition-all text-slate-800 font-medium"
                     autoFocus
                     required
@@ -517,12 +801,25 @@ export const AdminPage: React.FC = () => {
         <div className="w-full max-w-md bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-2xl space-y-6">
           {/* Top Lock Badge */}
           <div className="text-center space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-900 text-[11px] font-bold">
+              <Lock className="w-3 h-3 text-emerald-700" />
+              <span>
+                {isBengali
+                  ? 'সিঙ্গেল অ্যাডমিন স্লট লকড (নতুন সাইন আপ বন্ধ)'
+                  : 'Single Admin Slot Claimed • Sign-Up Locked'}
+              </span>
+            </div>
             <div className="w-16 h-16 rounded-2xl bg-emerald-950 text-[#F4B942] mx-auto flex items-center justify-center shadow-md border border-emerald-800">
               <ShieldCheck className="w-8 h-8" />
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold font-heading text-slate-900">
-              {isBengali ? 'ওনার সিকিউরিটি লগইন' : 'Owner Admin Login'}
+              {isBengali ? 'অ্যাডমিন প্যানেল লগইন' : 'Admin Panel Login'}
             </h2>
+            <p className="text-xs text-slate-500">
+              {isBengali
+                ? 'এই ওয়েবসাইটের একমাত্র অনুমোদিত অ্যাডমিন অ্যাকাউন্ট দিয়ে লগইন করুন।'
+                : 'Log in with the single authorized admin account.'}
+            </p>
           </div>
 
           {/* Form */}
@@ -674,31 +971,42 @@ export const AdminPage: React.FC = () => {
       {/* Admin Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex flex-wrap items-center gap-2 mb-1">
             <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 uppercase tracking-widest bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
               <ShieldCheck className="w-3 h-3 text-emerald-600" />
-              <span>OWNER SECURED CONSOLE</span>
+              <span>SINGLE-ADMIN LOCKED</span>
             </span>
-            <span className="text-xs text-slate-500 font-medium">
-              (Logged in as: <strong className="text-emerald-900">{currentUsername || 'admin'}</strong>)
+            <span className="text-xs text-slate-600 font-medium">
+              {adminAccount?.fullName ? `${adminAccount.fullName} ` : ''}
+              (<strong className="text-emerald-900">@{currentUsername || 'admin'}</strong>
+              {adminAccount?.email ? ` • ${adminAccount.email}` : ''})
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold font-heading text-[#064E3B]">
-            {isBengali ? 'সুন্দরবন ভ্রমণ — অ্যাডমিন কন্ট্রোল' : 'Sundarban Vromon Admin'}
+            {isBengali ? 'সুন্দরবন ভ্রমণ — অ্যাডমিন ও বুকিং প্যানেল' : 'Sundarban Vromon — Admin Bookings Panel'}
           </h1>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            type="button"
+            onClick={() => void refreshEnquiries()}
+            disabled={isLoadingEnquiries}
+            className="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-60"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoadingEnquiries ? 'animate-spin' : ''}`} />
+            <span>{isBengali ? 'রিফ্রেশ' : 'Refresh'}</span>
+          </button>
           <button
             onClick={handleExportCSV}
-            className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export CSV</span>
           </button>
           <button
             onClick={adminLogout}
-            className="px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            className="px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <Unlock className="w-3.5 h-3.5" />
             <span>Logout</span>
@@ -709,7 +1017,7 @@ export const AdminPage: React.FC = () => {
       {/* Stats Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-          <span className="text-xs text-slate-400 font-semibold block">Total Enquiries</span>
+          <span className="text-xs text-slate-400 font-semibold block">Total Bookings</span>
           <div className="text-2xl font-black text-slate-900">{enquiries.length}</div>
         </div>
 
@@ -719,15 +1027,15 @@ export const AdminPage: React.FC = () => {
         </div>
 
         <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-          <span className="text-xs text-emerald-600 font-semibold block">Total Pipeline Value</span>
-          <div className="text-2xl font-black text-emerald-800">
-            ₹{totalRevenue.toLocaleString('en-IN')}
-          </div>
+          <span className="text-xs text-emerald-600 font-semibold block">Confirmed Bookings</span>
+          <div className="text-2xl font-black text-emerald-800">{confirmedCount}</div>
         </div>
 
         <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-          <span className="text-xs text-purple-600 font-semibold block">Total Reviews</span>
-          <div className="text-2xl font-black text-purple-900">{reviews.length}</div>
+          <span className="text-xs text-purple-600 font-semibold block">Total Pipeline Value</span>
+          <div className="text-2xl font-black text-purple-900">
+            ₹{totalRevenue.toLocaleString('en-IN')}
+          </div>
         </div>
       </div>
 
@@ -779,12 +1087,44 @@ export const AdminPage: React.FC = () => {
 
       {/* 1. Enquiries Tab */}
       {activeTab === 'enquiries' && (
-        <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xs">
+        <div className="space-y-4">
+          {/* Search & Status Filter Bar */}
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-2xs">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={bookingSearch}
+                onChange={e => setBookingSearch(e.target.value)}
+                placeholder={isBengali ? 'নাম, ফোন, বুকিং আইডি বা প্যাকেজ দিয়ে খুঁজুন...' : 'Search by guest name, phone, booking ID, or package...'}
+                className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-2 focus:ring-emerald-100 outline-none"
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-1.5">
+              {(['all', 'pending', 'contacted', 'confirmed', 'cancelled'] as const).map(statusKey => (
+                <button
+                  key={statusKey}
+                  type="button"
+                  onClick={() => setBookingStatusFilter(statusKey)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer ${
+                    bookingStatusFilter === statusKey
+                      ? 'bg-[#064E3B] text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {statusKey}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 text-slate-500 uppercase font-semibold border-b border-slate-200">
                 <tr>
-                  <th className="p-4">Guest</th>
+                  <th className="p-4">Guest & Booking ID</th>
                   <th className="p-4">Contact</th>
                   <th className="p-4">Package</th>
                   <th className="p-4">Date & Pax</th>
@@ -794,7 +1134,13 @@ export const AdminPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {enquiries.map(enq => {
+                {filteredEnquiries.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="p-8 text-center text-slate-500 text-sm">
+                      {isBengali ? 'কোনো বুকিং পাওয়া যায়নি।' : 'No matching bookings found.'}
+                    </td>
+                  </tr>
+                ) : filteredEnquiries.map(enq => {
                   const guestName = (enq as any).guestName || enq.fullName || 'Guest';
                   const guestPhone = (enq as any).guestPhone || enq.phone || 'N/A';
                   const guestEmail = (enq as any).guestEmail || enq.email || '';
@@ -807,6 +1153,9 @@ export const AdminPage: React.FC = () => {
                     <tr key={enq.id} className="hover:bg-slate-50/70">
                       <td className="p-4">
                         <strong className="text-slate-900 block font-heading">{guestName}</strong>
+                        <span className="text-[11px] font-mono font-semibold text-emerald-800 block">
+                          {enq.id}
+                        </span>
                         <span className="text-[11px] text-slate-400">
                           {new Date(enq.createdAt).toLocaleDateString()}
                         </span>
@@ -879,10 +1228,13 @@ export const AdminPage: React.FC = () => {
                               ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
                               : enq.status === 'cancelled'
                               ? 'bg-red-50 text-red-800 border-red-300'
+                              : enq.status === 'contacted'
+                              ? 'bg-sky-50 text-sky-800 border-sky-300'
                               : 'bg-amber-50 text-amber-800 border-amber-300'
                           }`}
                         >
                           <option value="pending">Pending</option>
+                          <option value="contacted">Contacted</option>
                           <option value="confirmed">Confirmed</option>
                           <option value="cancelled">Cancelled</option>
                         </select>
@@ -902,6 +1254,7 @@ export const AdminPage: React.FC = () => {
                 })}
               </tbody>
             </table>
+          </div>
           </div>
         </div>
       )}
@@ -1062,9 +1415,10 @@ export const AdminPage: React.FC = () => {
             <form
               onSubmit={e => {
                 e.preventDefault();
+                setDateErrorMsg('');
                 if (!newDateInput) return;
                 if (datesList.some(d => d.date === newDateInput)) {
-                  alert(isBengali ? 'এই তারিখটি ইতিমধ্যে যুক্ত রয়েছে।' : 'This date already exists.');
+                  setDateErrorMsg(isBengali ? 'এই তারিখটি ইতিমধ্যে যুক্ত রয়েছে।' : 'This date already exists.');
                   return;
                 }
                 const dateObj = new Date(newDateInput + 'T00:00:00');
@@ -1157,6 +1511,13 @@ export const AdminPage: React.FC = () => {
                 </div>
               </div>
 
+              {dateErrorMsg && (
+                <div className="p-2 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 font-semibold flex items-center gap-1.5">
+                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                  <span>{dateErrorMsg}</span>
+                </div>
+              )}
+
               {dateSuccessMsg && (
                 <div className="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-xs text-emerald-800 font-semibold flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
@@ -1208,11 +1569,9 @@ export const AdminPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => {
-                            if (confirm(isBengali ? `${item.date} তারিখটি এভেলেবেল তালিকা থেকে মুছে ফেলতে চান?` : `Remove ${item.date}?`)) {
-                              const updated = datesList.filter(d => d.date !== item.date);
-                              setDatesList(updated);
-                              saveAvailableDates(updated);
-                            }
+                            const updated = datesList.filter(d => d.date !== item.date);
+                            setDatesList(updated);
+                            saveAvailableDates(updated);
                           }}
                           className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-800 transition-colors"
                           title="Remove Date"

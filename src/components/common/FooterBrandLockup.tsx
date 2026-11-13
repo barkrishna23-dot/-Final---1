@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Phone, MessageCircle, Mail, MapPin, ShieldCheck, Heart, ExternalLink, Instagram, Facebook, Youtube, PhoneCall, X, Quote, Lock, FileText, CheckCircle2, Shield } from 'lucide-react';
 import { BrandLogo } from './BrandLogo';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAdmin } from '../../context/AdminContext';
 import { BRAND_INFO } from '../../data/brandInfo';
 import founderOwnerPhoto from '../../assets/images/founder_optimized.jpg';
 
@@ -11,6 +12,7 @@ interface FooterProps {
 
 export const FooterBrandLockup: React.FC<FooterProps> = ({ onNavigate }) => {
   const { t, language, isBengali } = useLanguage();
+  const { hasAdminAccount, isAdminAuthenticated } = useAdmin();
   const [showFounderModal, setShowFounderModal] = useState(false);
   const [policyModal, setPolicyModal] = useState<'privacy' | 'terms' | null>(null);
   const currentYear = new Date().getFullYear();
@@ -303,7 +305,7 @@ export const FooterBrandLockup: React.FC<FooterProps> = ({ onNavigate }) => {
             © {currentYear} <strong>Sundarban Vromon (সুন্দরবন ভ্রমণ)</strong>. {t.common.allRightsReserved}
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-6">
             <button
               onClick={() => setPolicyModal('privacy')}
               className="hover:text-amber-300 transition-colors cursor-pointer text-slate-300 font-medium"
@@ -318,6 +320,39 @@ export const FooterBrandLockup: React.FC<FooterProps> = ({ onNavigate }) => {
             </button>
             <button onClick={() => onNavigate('contact')} className="hover:text-white transition-colors cursor-pointer text-slate-400">
               {isBengali ? 'যোগাযোগ' : 'Contact Us'}
+            </button>
+            <button
+              id="footer-admin-link"
+              onClick={() => onNavigate('admin')}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#0A2F24] hover:bg-[#134435] border border-emerald-800/70 hover:border-amber-400/60 text-amber-300 hover:text-amber-200 transition-all cursor-pointer font-semibold"
+              title={
+                isAdminAuthenticated
+                  ? isBengali
+                    ? 'অ্যাডমিন প্যানেল খুলুন'
+                    : 'Open Admin Panel'
+                  : hasAdminAccount
+                  ? isBengali
+                    ? 'অ্যাডমিন লগইন করুন'
+                    : 'Admin Login'
+                  : isBengali
+                  ? 'একমাত্র অ্যাডমিন অ্যাকাউন্ট তৈরি করুন বা লগইন করুন'
+                  : 'Create Single Admin Account / Login'
+              }
+            >
+              <Lock className="w-3 h-3 text-amber-400" />
+              <span>
+                {isAdminAuthenticated
+                  ? isBengali
+                    ? 'অ্যাডমিন প্যানেল'
+                    : 'Admin Panel'
+                  : hasAdminAccount
+                  ? isBengali
+                    ? 'অ্যাডমিন লগইন'
+                    : 'Admin Login'
+                  : isBengali
+                  ? 'অ্যাডমিন সাইন আপ / লগইন'
+                  : 'Admin Sign Up / Login'}
+              </span>
             </button>
           </div>
         </div>
