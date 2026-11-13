@@ -380,7 +380,8 @@ export async function createSingleAdminAccountInSupabase(
 }
 
 export async function updateSingleAdminAccountInSupabase(
-  updates: Partial<Pick<AdminAccountRecord, 'username' | 'passwordHash' | 'fullName' | 'email' | 'phone'>>
+  updates: Partial<Pick<AdminAccountRecord, 'username' | 'passwordHash' | 'fullName' | 'email' | 'phone'>>,
+  fullRecord?: AdminAccountRecord
 ): Promise<{ success: boolean; error?: string }> {
   if (!isSupabaseConfigured) {
     return { success: false, error: 'Supabase URL not configured.' };
@@ -394,14 +395,24 @@ export async function updateSingleAdminAccountInSupabase(
     if (updates.email !== undefined) payload.email = updates.email;
     if (updates.phone !== undefined) payload.phone = updates.phone || null;
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from(ADMIN_ACCOUNT_TABLE)
       .update(payload)
-      .eq('id', 1);
+      .eq('id', 1)
+      .select('id');
 
     if (error) {
       return { success: false, error: error.message };
     }
+
+    // If row id=1 did not exist remotely yet, insert the full record now
+    if ((!data || data.length === 0) && fullRecord) {
+      const insertRes = await createSingleAdminAccountInSupabase(fullRecord);
+      if (!insertRes.success) {
+        return { success: false, error: insertRes.error };
+      }
+    }
+
     return { success: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

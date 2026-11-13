@@ -32,8 +32,11 @@ import {
   Copy,
   Check,
   Tag,
+  Printer,
 } from 'lucide-react';
 import { getAvailableDates, saveAvailableDates, AvailableSafariDate } from '../data/bookingAvailability';
+import { TOUR_PACKAGES } from '../data/packages';
+import { PrintableBookingBill } from '../components/booking/PrintableBookingBill';
 
 export const AdminPage: React.FC = () => {
   const {
@@ -95,23 +98,49 @@ export const AdminPage: React.FC = () => {
   const [bookingSearch, setBookingSearch] = useState('');
   const [bookingStatusFilter, setBookingStatusFilter] = useState<'all' | BookingEnquiry['status']>('all');
   const [copiedRefCode, setCopiedRefCode] = useState<string | null>(null);
+  const [printingEnquiry, setPrintingEnquiry] = useState<BookingEnquiry | null>(null);
   const [datesList, setDatesList] = useState<AvailableSafariDate[]>(() => getAvailableDates());
   const [newDateInput, setNewDateInput] = useState('');
   const [newDateSeats, setNewDateSeats] = useState(8);
   const [newDateHighlight, setNewDateHighlight] = useState('');
   const [dateSuccessMsg, setDateSuccessMsg] = useState('');
   const [dateErrorMsg, setDateErrorMsg] = useState('');
+  const [editFullName, setEditFullName] = useState(adminAccount?.fullName || '');
+  const [editEmail, setEditEmail] = useState(adminAccount?.email || '');
+  const [editPhone, setEditPhone] = useState(adminAccount?.phone || '');
   const [newUsername, setNewUsername] = useState(currentUsername || '');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showEditPassword, setShowEditPassword] = useState(false);
+  const [isSavingCredentials, setIsSavingCredentials] = useState(false);
   const [credentialSuccessMsg, setCredentialSuccessMsg] = useState('');
   const [credentialErrorMsg, setCredentialErrorMsg] = useState('');
 
   useEffect(() => {
-    if (currentUsername && !newUsername) {
+    if (adminAccount) {
+      setEditFullName(prev => prev || adminAccount.fullName || '');
+      setEditEmail(prev => prev || adminAccount.email || '');
+      setEditPhone(prev => prev || adminAccount.phone || '');
+      setNewUsername(prev => prev || adminAccount.username || '');
+    } else if (currentUsername && !newUsername) {
       setNewUsername(currentUsername);
     }
-  }, [currentUsername, newUsername]);
+  }, [adminAccount, currentUsername, newUsername]);
+
+  useEffect(() => {
+    if (!printingEnquiry) return;
+    const printTimer = window.setTimeout(() => {
+      window.print();
+    }, 90);
+    const handleAfterPrint = () => {
+      setPrintingEnquiry(null);
+    };
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => {
+      window.clearTimeout(printTimer);
+      window.removeEventListener('afterprint', handleAfterPrint);
+    };
+  }, [printingEnquiry]);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -393,37 +422,64 @@ export const AdminPage: React.FC = () => {
     setCredentialSuccessMsg('');
     setCredentialErrorMsg('');
 
+    if (!editFullName.trim()) {
+      setCredentialErrorMsg(isBengali ? 'নাম (Name) খালি রাখা যাবে না।' : 'Name cannot be empty.');
+      return;
+    }
+    if (!editEmail.trim() || !editEmail.includes('@')) {
+      setCredentialErrorMsg(isBengali ? 'সঠিক ইমেল আইডি (Email ID) লিখুন।' : 'Please enter a valid Email ID.');
+      return;
+    }
     if (!newUsername.trim()) {
-      setCredentialErrorMsg(isBengali ? 'ইউজার আইডি খালি রাখা যাবে না।' : 'User ID cannot be empty.');
+      setCredentialErrorMsg(isBengali ? 'নতুন ইউজার আইডি খালি রাখা যাবে না।' : 'New User ID cannot be empty.');
       return;
     }
-    if (newPassword.length < 6) {
-      setCredentialErrorMsg(
-        isBengali
-          ? 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।'
-          : 'Password must be at least 6 characters long.'
-      );
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setCredentialErrorMsg(
-        isBengali ? 'দুটো পাসওয়ার্ড মেলেনি।' : 'Passwords do not match.'
-      );
-      return;
+    if (newPassword || confirmPassword) {
+      if (newPassword.length < 6) {
+        setCredentialErrorMsg(
+          isBengali
+            ? 'নতুন পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।'
+            : 'New password must be at least 6 characters long.'
+        );
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        setCredentialErrorMsg(
+          isBengali ? 'দুটো পাসওয়ার্ড মেলেনি।' : 'Passwords do not match.'
+        );
+        return;
+      }
     }
 
-    const ok = await updateAdminCredentials(newUsername.trim(), newPassword);
-    if (ok) {
-      setCredentialSuccessMsg(
-        isBengali
-          ? 'ইউজার আইডি ও পাসওয়ার্ড সফলভাবে আপডেট করা হয়েছে!'
-          : 'User ID and Password successfully updated!'
-      );
+    setIsSavingCredentials(true);
+    const res = await updateAdminCredentials({
+      fullName: editFullName,
+      email: editEmail,
+      phone: editPhone,
+      username: newUsername,
+      newPassword: newPassword || undefined,
+    });
+    setIsSavingCredentials(false);
+
+    if (res.success) {
+      if (res.syncedToCloud) {
+        setCredentialSuccessMsg(
+          isBengali
+            ? 'সকল তথ্য, ইউজার আইডি ও পাসওয়ার্ড সফলভাবে ডাটাবেসে সংরক্ষিত হয়েছে! এখন যেকোনো Chrome বা ডিভাইস থেকে এই নতুন আইডি ও পাসওয়ার্ড দিয়ে লগইন করতে পারবেন।'
+            : 'All details, User ID & Password saved to database! You can now log in from any Chrome browser or device.'
+        );
+      } else {
+        setCredentialSuccessMsg(
+          isBengali
+            ? 'লোকাল ব্রাউজারে আপডেট হয়েছে। তবে ক্লাউড সিঙ্ক ব্যর্থ হয়েছে: ' + (res.error || '')
+            : 'Updated locally, but cloud sync failed: ' + (res.error || '')
+        );
+      }
       setNewPassword('');
       setConfirmPassword('');
     } else {
       setCredentialErrorMsg(
-        isBengali ? 'আপডেট করা সম্ভব হয়নি।' : 'Failed to update credentials.'
+        isBengali ? 'আপডেট করা সম্ভব হয়নি: ' + (res.error || '') : 'Failed to update credentials: ' + (res.error || '')
       );
     }
   };
@@ -1349,13 +1405,26 @@ export const AdminPage: React.FC = () => {
                       </td>
 
                       <td className="p-4 text-right">
-                        <button
-                          onClick={() => deleteEnquiry(enq.id)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                          title="Delete Enquiry"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="inline-flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setPrintingEnquiry(enq)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#064E3B] border border-emerald-200 font-bold text-[11px] transition-colors cursor-pointer"
+                            title={isBengali ? 'বিল প্রিন্ট করুন' : 'Print Bill'}
+                          >
+                            <Printer className="w-3.5 h-3.5" />
+                            <span>{isBengali ? 'প্রিন্ট' : 'Print'}</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => deleteEnquiry(enq.id)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                            title="Delete Enquiry"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -1416,59 +1485,114 @@ export const AdminPage: React.FC = () => {
 
       {/* 3. Owner Credentials Setting Tab */}
       {activeTab === 'credentials' && (
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 max-w-xl space-y-6 shadow-xs">
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 max-w-2xl space-y-6 shadow-xs">
           <div className="space-y-1">
             <h3 className="text-lg font-bold font-heading text-slate-900 flex items-center gap-2">
               <Shield className="w-5 h-5 text-[#064E3B]" />
-              <span>{isBengali ? 'ওনার আইডি ও পাসওয়ার্ড পরিবর্তন' : 'Update Owner Login Credentials'}</span>
+              <span>{isBengali ? 'ওনার প্রোফাইল ও লগইন ক্রিডেনশিয়াল সেটিংস' : 'Owner Profile & Login Credentials'}</span>
             </h3>
             <p className="text-xs text-slate-500">
               {isBengali
-                ? 'আপনার ওয়েবসাইটের অ্যাডমিন প্যানেলে প্রবেশের ইউজার আইডি এবং পাসওয়ার্ড এখান থেকে পরিবর্তন করুন।'
-                : 'Manage and update the master login ID and password for this website.'}
+                ? 'এখান থেকে অ্যাডমিনের নাম, ইমেল, ফোন নম্বর, ইউজার আইডি এবং পাসওয়ার্ড পরিবর্তন করুন। সেভ করার সাথে সাথে ডাটাবেসে সংরক্ষিত হবে এবং যেকোনো Chrome বা ডিভাইস থেকে নতুন তথ্য দিয়ে খোলা যাবে।'
+                : 'View and update Admin Name, Email ID, Phone Number, User ID, and Password. Saved directly to database so any Chrome browser can log in with the updated credentials.'}
             </p>
           </div>
 
           <form onSubmit={handleUpdateCredentials} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-slate-700">
-                {isBengali ? 'নতুন ইউজার আইডি (New User ID)' : 'New User ID'}
-              </label>
-              <input
-                type="text"
-                value={newUsername}
-                onChange={e => setNewUsername(e.target.value)}
-                className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-1 focus:ring-[#064E3B]"
-                required
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700">
+                  {isBengali ? 'নাম (Name) *' : 'Name *'}
+                </label>
+                <input
+                  type="text"
+                  value={editFullName}
+                  onChange={e => setEditFullName(e.target.value)}
+                  placeholder={isBengali ? 'যেমন: Srikrishna Bar' : 'e.g. Srikrishna Bar'}
+                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-1 focus:ring-[#064E3B] outline-none"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700">
+                  {isBengali ? 'ফোন নম্বর (Ph Number)' : 'Ph Number'}
+                </label>
+                <input
+                  type="tel"
+                  value={editPhone}
+                  onChange={e => setEditPhone(e.target.value)}
+                  placeholder="9002413094"
+                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-1 focus:ring-[#064E3B] outline-none"
+                />
+              </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-slate-700">
-                {isBengali ? 'নতুন পাসওয়ার্ড (New Password)' : 'New Password (Min 6 chars)'}
-              </label>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={e => setNewPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-1 focus:ring-[#064E3B]"
-                required
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700">
+                  {isBengali ? 'ইমেল আইডি (Email ID) *' : 'Email ID *'}
+                </label>
+                <input
+                  type="email"
+                  value={editEmail}
+                  onChange={e => setEditEmail(e.target.value)}
+                  placeholder="owner@example.com"
+                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-1 focus:ring-[#064E3B] outline-none"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700">
+                  {isBengali ? 'নতুন ইউজার আইডি (New User ID) *' : 'New User ID *'}
+                </label>
+                <input
+                  type="text"
+                  value={newUsername}
+                  onChange={e => setNewUsername(e.target.value)}
+                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-1 focus:ring-[#064E3B] outline-none"
+                  required
+                />
+              </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-slate-700">
-                {isBengali ? 'পাসওয়ার্ড নিশ্চিত করুন (Confirm Password)' : 'Confirm Password'}
-              </label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={e => setConfirmPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-1 focus:ring-[#064E3B]"
-                required
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700">
+                  {isBengali ? 'নতুন পাসওয়ার্ড (New Password)' : 'New Password (Min 6 chars)'}
+                </label>
+                <div className="relative">
+                  <input
+                    type={showEditPassword ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    placeholder={isBengali ? 'পরিবর্তন করতে চাইলে লিখুন' : 'Leave blank to keep current'}
+                    className="w-full px-4 pr-10 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-1 focus:ring-[#064E3B] outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowEditPassword(!showEditPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
+                    tabIndex={-1}
+                  >
+                    {showEditPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700">
+                  {isBengali ? 'পাসওয়ার্ড নিশ্চিত করুন (Confirm Password)' : 'Confirm Password'}
+                </label>
+                <input
+                  type={showEditPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  placeholder={isBengali ? 'পুনরায় নতুন পাসওয়ার্ড লিখুন' : 'Re-enter new password'}
+                  className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-[#064E3B] focus:ring-1 focus:ring-[#064E3B] outline-none"
+                />
+              </div>
             </div>
 
             {credentialSuccessMsg && (
@@ -1487,9 +1611,16 @@ export const AdminPage: React.FC = () => {
 
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-[#064E3B] hover:bg-[#08614a] text-white font-bold text-xs sm:text-sm shadow-sm transition-all"
+              disabled={isSavingCredentials}
+              className="px-6 py-2.5 rounded-xl bg-[#064E3B] hover:bg-[#08614a] text-white font-bold text-xs sm:text-sm shadow-sm transition-all disabled:opacity-70 cursor-pointer"
             >
-              {isBengali ? 'সংরক্ষণ করুন' : 'Save Changes'}
+              {isSavingCredentials
+                ? isBengali
+                  ? 'সংরক্ষণ হচ্ছে...'
+                  : 'Saving Changes...'
+                : isBengali
+                ? 'সকল পরিবর্তন সংরক্ষণ করুন'
+                : 'Save All Changes'}
             </button>
           </form>
         </div>
@@ -1695,6 +1826,66 @@ export const AdminPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Single 1-Page A4 Printable Bill Portal for Selected Booking */}
+      {printingEnquiry && (() => {
+        const pkg = TOUR_PACKAGES.find(p => p.slug === printingEnquiry.packageSlug) || TOUR_PACKAGES[0];
+        const baseRate = pkg.basePrice || 1999;
+        const isDayTour = (pkg.durationNights || 0) === 0;
+        let roomModifier = 0;
+        if (!isDayTour) {
+          if (printingEnquiry.roomType === 'luxury-suite') roomModifier = 1200;
+          else if (printingEnquiry.roomType === 'non-ac') roomModifier = -500;
+        }
+        const perAdultRate = Math.max(baseRate + roomModifier, 1000);
+        const perChildRate = Math.round(baseRate * 0.5);
+        const adultsCount = Math.max(Number(printingEnquiry.adultsCount || 1), 1);
+        const childrenCount = Math.max(Number(printingEnquiry.childrenCount || 0), 0);
+        const addonAmount = printingEnquiry.cameramanAddon ? 2500 : 0;
+        const discountAmount = Number(printingEnquiry.discountAmount || 0);
+        const subtotal = adultsCount * perAdultRate + childrenCount * perChildRate + addonAmount;
+        const totalAmount =
+          printingEnquiry.calculatedEstimatedCost && printingEnquiry.calculatedEstimatedCost > 0
+            ? printingEnquiry.calculatedEstimatedCost
+            : Math.max(subtotal - discountAmount, 0);
+        const bookingDateFormatted = new Date(printingEnquiry.createdAt).toLocaleDateString(
+          isBengali ? 'bn-IN' : 'en-IN',
+          { day: '2-digit', month: 'short', year: 'numeric' }
+        );
+
+        return (
+          <PrintableBookingBill
+            enquiryId={printingEnquiry.id}
+            fullName={printingEnquiry.fullName}
+            phone={printingEnquiry.phone}
+            customerWhatsapp={printingEnquiry.whatsapp || printingEnquiry.phone}
+            email={printingEnquiry.email}
+            packageTitle={isBengali ? pkg.title.bn : pkg.title.en}
+            preferredDate={printingEnquiry.preferredDate}
+            bookingDate={bookingDateFormatted}
+            pickupPoint={printingEnquiry.pickupPoint}
+            adultsCount={adultsCount}
+            childrenCount={childrenCount}
+            perAdultRate={perAdultRate}
+            perChildRate={perChildRate}
+            addonAmount={addonAmount}
+            referralCodeUsed={printingEnquiry.referralCodeUsed}
+            discountAmount={discountAmount}
+            totalAmount={totalAmount}
+            paidAmount={0}
+            paymentMethod={
+              printingEnquiry.status === 'confirmed'
+                ? isBengali
+                  ? 'বুকিং কনফার্ম (ভ্রমণের সময় প্রদেয়)'
+                  : 'Confirmed Booking (Pay at Tour)'
+                : isBengali
+                ? 'বুকিং আবেদন / বিল কপি'
+                : 'Booking Invoice Copy'
+            }
+            isBengali={isBengali}
+          />
+        );
+      })()}
     </div>
   );
 };

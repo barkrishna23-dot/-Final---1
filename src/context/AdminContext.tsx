@@ -76,7 +76,13 @@ interface AdminContextType {
   adminLogin: (username: string, pass: string) => Promise<{ success: boolean; error?: string }>;
   logoutAdmin: () => void;
   adminLogout: () => void;
-  updateAdminCredentials: (newUsername: string, newPassword: string) => Promise<boolean>;
+  updateAdminCredentials: (updates: {
+    fullName: string;
+    email: string;
+    phone?: string;
+    username: string;
+    newPassword?: string;
+  }) => Promise<{ success: boolean; syncedToCloud: boolean; error?: string }>;
   resetAdminPassword: (verificationInput: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
   addEnquiry: (enquiry: Omit<BookingEnquiry, 'id' | 'createdAt' | 'status'>) => Promise<string>;
   updateEnquiryStatus: (id: string, status: BookingEnquiry['status']) => void;
@@ -301,30 +307,78 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return { success: true };
   };
 
-  const updateAdminCredentials = async (newUsername: string, newPassword: string): Promise<boolean> => {
-    if (!adminAccount || !newUsername.trim() || !newPassword.trim()) return false;
-    const newHash = await hashAdminPassword(newPassword);
+  const updateAdminCredentials = async (updates: {
+    fullName: string;
+    email: string;
+    phone?: string;
+    username: string;
+    newPassword?: string;
+  }): Promise<{ success: boolean; syncedToCloud: boolean; error?: string }> => {
+    if (!adminAccount) {
+      return { success: false, syncedToCloud: false, error: 'No admin account found.' };
+    }
+
+    const cleanName = updates.fullName.trim();
+    const cleanEmail = updates.email.trim().toLowerCase();
+    const cleanPhone = updates.phone?.trim() || undefined;
+    const cleanUsername = updates.username.trim();
+    const cleanPassword = updates.newPassword?.trim() || '';
+
+    if (!cleanName || !cleanEmail || !cleanUsername) {
+      return { success: false, syncedToCloud: false, error: 'Required fields cannot be empty.' };
+    }
+
+    const nextPasswordHash = cleanPassword
+      ? await hashAdminPassword(cleanPassword)
+      : adminAccount.passwordHash;
+
     const updated: AdminAccountRecord = {
       ...adminAccount,
-      username: newUsername.trim(),
-      passwordHash: newHash,
+      fullName: cleanName,
+      email: cleanEmail,
+      phone: cleanPhone,
+      username: cleanUsername,
+      passwordHash: nextPasswordHash,
     };
+
+    let syncedToCloud = false;
+    let cloudError: string | undefined;
+
+    if (isSupabaseConfigured) {
+      const remoteRes = await updateSingleAdminAccountInSupabase(
+        {
+          fullName: updated.fullName,
+          email: updated.email,
+          phone: updated.phone,
+          username: updated.username,
+          passwordHash: updated.passwordHash,
+        },
+        updated
+      );
+      syncedToCloud = remoteRes.success;
+      cloudError = remoteRes.error;
+    }
+
     setAdminAccount(updated);
     localStorage.setItem(ADMIN_ACCOUNT_STORAGE_KEY, JSON.stringify(updated));
-    if (isSupabaseConfigured) {
-      await updateSingleAdminAccountInSupabase({
-        username: updated.username,
-        passwordHash: updated.passwordHash,
-      });
-    }
-    return true;
+    return { success: true, syncedToCloud, error: cloudError };
   };
 
   const resetAdminPassword = async (
     verificationInput: string,
     newPassword: string
   ): Promise<{ success: boolean; message: string }> => {
-    if (!adminAccount) {
+    let activeAccount = adminAccount;
+    if (isSupabaseConfigured) {
+      const remote = await fetchSingleAdminAccount();
+      if (remote.account) {
+        activeAccount = remote.account;
+        setAdminAccount(remote.account);
+        localStorage.setItem(ADMIN_ACCOUNT_STORAGE_KEY, JSON.stringify(remote.account));
+      }
+    }
+
+    if (!activeAccount) {
       return {
         success: false,
         message: 'No admin account has been created yet. Please use the single sign-up slot.',
@@ -342,12 +396,12 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       };
     }
 
-    const matchesEmail = cleanVerify === adminAccount.email.toLowerCase();
-    const matchesUsername = cleanVerify === adminAccount.username.toLowerCase();
+    const matchesEmail = cleanVerify === activeAccount.email.toLowerCase();
+    const matchesUsername = cleanVerify === activeAccount.username.toLowerCase();
     const matchesPhone =
-      Boolean(adminAccount.phone) &&
+      Boolean(activeAccount.phone) &&
       cleanDigits.length >= 6 &&
-      adminAccount.phone!.replace(/\D/g, '').includes(cleanDigits);
+      activeAccount.phone!.replace(/\D/g, '').includes(cleanDigits);
 
     if (!matchesEmail && !matchesUsername && !matchesPhone) {
       return {
@@ -358,13 +412,13 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const newHash = await hashAdminPassword(cleanPass);
     const updated: AdminAccountRecord = {
-      ...adminAccount,
+      ...activeAccount,
       passwordHash: newHash,
     };
     setAdminAccount(updated);
     localStorage.setItem(ADMIN_ACCOUNT_STORAGE_KEY, JSON.stringify(updated));
     if (isSupabaseConfigured) {
-      await updateSingleAdminAccountInSupabase({ passwordHash: newHash });
+      await updateSingleAdminAccountInSupabase({ passwordHash: newHash }, updated);
     }
     return {
       success: true,
@@ -377,7 +431,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     inputPass: string
   ): Promise<{ success: boolean; error?: string }> => {
     let activeAccount = adminAccount;
-    if (!activeAccount && isSupabaseConfigured) {
+    if (isSupabaseConfigured) {
       const remote = await fetchSingleAdminAccount();
       if (remote.account) {
         activeAccount = remote.account;
