@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { SavedTripProvider } from './context/SavedTripContext';
 import { AdminProvider } from './context/AdminContext';
+import { applyDynamicSeo } from './utils/seo';
 
 // Common Components
 import { UtilityBar } from './components/common/UtilityBar';
@@ -43,8 +44,36 @@ import { TideGuidePage } from './pages/TideGuidePage';
 import { TOUR_PACKAGES } from './data/packages';
 import { BLOG_POSTS } from './data/blogPosts';
 
+const VALID_URL_ROUTES = new Set([
+  'home',
+  'packages',
+  'booking',
+  'places',
+  'food',
+  'reviews',
+  'blog',
+  'about-us',
+  'contact',
+  'plan-my-trip',
+  'gallery-photos',
+  'videos',
+  'safety-rules',
+  'tides-guide',
+  'saved-trips',
+]);
+
+const getInitialRoute = (): string => {
+  if (typeof window === 'undefined') return 'home';
+  const param = new URLSearchParams(window.location.search).get('page');
+  if (param && VALID_URL_ROUTES.has(param)) {
+    return param;
+  }
+  return 'home';
+};
+
 const AppContent: React.FC = () => {
-  const [currentRoute, setCurrentRoute] = useState<string>('home');
+  const { language } = useLanguage();
+  const [currentRoute, setCurrentRoute] = useState<string>(getInitialRoute);
   const [selectedPackageSlug, setSelectedPackageSlug] = useState<string | null>(null);
   const [selectedDestinationSlug, setSelectedDestinationSlug] = useState<string | null>(null);
   const [selectedBlogSlug, setSelectedBlogSlug] = useState<string | null>(null);
@@ -115,6 +144,11 @@ const AppContent: React.FC = () => {
   const activeBlogPost = selectedBlogSlug
     ? BLOG_POSTS.find(b => b.slug === selectedBlogSlug) || BLOG_POSTS[0]
     : BLOG_POSTS[0];
+
+  // Sync page-level SEO title, meta description, OpenGraph, and canonical URL
+  useEffect(() => {
+    applyDynamicSeo(currentRoute, language, activePackage, activeBlogPost);
+  }, [currentRoute, language, activePackage, activeBlogPost]);
 
   return (
     <div className="min-h-screen bg-transparent text-slate-900 flex flex-col font-sans selection:bg-[#F59E0B] selection:text-slate-950 relative">
