@@ -412,7 +412,7 @@ export const TOUR_PACKAGES: TourPackage[] = [
     durationNights: 3,
     startingPoint: { bn: 'কলকাতা / ক্যানিং / গদখালি', en: 'Kolkata / Canning / Godkhali Jetty' },
     endPoint: { bn: 'কলকাতা / ক্যানিং', en: 'Kolkata / Canning Railway Station' },
-    heroImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+    heroImage: 'https://res.cloudinary.com/v6celbjp/image/upload/v1795112374/images_2.jpg',
     galleryImages: [
       'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',

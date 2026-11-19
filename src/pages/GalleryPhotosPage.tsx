@@ -71,6 +71,7 @@ export const GalleryPhotosPage: React.FC = () => {
             <img
               src={item.mediaUrl}
               alt={item.title.en}
+              referrerPolicy="no-referrer"
               className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
             />
             <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
@@ -106,6 +107,7 @@ export const GalleryPhotosPage: React.FC = () => {
               <img
                 src={activePhoto.mediaUrl}
                 alt={activePhoto.title.en}
+                referrerPolicy="no-referrer"
                 className="max-h-[65vh] w-auto object-contain"
               />
             </div>

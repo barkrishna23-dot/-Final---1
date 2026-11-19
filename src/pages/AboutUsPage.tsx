@@ -314,51 +314,6 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = () => {
           </div>
         </div>
 
-        {/* Google Drive Document Access Card */}
-        <div className="bg-gradient-to-br from-[#05291F] via-[#064E3B] to-[#0D3B2E] text-white p-5 sm:p-7 rounded-2xl border border-emerald-700/80 shadow-md flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-          <div className="flex items-start gap-4">
-            {/* Google Drive SVG Logo */}
-            <div className="w-12 h-12 rounded-2xl bg-white p-2.5 shadow-md shrink-0 flex items-center justify-center">
-              <svg viewBox="0 0 87.3 78" className="w-full h-full" aria-label="Google Drive">
-                <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
-                <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44c-.8 1.4-1.2 2.95-1.2 4.5h27.5z" fill="#00ac47"/>
-                <path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/>
-                <path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
-                <path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/>
-                <path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/>
-              </svg>
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="bg-amber-400/20 text-amber-300 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-amber-400/40">
-                  {isBengali ? 'গুগল ড্রাইভ অফিসিয়াল কপি' : 'Official Google Drive Document'}
-                </span>
-                <span className="text-emerald-200 text-xs">
-                  {isBengali ? 'শ্রীকৃষ্ণ বার স্বাক্ষরিত ও সত্যায়িত' : 'Signed & Verified by Srikrishna Bar'}
-                </span>
-              </div>
-              <h3 className="text-base sm:text-lg font-bold font-heading text-white">
-                {isBengali ? 'সুন্দরবন ভ্রমণ — শর্তাবলী, রিফান্ড ও গোপনীয়তা ড্রাইভ কপি' : 'Sundarban Vromon — Terms, Refund & Privacy Policy Drive'}
-              </h3>
-              <p className="text-xs sm:text-sm text-emerald-100/90 leading-relaxed max-w-2xl">
-                {isBengali
-                  ? 'আমাদের পরিচয় ও স্বত্বাধিকারী শ্রীকৃষ্ণ বার কর্তৃক অনুমোদিত সম্পূর্ণ শর্তাবলী, বাতিল ও রিফান্ড নীতি, গোপনীয়তা নীতি এবং বন দপ্তর নির্দেশিকা সরাসরি গুগল ড্রাইভ ফাইলে দেখুন বা প্রিন্ট ও সেভ করুন।'
-                  : 'Official document authorized by founder Srikrishna Bar containing full booking terms, refund schedules, privacy protocols, and forest safety regulations.'}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full lg:w-auto shrink-0">
-            <button
-              onClick={() => setShowDriveModal(true)}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-emerald-950 font-bold text-xs sm:text-sm hover:bg-emerald-50 transition-colors shadow-sm cursor-pointer"
-            >
-              <Eye className="w-4 h-4 text-emerald-800" />
-              <span>{isBengali ? 'ড্রাইভ কপি প্রিভিউ' : 'Preview Document'}</span>
-            </button>
-          </div>
-        </div>
-
         {/* SECTION 1: শর্তাবলী ও বুকিং নীতি (Terms & Conditions) */}
         {(activePolicyTab === 'all' || activePolicyTab === 'terms') && (
           <div className="space-y-4 animate-in fade-in duration-300">

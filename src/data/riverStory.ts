@@ -1,5 +1,5 @@
 import { RiverStoryChapter } from '../types';
-const chapter1GodkhaliImg = 'https://res.cloudinary.com/v6celbjp/image/upload/v1790276194/ChatGPT_Image_Sep_10_2026_04_00_50_PM.png';
+const chapter1GodkhaliImg = 'https://res.cloudinary.com/v6celbjp/image/upload/v1795110990/ChatGPT_Image_Sep_10_2026_03_59_04_PM.png';
 import panchamukhiDestImg from '../assets/images/regenerated_image_1789501618239.jpg';
 
 export const RIVER_STORY_CHAPTERS: RiverStoryChapter[] = [
@@ -44,7 +44,7 @@ export const RIVER_STORY_CHAPTERS: RiverStoryChapter[] = [
       en: 'As the boat powers through the Matla confluence, the scale of the Bengal delta unfolds. Tidal currents swirl with strength, creating frothing wakes against the bow. Brahminy kites hover against cobalt skies while distant islands appear like emerald flotillas.',
     },
     visualCue: 'vast-estuary',
-    image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://res.cloudinary.com/v6celbjp/image/upload/v1790276194/ChatGPT_Image_Sep_10_2026_04_00_50_PM.png',
     observationList: [
       { bn: 'শঙ্খচিল ও শিকারী নদীর পাখির ডাইভ দেওয়ার দৃশ্য', en: 'Brahminy kites diving for surface river fish' },
       { bn: 'নদীতে মাছ ধরার জেলেদের টানানো বিশেষ জাল (ভেসাল জাল)', en: 'Traditional artisanal fishing nets strung across poles' },
@@ -70,7 +70,7 @@ export const RIVER_STORY_CHAPTERS: RiverStoryChapter[] = [
       en: 'Passing the sanctuary boundary pillars, the deafening open river gives way to sheltered delta channels. Lush mangrove canopies of Sundari, Garjan, Gewa, and Golpata flank both shores. Thousands of pneumatophores spike upwards through the silt.',
     },
     visualCue: 'mangrove-wall',
-    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://res.cloudinary.com/v6celbjp/image/upload/v1795109867/mangrove-3.jpg_2K_20260910162912.jpg',
     observationList: [
       { bn: 'ম্যানগ্রোভের শ্বাসমূল (Pneumatophores) ও ঠেস মূলের গঠন', en: 'Dense pneumatophore breathing root carpets' },
       { bn: 'তীরবর্তী কেওড়া গাছে রিসাস বানরের দলের লাফালাফি', en: 'Rhesus macaques foraging in Sonneratia foliage' },
@@ -96,7 +96,7 @@ export const RIVER_STORY_CHAPTERS: RiverStoryChapter[] = [
       en: 'Low tide reveals the true biological engine of the Sundarbans. As the saline waters recede by 6 to 10 feet, shimmering grey mudbanks emerge alive with thousands of crimson fiddler crabs waving oversized claws, and amphibious mudskippers walking across soft silt.',
     },
     visualCue: 'mudflat-life',
-    image: 'https://images.unsplash.com/photo-1575550959106-5a7defe28b56?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://res.cloudinary.com/v6celbjp/image/upload/v1795111153/ChatGPT_Image_Sep_16_2026_01_25_30_AM.png',
     observationList: [
       { bn: 'ফিডলার কাঁকড়ার লাল ও কমলা রঙের মেলা', en: 'Crimson Fiddler Crabs waving dominant claws' },
       { bn: 'কাদার ওপর ডানা মেলে থাকা মাডস্কিপার মাছ', en: 'Mudskipper fish skipping across exposed riverbanks' },
@@ -122,7 +122,7 @@ export const RIVER_STORY_CHAPTERS: RiverStoryChapter[] = [
       en: 'In the narrow corridors of Pirkhali Creek, the captain cuts the engine to an idling hum. The boat glides silently. The silence is profound: the snap of a crab claw, the rustle of deer hooves in dry leaves, and the sharp piping call of a Kingfisher echoing across water.',
     },
     visualCue: 'creek-drift',
-    image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://res.cloudinary.com/v6celbjp/image/upload/v1795113171/images.jpg',
     observationList: [
       { bn: '৭ প্রজাতির বিভিন্ন রঙের মাছরাঙা (Kingfishers)', en: 'Black-capped, Collared, and Pied Kingfishers perched on low twigs' },
       { bn: 'বড় গুইসাপের নিঃশব্দে নদী সাঁতরে পার হওয়ার দৃশ্য', en: 'Water Monitor Lizards swimming effortlessly across calm water' },
@@ -148,7 +148,7 @@ export const RIVER_STORY_CHAPTERS: RiverStoryChapter[] = [
       en: 'Disembarking onto fenced timber jetties brings you to the protected sanctuaries. The elevated watchtowers look directly down upon sweet-water reservoirs where spotted deer herds, wild boars, and monitors congregate to drink under the watchful eyes of jungle raptors.',
     },
     visualCue: 'watch-towers',
-    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://res.cloudinary.com/v6celbjp/image/upload/v1795113171/Sudhanyakhali-Watch-Tower-Pic-2.jpg',
     observationList: [
       { bn: 'চিত্রা হরিণের পানি পান ও সজাগ দৃষ্টি', en: 'Spotted deer herds cautiously drinking at the sweet water pool' },
       { bn: 'সজনেখালি বনবিবি মন্দির ও ঐতিহাসিক লোকবিশ্বাস', en: 'Historical Bonbibi shrine dedicated to the protector of forest folk' },
@@ -174,7 +174,7 @@ export const RIVER_STORY_CHAPTERS: RiverStoryChapter[] = [
       en: 'The Dobanki Canopy Walkway elevates travelers 20 feet into the air through a 400-meter heavy-gauge wire enclosure. You walk at eye level with tree crowns and hanging orchids, looking straight down onto tidal mud, crabs, and meandering forest trails.',
     },
     visualCue: 'canopy-bridge',
-    image: 'https://images.unsplash.com/photo-1575550959106-5a7defe28b56?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://res.cloudinary.com/v6celbjp/image/upload/v1795112372/DOBANKI_WATCH_TOWER.webp',
     observationList: [
       { bn: 'গাছের ডালপালায় বসে থাকা কাঠঠোকরা ও শ্যামা পাখি', en: 'Woodpeckers and shamas fluttering among high mangrove branches' },
       { bn: 'নিচে কাদার ওপর কাঁকড়ার দৌড়াদৌড়ি', en: 'Crab activity visible directly below the mesh walkway floor' },
@@ -226,7 +226,7 @@ export const RIVER_STORY_CHAPTERS: RiverStoryChapter[] = [
       en: 'Back at the Pakhiralay resort, the delta night comes alive with warmth. Under clear star-filled skies, local folk musicians play the ektara, singing timeless ballads of Bonbibi and tiger spirits. A feast of country chicken or spicy crab curry caps off an unforgettable day.',
     },
     visualCue: 'night-folk-lore',
-    image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://res.cloudinary.com/v6celbjp/image/upload/v1795113789/22.jpg',
     observationList: [
       { bn: 'একতারা ও দোতারার সুরে হৃদয়ছোঁয়া বাউল সংগীত', en: 'Soulful live acoustic Baul songs and tribal rhythms' },
       { bn: 'সুন্দরবনের মৌলি ও জেলেদের বাস্তব জীবনগাথা', en: 'True oral folklore of honey-gatherers and forest hermits' },
